@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+    {include file="common/header"/}
+
+    <el-form :inline="true">
+        <el-form-item>
+            <el-button type="primary" icon="el-icon-edit" size="small" @click="clickAdd">添加</el-button>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="danger" icon="el-icon-delete" size="small" @click="postMultDelete">批量删除</el-button>
+        </el-form-item>
+        <div style="float:right">
+            <el-form-item style="width:120px;">
+                <el-select placeholder="请选择类型" size="small" v-model="search.node_system">
+                    <el-option value="" label="全部类型">
+                    </el-option>
+                    <el-option v-for="system in systemList" :value="system.system_id" :label="system.system_title">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item style="width:120px;">
+                <el-select placeholder="显示状态" size="small" v-model="search.node_show">
+                    <el-option value="" label="全部状态">
+                    </el-option>
+                    <el-option v-for="show in showList" :value="show.show_id" :label="show.show_title">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item style="width:120px;">
+                <el-select placeholder="筛选类别" size="small" v-model="search.filter">
+                    <el-option value="node_id" label="节点ID">
+                    </el-option>
+                    <el-option value="node_title" label="节点名称">
+                    </el-option>
+                    <el-option value="node_desc" label="节点描述">
+                    </el-option>
+                    <el-option value="node_module" label="模块">
+                    </el-option>
+                    <el-option value="node_controller" label="控制器">
+                    </el-option>
+                    <el-option value="node_action" label="方法">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item>
+                <el-input placeholder="输入关键词搜索" size="small" v-model="search.keyword"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button icon="el-icon-search" size="small" @click="getList">搜索</el-button>
+            </el-form-item>
+        </div>
+    </el-form>
+    <el-table :data="dataList" @selection-change="changeSelection" v-loading="loading">
+        <el-table-column type="selection" width="50">
+        </el-table-column>
+        <el-table-column prop="node_id" label="ID" width="80">
+        </el-table-column>
+        <el-table-column prop="node_title" label="节点名称">
+        </el-table-column>
+        <el-table-column label="节点地址">
+            <template slot-scope="scope">
+                {{scope.row.node_module+"/"+scope.row.node_controller+"/"+scope.row.node_action}}
+            </template>
+        </el-table-column>
+        <el-table-column prop="node_order" label="排序" width="">
+        </el-table-column>
+        <el-table-column label="类型">
+            <template slot-scope="scope">
+                <font v-if="scope.row.node_system==0">自定义</font>
+                <font v-if="scope.row.node_system!=0" style="color:#aaa;">系统节点</font>
+            </template>
+        </el-table-column>
+        <el-table-column label="隐藏" width="80">
+            <template slot-scope="scope">
+                <el-switch v-model="scope.row.node_show==0?true:false" active-color="#ff4949"
+                    @change="clickShow(scope.row)">
+                </el-switch>
+            </template>
+        </el-table-column>
+        <el-table-column label="操作" width="180">
+            <template slot-scope="scope">
+                <el-link type="info" @click="clickEdit(scope.row)" :underline="false"><i class="el-icon-edit"></i>编辑
+                </el-link>
+                <el-link type="danger" @click="clickDelete(scope.row)" :underline="false"><i
+                        class="el-icon-delete"></i>删除</el-link>
+            </template>
+        </el-table-column>
+
+    </el-table>
+
+
+
+
+    <!-- 添加框 -->
+    <el-dialog title="添加节点" :visible.sync="dialogFormAdd" :modal-append-to-body='false'>
+        <el-form>
+            <el-form-item label="节点名称" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formAdd.node_title"></el-input>
+            </el-form-item>
+            <el-form-item label="节点描述" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formAdd.node_desc"></el-input>
+            </el-form-item>
+            <el-form-item label="节点图标" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formAdd.node_icon"></el-input>
+            </el-form-item>
+            <el-form-item label="所属模块" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formAdd.node_module"></el-input>
+            </el-form-item>
+            <el-form-item label="控制器" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formAdd.node_controller"></el-input>
+            </el-form-item>
+            <el-form-item label="方法" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formAdd.node_action"></el-input>
+            </el-form-item>
+            <el-form-item label="是否显示" :label-width="formLabelWidth">
+                <el-select placeholder="请选择是否显示到菜单" size="small" v-model="formAdd.node_show">
+                    <el-option v-for="show in showList" :value="show.show_id" :label="show.show_title">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="父级菜单" :label-width="formLabelWidth">
+                <el-select placeholder="请选择菜单" size="small" v-model="formAdd.node_pid">
+                    <el-option v-for="parent in parentList" :value="parent.node_id" :label="parent.node_title">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="显示顺序" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formAdd.node_order"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="postAdd">确认添加</el-button>
+        </div>
+    </el-dialog>
+    <!-- 修改框 -->
+    <el-dialog title="修改节点" :visible.sync="dialogFormEdit" :modal-append-to-body='false'>
+        <el-form>
+            <el-form-item label="节点名称" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formEdit.node_title"></el-input>
+            </el-form-item>
+            <el-form-item label="节点描述" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formEdit.node_desc"></el-input>
+            </el-form-item>
+            <el-form-item label="节点图标" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formEdit.node_icon"></el-input>
+            </el-form-item>
+            <el-form-item label="所属模块" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formEdit.node_module"></el-input>
+            </el-form-item>
+            <el-form-item label="控制器" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formEdit.node_controller"></el-input>
+            </el-form-item>
+            <el-form-item label="方法" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formEdit.node_action"></el-input>
+            </el-form-item>
+            <el-form-item label="是否显示" :label-width="formLabelWidth">
+                <el-select placeholder="请选择是否显示到菜单" size="small" v-model="formEdit.node_show">
+                    <el-option v-for="show in showList" :value="show.show_id" :label="show.show_title">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="父级菜单" :label-width="formLabelWidth">
+                <el-select placeholder="请选择菜单" size="small" v-model="formEdit.node_pid">
+                    <el-option v-for="parent in parentList" :value="parent.node_id" :label="parent.node_title">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="显示顺序" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formEdit.node_order"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="postEdit">确认修改</el-button>
+        </div>
+    </el-dialog>
+
+    {include file="common/footer"/}
+    <script>
+        new Vue({
+            el: '#app',
+            data() {
+                this.getList();
+                return {
+                    search: {
+                        node_system: "",
+                        node_show: "",
+                        keyword: "",
+                        filter: "node_id"
+                    },
+                    formLabelWidth: '80px',
+                    dialogFormAdd: false,
+                    dialogFormEdit: false,
+                    loading: true,
+                    dataList: [],
+                    parentList: [],
+                    systemList: [
+                        {
+                            system_id: 0,
+                            system_title: "自定义节点"
+                        },
+                        {
+                            system_id: 1,
+                            system_title: "系统节点"
+                        }
+                    ],
+                    showList: [
+                        {
+                            show_id: 0,
+                            show_title: "隐藏的节点"
+                        },
+                        {
+                            show_id: 1,
+                            show_title: "显示的节点"
+                        }
+                    ],
+                    selectList: [],
+                    formAdd: {
+                        node_readonly: 0,
+                        node_pid: 0,
+                        node_order: 1,
+                        node_show: 1,
+                    },
+                    formEdit: {
+                        node_readonly: 0,
+                        node_pid: 0,
+                    },
+                }
+            },
+            methods: {
+                postMultDelete() {
+                    var that = this;
+                    if (that.selectList.length == 0) {
+                        that.$message.error('未选择任何节点！');
+                        return;
+                    }
+                    this.$confirm('即将删除选中的节点, 是否确认?', '批量删除', {
+                        confirmButtonText: '删除',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        axios.post('/api/node/delete', {
+                            ...PostBase, ...{
+                                node_id: that.selectList.join(",")
+                            }
+                        })
+                            .then(function (response) {
+                                that.getList();
+                                if (response.data.code == CODE_SUCCESS) {
+                                    that.$message({
+                                        message: response.data.msg,
+                                        type: 'success'
+                                    });
+                                } else {
+                                    that.$message.error(response.data.msg);
+                                }
+                            })
+                            .catch(function (error) {
+                                that.$message.error('服务器内部错误');
+                            });
+                    }).catch(() => {
+                    });
+                },
+                changeSelection(list) {
+                    var that = this;
+                    that.selectList = [];
+                    for (var index in list) {
+                        that.selectList.push(list[index].node_id);
+                    }
+                },
+                postEdit() {
+                    var that = this;
+                    axios.post('/api/node/update', {
+                        ...PostBase, ...that.formEdit
+                    })
+                        .then(function (response) {
+                            that.getList();
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.$message({
+                                    message: response.data.msg,
+                                    type: 'success'
+                                });
+                                that.dialogFormEdit = false;
+                            } else {
+                                that.$message.error(response.data.msg);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.$message.error('服务器内部错误');
+                        });
+                },
+                postAdd() {
+                    var that = this;
+                    axios.post('/api/node/add', {
+                        ...PostBase, ...that.formAdd
+                    })
+                        .then(function (response) {
+                            that.getList();
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.$message({
+                                    message: response.data.msg,
+                                    type: 'success'
+                                });
+                                that.dialogFormAdd = false;
+                            } else {
+                                that.$message.error(response.data.msg);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.$message.error('服务器内部错误');
+                        });
+                },
+                clickAdd() {
+                    var that = this;
+                    axios.post('/api/node/getList', {
+                        ...PostBase
+                    })
+                        .then(function (response) {
+                            that.groupList = response.data.data;
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.dialogFormAdd = true;
+                            } else {
+                                that.$message.error(response.data.msg);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.$message.error('服务器内部错误');
+                        });
+                },
+                clickDelete(row) {
+                    var that = this;
+                    this.$confirm('即将删除这个节点, 是否确认?', '删除提醒', {
+                        confirmButtonText: '删除',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        axios.post('/api/node/delete', {
+                            ...PostBase, ...{
+                                node_id: row.node_id
+                            }
+                        })
+                            .then(function (response) {
+                                that.getList();
+                                if (response.data.code == CODE_SUCCESS) {
+                                    that.$message({
+                                        message: response.data.msg,
+                                        type: 'success'
+                                    });
+                                } else {
+                                    that.$message.error(response.data.msg);
+                                }
+                            })
+                            .catch(function (error) {
+                                that.$message.error('服务器内部错误');
+                            });
+                    }).catch(() => {
+                    });
+                },
+                clickShow(row) {
+                    var that = this;
+                    axios.post(row.node_show ? '/api/node/hide_menu' : '/api/node/show_menu', {
+                        ...PostBase, ...{
+                            node_id: row.node_id
+                        }
+                    })
+                        .then(function (response) {
+                            that.getList();
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.$message({
+                                    message: response.data.msg,
+                                    type: 'success'
+                                });
+                            } else {
+                                that.$message.error(response.data.msg);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.$message.error('服务器内部错误');
+                        });
+                },
+                clickEdit(row) {
+                    var that = this;
+                    that.formEdit = row;
+                    axios.post('/api/node/getList', {
+                        ...PostBase
+                    })
+                        .then(function (response) {
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.groupList = response.data.data;
+                                axios.post('/api/node/detail', {
+                                    ...PostBase, ...{
+                                        node_id: row.node_id
+                                    }
+                                })
+                                    .then(function (response) {
+                                        if (response.data.code == CODE_SUCCESS) {
+                                            that.formEdit = response.data.data;
+                                            that.dialogFormEdit = true;
+                                        } else {
+                                            that.$message.error(response.data.msg);
+                                        }
+                                    })
+                                    .catch(function (error) {
+                                        that.$message.error('服务器内部错误');
+                                    });
+                            } else {
+                                that.$message.error(response.data.msg);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.$message.error('服务器内部错误');
+                        });
+
+                },
+                changeCurrentPage(page) {
+                    this.form.page = page;
+                    this.getList();
+                },
+                getList() {
+                    var that = this;
+                    that.loading = true;
+                    axios.post('/api/node/getList', { ...PostBase, ...that.form, ...that.search })
+                        .then(function (response) {
+                            that.loading = false;
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.dataList = [];
+                                that.parentList = [];
+                                that.parentList.push({
+                                    node_id: 0,
+                                    node_title: "根级菜单"
+                                });
+                                for (var i in response.data.data.data) {
+                                    that.dataList.push(response.data.data.data[i]);
+                                    response.data.data.data[i].node_title = '　　' + response.data.data.data[i].node_title;
+                                    that.parentList.push(response.data.data.data[i]);
+                                    for (var j in response.data.data.data[i].sub) {
+                                        response.data.data.data[i].sub[j].node_title = '　　　　' + response.data.data.data[i].sub[j].node_title;
+                                        that.dataList.push(response.data.data.data[i].sub[j]);
+                                    }
+                                }
+                            } else {
+                                that.$message.error(response.data.msg);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.loading = false;
+                            that.$message.error('服务器内部错误');
+                        });
+                }
+            }
+        })
+    </script>
+
+
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title>Oauth Login</title>
+</head>
+
+<body>
+    <form method="POST">
+        <div>你正在登录 <font color=orangered><?php echo $app['name'];?></font>
+        </div>
+        <div><input type="tel" placeholder="请输入帐号" name="account" value="root" /></div>
+        <div><input type="password" placeholder="请输入密码" name="password" value="123456" /></div>
+        <div><input type="submit" value="登录并授权" /></div>
+        <div>root 123456</div>
+    </form>
+</body>
+
+</html>

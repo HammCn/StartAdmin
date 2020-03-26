@@ -1,0 +1,109 @@
+<meta charset="UTF-8">
+<!-- import CSS -->
+<link rel="stylesheet" href="/static/css/element.css">
+<link rel="stylesheet" href="/static/css/StartAdmin.css">
+<link rel="stylesheet" href="//at.alicdn.com/t/font_666204_u6x6ssnn9sh.css">
+<style>
+    .el-footer {
+        background-color: #f5f5f5;
+        color: #333;
+        line-height: 60px;
+    }
+
+    .el-header {
+        background-color: #333;
+        color: #fff;
+        line-height: 60px;
+    }
+
+    .el-aside {
+        background-color: #fff;
+        color: #333;
+    }
+
+    .el-main {
+        background-color: #ffffff;
+        color: #333;
+        padding: 10px;
+    }
+
+    .el-select {
+        display: block;
+    }
+
+    .body {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0px;
+        top: 60px;
+    }
+
+    .el-header .title {
+        font-size: 20px;
+        font-weight: 500;
+    }
+
+    .el-header .topArea {
+        float: right;
+    }
+
+    .el-header .topArea a {
+        margin-right: 20px;
+        color: white;
+        cursor: pointer;
+    }
+
+    .pub_dialog {
+        display: flex;
+        justify-content: center;
+        align-items: Center;
+        overflow: hidden;
+    }
+
+    .pub_dialog .el-dialog {
+        margin: 0 auto !important;
+        height: 80%;
+        overflow: hidden;
+    }
+
+    .pub_dialog .el-dialog .el-dialog__body {
+        position: absolute;
+        left: 0;
+        top: 54px;
+        bottom: 80px;
+        right: 0;
+        padding: 0;
+        z-index: 1;
+        overflow: hidden;
+        overflow-y: auto;
+    }
+
+    .pub_dialog .el-dialog .el-dialog__footer {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+    }
+</style>
+</head>
+
+<body>
+    <div id="app" v-cloak>
+        <el-container>
+            <el-header>
+                <span class="title">StartAdmin</span>
+                <span class="topArea">
+                    <el-link :underline="false">消息管理</el-link>
+                    <el-dropdown>
+                        <el-link class="el-icon-user-solid" :underline="false">周杰伦</el-link>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item>消息中心</el-dropdown-item>
+                            <el-dropdown-item>修改资料</el-dropdown-item>
+                            <el-dropdown-item>退出登录</el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                </span>
+            </el-header>
+            <el-container class="body">
+                {include file="common/menu"/}
+                <el-main>

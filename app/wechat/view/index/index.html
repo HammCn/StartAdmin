@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <title>StartAdmin&WeUI</title>
+    {include file="common/style"/}
+    <style>
+        .headimg {
+            margin-top: 20%;
+            margin-bottom: 20%;
+            text-align: center;
+        }
+
+        .headimg>img {
+            width: 30%;
+            border-radius: 100%;
+        }
+    </style>
+    {include file="common/header"/}
+    <div class="headimg"><img src="{$wechat.wechat_head|urldecode}" /></div>
+    <div class="weui-form-preview">
+        <div class="weui-form-preview__hd">
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label">微信昵称</label>
+                <em class="weui-form-preview__value">{$wechat.wechat_nick|urldecode=###}</em>
+            </div>
+        </div>
+        <div class="weui-form-preview__bd">
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label">性别</label>
+                <span class="weui-form-preview__value">{$wechat.wechat_sex==1?"男":"女"}</span>
+            </div>
+        </div>
+        <div class="weui-form-preview__ft">
+            <a class="weui-form-preview__btn weui-form-preview__btn_primary" @click="scanQrcde">扫一扫</a>
+        </div>
+    </div>
+    {include file="common/script"/}
+    <script>
+        wx.ready(function () {
+        });
+        new Vue({
+            el: '#app',
+            data: function () {
+                jssdkInit();
+                return {
+                }
+            },
+            methods: {
+                scanQrcde() {
+                    wx.scanQRCode({
+                        needResult: 1, //0微信处理，1直接返回，
+                        scanType: ["qrCode", "barCode"], //qrCode,barCode
+                        success: function (res) {
+                            alert(res.resultStr);
+                        }
+                    });
+                },
+                onSubmit: function () {
+                    var that = this;
+                    axios.post('/api/user/login', Object.assign(PostBase, this.form))
+                        .then(function (response) {
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.$message({
+                                    message: '登录成功,正在跳转中',
+                                    type: 'success'
+                                });
+                                setCookie('access_token', response.data.data.access_token);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.$message.error('登录失败，服务器内部错误');
+                        });
+                }
+            }
+        })
+    </script>
+    {include file="common/footer"/}

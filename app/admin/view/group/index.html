@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+    {include file="common/header"/}
+
+    <el-form :inline="true">
+        <el-form-item>
+            <el-button type="primary" icon="el-icon-edit" size="small" @click="clickAdd">添加</el-button>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="danger" icon="el-icon-delete" size="small" @click="postMultDelete">批量删除</el-button>
+        </el-form-item>
+        <!-- <div style="float:right">
+            <el-form-item>
+                <el-select placeholder="请选择状态" size="small" v-model="search.group_status">
+                    <el-option value="" label="全部用户">
+                    </el-option>
+                    <el-option value="0" label="正常用户">
+                    </el-option>
+                    <el-option value="1" label="禁用用户">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item style="width:120px;">
+                <el-select placeholder="筛选类别" size="small" v-model="search.filter">
+                    <el-option value="group_id" label="用户ID">
+                    </el-option>
+                    <el-option value="group_name" label="用户昵称">
+                    </el-option>
+                    <el-option value="group_account" label="用户帐号">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item>
+                <el-input placeholder="输入关键词搜索" size="small" v-model="search.keyword"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button icon="el-icon-search" size="small" @click="getList">搜索</el-button>
+            </el-form-item>
+        </div> -->
+    </el-form>
+    <el-table :data="dataList" @selection-change="changeSelection" v-loading="loading">
+        <el-table-column type="selection" width="50">
+        </el-table-column>
+        <el-table-column prop="group_id" label="组ID" width="100">
+        </el-table-column>
+        <el-table-column prop="group_name" label="组名称" width="200">
+        </el-table-column>
+        <el-table-column prop="group_desc" label="组描述">
+        </el-table-column>
+        </el-table-column>
+        <el-table-column label="权限" width="80">
+            <template slot-scope="scope">
+                <font v-if="scope.row.group_system==0">用户组</font>
+                <font v-if="scope.row.group_system!=0" style="color:#aaa;">系统组</font>
+            </template>
+        </el-table-column>
+        <el-table-column label="禁用" width="80">
+            <template slot-scope="scope">
+                <el-switch v-model="scope.row.group_status==1?true:false" active-color="#ff4949"
+                    @change="clickStatus(scope.row)">
+                </el-switch>
+            </template>
+        </el-table-column>
+        <el-table-column label="操作" width="200">
+            <template slot-scope="scope">
+                <el-link type="info" @click="clickEdit(scope.row)" :underline="false"><i class="el-icon-edit"></i>编辑
+                </el-link>
+                <el-link type="info" @click="clickAuth(scope.row)" :underline="false"><i class="el-icon-lock"></i>授权
+                </el-link>
+                <el-link type="danger" @click="clickDelete(scope.row)" :underline="false"><i
+                        class="el-icon-delete"></i>删除</el-link>
+            </template>
+        </el-table-column>
+
+    </el-table>
+
+
+
+    <!-- 添加框 -->
+    <el-dialog title="添加用户组" :visible.sync="dialogFormAdd" :modal-append-to-body='false'>
+        <el-form>
+            <el-form-item label="组名称" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formAdd.group_name"></el-input>
+            </el-form-item>
+            <el-form-item label="组描述" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formAdd.group_desc"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="postAdd">确认添加</el-button>
+        </div>
+    </el-dialog>
+    <!-- 修改框 -->
+    <el-dialog title="修改用户组" :visible.sync="dialogFormEdit" :modal-append-to-body='false'>
+        <el-form>
+            <el-form-item label="组名称" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formEdit.group_name"></el-input>
+            </el-form-item>
+            <el-form-item label="组描述" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formEdit.group_desc"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="postEdit">确认修改</el-button>
+        </div>
+    </el-dialog>
+    <!-- 授权框 -->
+    <el-dialog class="pub_dialog" title="用户组授权" :visible.sync="dialogFormAuth" :modal-append-to-body='false'
+        width="60%">
+        <el-table ref="multipleTable" :data="nodeList" border @selection-change="changeAuthSelect" v-loading="loading">
+            <el-table-column type="selection" width="50">
+            </el-table-column>
+            <el-table-column property="node_id" label="节点ID" width="80"></el-table-column>
+            <el-table-column property="node_title" label="节点名称"></el-table-column>
+            <el-table-column label="节点地址">
+                <template slot-scope="scope">
+                    {{scope.row.node_module+"/"+scope.row.node_controller+"/"+scope.row.node_action}}
+                </template>
+            </el-table-column>
+        </el-table>
+        <div slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="postAuth">确认授权</el-button>
+        </div>
+    </el-dialog>
+
+    {include file="common/footer"/}
+    <script>
+        new Vue({
+            el: '#app',
+            data() {
+                this.getList();
+                return {
+                    search: {
+                        group_status: "",
+                        keyword: "",
+                        filter: "group_id"
+                    },
+                    formLabelWidth: '80px',
+                    dialogFormAdd: false,
+                    dialogFormEdit: false,
+                    dialogFormAuth: false,
+                    loading: true,
+                    dataList: [],
+                    groupList: [],
+                    authList: [],
+                    selectList: [],
+                    selectNodeList: [],
+                    selectedGroupId: 0,
+                    nodeList: [],
+                    form: {
+                        page: 1
+                    },
+                    formAdd: {
+                        group_group: 3
+                    },
+                    formEdit: {
+                        group_group: 3
+                    },
+                }
+            },
+            methods: {
+                postMultDelete() {
+                    var that = this;
+                    if (that.selectList.length == 0) {
+                        that.$message.error('未选择任何用户！');
+                        return;
+                    }
+                    this.$confirm('即将删除选中的用户, 是否确认?', '批量删除', {
+                        confirmButtonText: '删除',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        axios.post('/api/group/delete', {
+                            ...PostBase, ...{
+                                group_id: that.selectList.join(",")
+                            }
+                        })
+                            .then(function (response) {
+                                that.getList();
+                                if (response.data.code == CODE_SUCCESS) {
+                                    that.$message({
+                                        message: response.data.msg,
+                                        type: 'success'
+                                    });
+                                } else {
+                                    that.$message.error(response.data.msg);
+                                }
+                            })
+                            .catch(function (error) {
+                                that.$message.error('服务器内部错误');
+                            });
+                    }).catch(() => {
+                    });
+                },
+                changeAuthSelect(list) {
+                    var that = this;
+                    that.selectNodeList = [];
+                    for (var index in list) {
+                        that.selectNodeList.push(list[index].node_id);
+                    }
+                },
+                changeSelection(list) {
+                    var that = this;
+                    that.selectList = [];
+                    for (var index in list) {
+                        that.selectList.push(list[index].group_id);
+                    }
+                },
+                postAuth() {
+                    var that = this;
+                    console.log();
+
+                    var that = this;
+                    axios.post('/api/group/authorize', {
+                        ...PostBase, ...{
+                            node_ids: that.selectNodeList.join(','),
+                            group_id: that.selectedGroupId
+                        }
+                    })
+                        .then(function (response) {
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.$message({
+                                    message: response.data.msg,
+                                    type: 'success'
+                                });
+                                that.dialogFormAuth = false;
+                            } else {
+                                that.$message.error(response.data.msg);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.$message.error('服务器内部错误');
+                        });
+                },
+                postEdit() {
+                    var that = this;
+                    axios.post('/api/group/update', {
+                        ...PostBase, ...that.formEdit
+                    })
+                        .then(function (response) {
+                            that.getList();
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.$message({
+                                    message: response.data.msg,
+                                    type: 'success'
+                                });
+                                that.dialogFormEdit = false;
+                            } else {
+                                that.$message.error(response.data.msg);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.$message.error('服务器内部错误');
+                        });
+                },
+                postAdd() {
+                    var that = this;
+                    axios.post('/api/group/add', {
+                        ...PostBase, ...that.formAdd
+                    })
+                        .then(function (response) {
+                            that.getList();
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.$message({
+                                    message: response.data.msg,
+                                    type: 'success'
+                                });
+                                that.dialogFormAdd = false;
+                            } else {
+                                that.$message.error(response.data.msg);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.$message.error('服务器内部错误');
+                        });
+                },
+                clickAdd() {
+                    var that = this;
+                    that.formAdd = {};
+                    axios.post('/api/group/getList', {
+                        ...PostBase
+                    })
+                        .then(function (response) {
+                            that.groupList = response.data.data;
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.dialogFormAdd = true;
+                            } else {
+                                that.$message.error(response.data.msg);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.$message.error('服务器内部错误');
+                        });
+                },
+                clickDelete(row) {
+                    var that = this;
+                    this.$confirm('即将删除这个用户, 是否确认?', '删除提醒', {
+                        confirmButtonText: '删除',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        axios.post('/api/group/delete', {
+                            ...PostBase, ...{
+                                group_id: row.group_id
+                            }
+                        })
+                            .then(function (response) {
+                                that.getList();
+                                if (response.data.code == CODE_SUCCESS) {
+                                    that.$message({
+                                        message: response.data.msg,
+                                        type: 'success'
+                                    });
+                                } else {
+                                    that.$message.error(response.data.msg);
+                                }
+                            })
+                            .catch(function (error) {
+                                that.$message.error('服务器内部错误');
+                            });
+                    }).catch(() => {
+                    });
+                },
+                clickStatus(row) {
+                    var that = this;
+                    axios.post(row.group_status ? '/api/group/enable' : '/api/group/disable', {
+                        ...PostBase, ...{
+                            group_id: row.group_id
+                        }
+                    })
+                        .then(function (response) {
+                            that.getList();
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.$message({
+                                    message: response.data.msg,
+                                    type: 'success'
+                                });
+                            } else {
+                                that.$message.error(response.data.msg);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.$message.error('服务器内部错误');
+                        });
+                },
+                clickAuth(row) {
+                    var that = this;
+                    that.selectedGroupId = row.group_id;
+                    axios.post('/api/node/getList', {
+                        ...PostBase, ...that.formEdit
+                    })
+                        .then(function (response) {
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.nodeList = [];
+                                for (var i in response.data.data.data) {
+                                    that.nodeList.push(response.data.data.data[i]);
+                                    for (var j in response.data.data.data[i].sub) {
+                                        response.data.data.data[i].sub[j].node_title = '........' + response.data.data.data[i].sub[j].node_title;
+                                        that.nodeList.push(response.data.data.data[i].sub[j]);
+                                    }
+                                }
+                                that.dialogFormAuth = true;
+                                that.getAuthList(row);
+                            } else {
+                                that.$message.error(response.data.msg);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.$message.error('服务器内部错误');
+                        });
+                },
+                getAuthList(row) {
+                    var that = this;
+                    axios.post('/api/group/getAuthorize', {
+                        ...PostBase, ...{
+                            group_id: row.group_id
+                        }
+                    })
+                        .then(function (response) {
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.authList = [];
+                                for (var i in that.nodeList) {
+                                    for (var j in response.data.data) {
+                                        if (that.nodeList[i].node_id == response.data.data[j].auth_node) {
+                                            that.authList.push(that.nodeList[i].node_id);
+                                            that.$refs.multipleTable.toggleRowSelection(that.nodeList[i]);
+                                        }
+                                    }
+                                }
+                                that.dialogFormAuth = true;
+                            } else {
+                                that.$message.error(response.data.msg);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.$message.error('服务器内部错误');
+                        });
+                },
+                clickEdit(row) {
+                    var that = this;
+                    that.formEdit = row;
+                    axios.post('/api/group/getList', {
+                        ...PostBase
+                    })
+                        .then(function (response) {
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.groupList = response.data.data;
+                                axios.post('/api/group/detail', {
+                                    ...PostBase, ...{
+                                        group_id: row.group_id
+                                    }
+                                })
+                                    .then(function (response) {
+                                        if (response.data.code == CODE_SUCCESS) {
+                                            that.formEdit = response.data.data;
+                                            that.dialogFormEdit = true;
+                                        } else {
+                                            that.$message.error(response.data.msg);
+                                        }
+                                    })
+                                    .catch(function (error) {
+                                        that.$message.error('服务器内部错误');
+                                    });
+                            } else {
+                                that.$message.error(response.data.msg);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.$message.error('服务器内部错误');
+                        });
+
+                },
+                changeCurrentPage(page) {
+                    this.form.page = page;
+                    this.getList();
+                },
+                getList() {
+                    var that = this;
+                    that.loading = true;
+                    axios.post('/api/group/getList', { ...PostBase, ...that.form, ...that.search })
+                        .then(function (response) {
+                            that.loading = false;
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.dataList = response.data.data;
+                            } else {
+                                that.$message.error(response.data.msg);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.loading = false;
+                            that.$message.error('服务器内部错误');
+                        });
+                }
+            }
+        })
+    </script>
+
+
+</html>

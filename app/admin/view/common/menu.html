@@ -1,0 +1,25 @@
+<el-aside width="220px">
+    <el-menu class="el-menu-vertical-demo" :default-active="'{$node.node_id}'" :default-open="[{$node.node_id}]"
+        unique-opened style="border:none;">
+        {volist name="menuList" id="item"}
+        {if condition="count($item.subList)>0"}
+        <el-submenu index="{$item.node_id}">
+            <template slot="title"><i class="iconfont icon-{$item.node_icon}"></i> {$item.node_title}</template>
+            {volist name="$item.subList" id="subItem"}
+            <el-menu-item
+                onclick="location.href='/{$subItem.node_module}/{$subItem.node_controller}/{$subItem.node_action}';"
+                index="{$subItem.node_id}" {if
+                condition="$subItem.node_controller==strtolower($controller) && $subItem.node_action==strtolower($action)"
+                }class="is-active" {/if}>{$subItem.node_title}</el-menu-item>
+            {/volist}
+        </el-submenu>
+        {else}
+        <el-menu-item index="{$item.node_id}" onclick="location.href='/{$item.node_module}/{$item.node_controller}/{$item.node_action}';" {if
+            condition="$item.node_controller==strtolower($controller) && $item.node_action==strtolower($action)"
+            }class="is-active" {/if}>
+            <i class="iconfont icon-{$item.node_icon}"></i> {$item.node_title}
+        </el-menu-item>
+        {/if}
+        {/volist}
+    </el-menu>
+</el-aside>

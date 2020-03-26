@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="/static/css/element.css">
+    <link rel="stylesheet" href="/static/css/StartAdmin.css">
+    <style>
+        .login {
+            display: flex;
+            display: -webkit-flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+        }
+
+        .login-box {
+            width: 400px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" v-cloak>
+        <div class="login">
+            <el-card class="box-card login-box" shadow="never">
+                <div slot="header" class="clearfix">
+                    <span>请你登录后再访问</span>
+                </div>
+                <div class="text item">
+                    <el-form ref="form" :model="form">
+                        <el-form-item>
+                            <el-input v-model="form.user_account" placeholder="请输入你的帐号"
+                                prefix-icon="el-icon-mobile-phone" clearable>
+                            </el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-input v-model="form.user_password" placeholder="请输入你的密码" prefix-icon="el-icon-lock"
+                                show-password></el-input>
+                        </el-form-item>
+                        <div style="text-align: right;">
+                            <el-link href="/admin/user/reg" target="_blank" type="info" style="margin-right:10px;">注册帐号
+                            </el-link>
+                            <el-link href="/admin/user/resetPassword" target="_blank" type="info"
+                                style="margin-right:10px;">找回密码</el-link>
+                            <el-button type="primary" @click="onSubmit">登录帐号</el-button>
+                        </div>
+                    </el-form>
+                </div>
+            </el-card>
+        </div>
+    </div>
+</body>
+<script src="/static/js/vue.js"></script>
+<script src="/static/js/axios.min.js"></script>
+<script src="/static/js/element.js"></script>
+<script src="/static/js/StartAdmin.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                form: {
+                    user_account: "root",
+                    user_password: "123456"
+                }
+            }
+        },
+        methods: {
+            onSubmit() {
+                var that = this;
+                axios.post('/api/user/login', { ...PostBase, ...this.form })
+                    .then(function (response) {
+                        if (response.data.code == CODE_SUCCESS) {
+                            that.$message({
+                                message: '登录成功,正在跳转中',
+                                type: 'success'
+                            });
+                            setTimeout(function () {
+                                location.replace('{$callback}');
+                            }, 1000)
+                        } else {
+                            that.$message.error(response.data.msg);
+                        }
+                    })
+                    .catch(function (error) {
+                        that.$message.error('登录失败，服务器内部错误');
+                    });
+            }
+        }
+    })
+</script>
+
+</html>

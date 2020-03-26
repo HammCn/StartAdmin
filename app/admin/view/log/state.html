@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+    {include file="common/header"/}
+    <el-table :data="dataList" v-loading="loading">
+        <el-table-column prop="node_id" label="节点ID">
+        </el-table-column>
+        <el-table-column prop="node_title" label="节点名称">
+        </el-table-column>
+        <el-table-column prop="visitcount" label="访问次数">
+        </el-table-column>
+        </el-table-column>
+
+    </el-table>
+
+
+
+    {include file="common/footer"/}
+    <script>
+        new Vue({
+            el: '#app',
+            data() {
+                this.getData();
+                return {
+                    loading: true,
+                    dataList: [],
+                }
+            },
+            methods: {
+                getData() {
+                    var that = this;
+                    that.loading = true;
+                    axios.post('/api/log/state', { ...PostBase, })
+                        .then(function (response) {
+                            that.loading = false;
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.dataList = response.data.data;
+                            } else {
+                                that.$message.error(response.data.msg);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.loading = false;
+                            that.$message.error('服务器内部错误');
+                        });
+                }
+            }
+        })
+    </script>
+
+
+</html>

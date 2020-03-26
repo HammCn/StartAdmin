@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+    {include file="common/header"/}
+    <el-form :model="jobs" status-icon :rules="rules" ref="jobs" label-width="80px">
+        <el-card class="box-card" shadow="never">
+            <div slot="header" class="clearfix">
+                <span>代码生成基本设置</span>
+            </div>
+            <div class="text item">
+                <el-form-item label="节点名称" prop="nodeTitle">
+                    <el-tooltip content="节点名称将显示到管理后台菜单/授权列表中" placement="top">
+                        <el-input placeholder="如 学生" v-model="jobs.nodeTitle"></el-input>
+                    </el-tooltip>
+                </el-form-item>
+                <el-form-item label="控制器" prop="controller">
+                    <el-tooltip content="建议输入英文/拼音,请不要输入标点符号/空格/数字等" placement="top">
+                        <el-input placeholder="如 student" v-model="jobs.controller"></el-input>
+                    </el-tooltip>
+                </el-form-item>
+            </div>
+        </el-card>
+        <br>
+        <el-card class="box-card" shadow="never">
+            <div slot="header" class="clearfix">
+                <span>数据字段列表</span>
+                <el-button style="float: right; padding: 3px 0" type="text" @click="addRow">添加字段</el-button>
+            </div>
+            <div class="text item">
+                <template>
+                    <el-table :data="data.fieldList" empty-text="暂无添加的字段，请点击右上角添加字段">
+                        <el-table-column label="字段名称" width="150">
+                            <template slot-scope="scope">
+                                <el-tooltip content="字段名称建议输入英文或拼音，请不要输入标点符号/数字/空格等" placement="top">
+                                    <el-input placeholder="如 student" v-model="scope.row.name"
+                                        @blur="changeName(scope.$index)"></el-input>
+                                </el-tooltip>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="字段类型" width="120">
+                            <template slot-scope="scope">
+                                <el-select size="medium" placeholder="请选择用户组" v-model="scope.row.type">
+                                    <el-option v-for="type in data.typeList" :value="type.key" :label="type.value">
+                                    </el-option>
+                                </el-select>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="字段长度" width="100">
+                            <template slot-scope="scope">
+                                <el-input placeholder="输入整数" v-model="scope.row.length"
+                                    @blur="changeDefault(scope.$index)"></el-input>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="默认值" width="120">
+                            <template slot-scope="scope">
+                                <el-tooltip content="varchar类型默认值不填为空字符串，int类型不填默认值为0" placement="top">
+                                    <el-input placeholder="默认值" v-model="scope.row.default"></el-input>
+                                </el-tooltip>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="是否必填" width="120">
+                            <template slot-scope="scope">
+                                <el-tooltip content="启用后API/前端都将对这个字段进行必填验证" placement="top">
+                                    <el-switch v-model="scope.row.require"></el-switch>
+                                </el-tooltip>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="字段描述">
+                            <template slot-scope="scope">
+                                <el-tooltip content="字段描述将显示到数据库字段上，同时显示到生成的表单页面上" placement="top">
+                                    <el-input placeholder="如 student" v-model="scope.row.desc"></el-input>
+                                </el-tooltip>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="操作" width="100">
+                            <template slot-scope="scope">
+                                <el-link type="danger" @click="clickDelete(scope.$index)" :underline="false"><i
+                                        class="el-icon-delete"></i>删除</el-link>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </template>
+            </div>
+        </el-card>
+        <br>
+        <el-button type="primary" @click="submitForm('jobs')">代码生成</el-button>
+    </el-form>
+    {include file="common/footer"/}
+    <script>
+        var fieldDemo =
+        {
+            name: "",
+            type: "varchar",
+            length: 255,
+            default: "",
+            require: false,
+            desc: ""
+        };
+        var app = new Vue({
+            el: '#app',
+            data() {
+                return {
+                    jobs: {
+                        nodeTitle: "",
+                        controller: "",
+                    },
+                    data: {
+                        typeList: [
+                            {
+                                key: "varchar",
+                                value: "varchar"
+                            },
+                            {
+                                key: "int",
+                                value: "int"
+                            },
+                            {
+                                key: "text",
+                                value: "text"
+                            }
+                        ],
+                        fieldList: [
+                        ]
+                    },
+                    rules: {
+                        nodeTitle: [
+                            { required: true, message: '请输入节点名称', trigger: 'blur' },
+                        ],
+                        controller: [
+                            { required: true, pattern: /^[a-z]+$/, message: '控制器只允许小写字母', trigger: 'blur' },
+                        ],
+                        name: [
+                            { required: true, pattern: /^[a-z]+$/, message: '控制器只允许小写字母', trigger: 'blur' },
+                        ],
+                    }
+                }
+            },
+            methods: {
+                changeName(_index) {
+                    var name = this.data.fieldList[_index].name;
+                    re = /^[a-z]+$/;
+                    if (!re.test(name)) {
+                        this.$alert(name + "貌似不是一个纯小写字母的推荐字段标准", '不理想的字段名', {
+                            confirmButtonText: '我马上改',
+                        });
+                        return;
+                    }
+                    for (var index in this.data.fieldList) {
+                        if (this.data.fieldList[index].name == name && index != _index) {
+                            this.$alert(name + "已经被使用了，请不要添加重复字段", '不理想的字段名', {
+                                confirmButtonText: '我马上改',
+                            });
+                            break;
+                        }
+                    }
+                },
+                changeDefault(_index) {
+                    var _default = this.data.fieldList[_index].default;
+                    re = /^[0-9]+$/;
+                    if (!re.test(_default)) {
+                        this.$alert(name + "不是一个合法字段长度值", '不理想的字段名', {
+                            confirmButtonText: '我马上改',
+                        });
+                    }
+                },
+                submitForm(formName) {
+                    var that = this;
+                    that.$refs[formName].validate((valid) => {
+                        if (!valid) {
+                            that.$message.error('仔细检查检查，是不是有个地方写得不对？');
+                            return;
+                        }
+                        if (that.data.fieldList.length == 0) {
+                            that.$message.error('是不是忘记填字段了？');
+                            return;
+                        }
+                        var postData = {
+                            nodeTitle: that.jobs.nodeTitle,
+                            controller: that.jobs.controller,
+                            fieldList: that.data.fieldList
+                        };
+                        console.log(JSON.parse(JSON.stringify(postData)));
+
+                        axios.post('/api/system/build', {
+                            ...PostBase, ...JSON.parse(JSON.stringify(postData))
+                        })
+                            .then(function (response) {
+                                if (response.data.code == CODE_SUCCESS) {
+                                    that.$message({
+                                        message: response.data.msg,
+                                        type: 'success'
+                                    });
+                                } else {
+                                    that.$message.error(response.data.msg);
+                                }
+                            })
+                            .catch(function (error) {
+                                that.$message.error('服务器内部错误');
+                            });
+
+                    });
+                },
+                resetForm(formName) {
+                    this.$refs[formName].resetFields();
+                },
+                clickDelete(index) {
+                    this.data.fieldList.splice(index, 1);
+                },
+                addRow() {
+                    fieldDemo.length++;
+                    this.data.fieldList.push(JSON.parse(JSON.stringify(fieldDemo)));
+                },
+            }
+        })
+    </script>
+
+
+</html>
