@@ -202,14 +202,10 @@
 
                     });
                 },
-                resetForm(formName) {
-                    this.$refs[formName].resetFields();
-                },
                 clickDelete(index) {
                     this.data.fieldList.splice(index, 1);
                 },
                 addRow() {
-                    fieldDemo.length++;
                     this.data.fieldList.push(JSON.parse(JSON.stringify(fieldDemo)));
                 },
             }
