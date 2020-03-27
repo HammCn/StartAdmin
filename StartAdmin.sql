@@ -1,15 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.9.0.1
+-- version 4.6.6
 -- https://www.phpmyadmin.net/
 --
--- 主机： localhost:3306
--- 生成日期： 2020-03-26 19:47:18
--- 服务器版本： 5.7.26-log
--- PHP 版本： 7.1.32
+-- Host: 127.0.0.1:3306
+-- Generation Time: 2020-03-28 01:07:22
+-- 服务器版本： 5.7.28
+-- PHP Version: 7.3.9
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
-START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -19,7 +17,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- 数据库： `startadmin`
+-- Database: `startadmin`
 --
 
 -- --------------------------------------------------------
@@ -60,23 +58,6 @@ CREATE TABLE `sa_app` (
 
 INSERT INTO `sa_app` (`app_id`, `app_secret`, `app_name`, `app_status`, `app_createtime`, `app_updatetime`) VALUES
 (1, '123456', 'Test', 0, 0, 0);
-
--- --------------------------------------------------------
-
---
--- 表的结构 `sa_applog`
---
-
-CREATE TABLE `sa_applog` (
-  `applog_id` int(9) NOT NULL COMMENT '授权ID',
-  `applog_appid` int(9) NOT NULL COMMENT '授权应用',
-  `applog_user` int(9) NOT NULL COMMENT '用户ID',
-  `applog_accesstoken` varchar(255) CHARACTER SET utf8 NOT NULL COMMENT 'ACCESS_TOKEN',
-  `applog_accesstokentime` int(9) NOT NULL COMMENT 'access_token到期时间',
-  `applog_status` int(9) NOT NULL DEFAULT '0' COMMENT '1被禁用',
-  `applog_createtime` int(9) NOT NULL DEFAULT '0' COMMENT '创建时间',
-  `applog_updatetime` int(9) NOT NULL DEFAULT '0' COMMENT '修改时间'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Oauth2日志';
 
 -- --------------------------------------------------------
 
@@ -242,6 +223,7 @@ INSERT INTO `sa_node` (`node_id`, `node_system`, `node_title`, `node_desc`, `nod
 (3, 1, '系统设置', '', 'admin', '', '', 0, 0, 1, 'shezhi', NULL, 0, 0, 1575948484),
 (4, 1, '接口列表', '', 'api', '', '', 0, 0, 0, '', NULL, 0, 0, 1576045995),
 (5, 1, '数据日志', '', 'admin', '', '', 0, 0, 1, 'book', NULL, 0, 0, 1575948636),
+(6, 1, '微信管理', '', 'admin', '', '', 0, 0, 1, 'wechat', NULL, 0, 1585323009, 1585323009),
 (100, 1, '用户管理', '', 'admin', 'user', 'index', 2, 0, 1, '', '', 0, 0, 1575948484),
 (101, 1, '用户组管理', '', 'admin', 'group', 'index', 2, 0, 1, '', NULL, 0, 0, 1575948484),
 (102, 1, '系统配置', '', 'admin', 'conf', 'index', 3, 0, 1, '', '', 0, 0, 1575960614),
@@ -319,7 +301,16 @@ INSERT INTO `sa_node` (`node_id`, `node_system`, `node_title`, `node_desc`, `nod
 (1087, 0, '禁用临时凭证接口', '', 'api', 'code', 'disable', 4, 0, 1, '', NULL, 0, 1581836878, 1581836878),
 (1088, 0, '启用临时凭证接口', '', 'api', 'code', 'enable', 4, 0, 1, '', NULL, 0, 1581836878, 1581836878),
 (1089, 0, '获取临时凭证列表接口', '', 'api', 'code', 'getList', 4, 0, 1, '', NULL, 0, 1581836878, 1581836878),
-(1090, 0, '临时凭证管理', '', 'admin', 'code', 'index', 3, 0, 1, '', '', 0, 1581836878, 1581839323);
+(1090, 0, '临时凭证管理', '', 'admin', 'code', 'index', 3, 0, 1, '', '', 0, 1581836878, 1581839323),
+(1091, 0, '获取微信菜单详情接口', '', 'api', 'wemenu', 'detail', 4, 0, 1, '', NULL, 0, 1585323009, 1585323009),
+(1092, 0, '添加微信菜单接口', '', 'api', 'wemenu', 'add', 4, 0, 1, '', NULL, 0, 1585323009, 1585323009),
+(1093, 0, '修改微信菜单接口', '', 'api', 'wemenu', 'update', 4, 0, 1, '', NULL, 0, 1585323009, 1585323009),
+(1094, 0, '删除微信菜单接口', '', 'api', 'wemenu', 'delete', 4, 0, 1, '', NULL, 0, 1585323009, 1585323009),
+(1095, 0, '禁用微信菜单接口', '', 'api', 'wemenu', 'disable', 4, 0, 1, '', NULL, 0, 1585323009, 1585323009),
+(1096, 0, '启用微信菜单接口', '', 'api', 'wemenu', 'enable', 4, 0, 1, '', NULL, 0, 1585323009, 1585323009),
+(1097, 0, '获取微信菜单列表接口', '', 'api', 'wemenu', 'getList', 4, 0, 1, '', NULL, 0, 1585323009, 1585323009),
+(1098, 0, '微信菜单管理', '', 'admin', 'wemenu', 'index', 6, 0, 1, '', NULL, 0, 1585323009, 1585323009),
+(1100, 0, '微信发布自定义菜单接口', '', 'api', 'wemenu', 'publish', 4, 0, 1, '', NULL, 0, 1585323009, 1585323009);
 
 -- --------------------------------------------------------
 
@@ -387,38 +378,69 @@ CREATE TABLE `sa_wechat` (
   `wechat_updatetime` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信粉丝表';
 
+-- --------------------------------------------------------
+
 --
--- 转储表的索引
+-- 表的结构 `sa_wemenu`
+--
+
+CREATE TABLE `sa_wemenu` (
+  `wemenu_id` int(9) NOT NULL,
+  `wemenu_name` varchar(255) NOT NULL DEFAULT '' COMMENT '菜单名称',
+  `wemenu_type` varchar(255) NOT NULL DEFAULT '0' COMMENT '类型',
+  `wemenu_url` varchar(255) NOT NULL DEFAULT '' COMMENT '菜单链接',
+  `wemenu_appid` varchar(255) NOT NULL DEFAULT '' COMMENT '小程序ID',
+  `wemenu_key` varchar(255) NOT NULL DEFAULT '' COMMENT '点击参数',
+  `wemenu_page` varchar(255) NOT NULL DEFAULT '' COMMENT '小程序页面',
+  `wemenu_pid` int(9) NOT NULL DEFAULT '0' COMMENT '父菜单',
+  `wemenu_status` int(9) NOT NULL DEFAULT '0' COMMENT '状态',
+  `wemenu_createtime` int(9) NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `wemenu_updatetime` int(9) NOT NULL DEFAULT '0' COMMENT '修改时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信菜单表';
+
+--
+-- 转存表中的数据 `sa_wemenu`
+--
+
+INSERT INTO `sa_wemenu` (`wemenu_id`, `wemenu_name`, `wemenu_type`, `wemenu_url`, `wemenu_appid`, `wemenu_key`, `wemenu_page`, `wemenu_pid`, `wemenu_status`, `wemenu_createtime`, `wemenu_updatetime`) VALUES
+(5, '普通菜单', 'click', '', '', 'normal_menu', '', 0, 0, 1585325798, 1585327206),
+(6, '富媒体', 'click', '', '', 'media', '', 0, 0, 1585325806, 1585327224),
+(7, '高级菜单', 'click', '', '', 'system', '', 0, 0, 1585325814, 1585327395),
+(8, '点击菜单', 'click', '', '', 'click', '', 5, 0, 1585325831, 1585327202),
+(9, '拍照发图', 'pic_sysphoto', '', '', 'camera', '', 6, 0, 1585325860, 1585327286),
+(10, '微信扫码推', 'scancode_push', '', '', 'wechatScanner', '', 7, 0, 1585325867, 1585327464),
+(11, '打开小程序', 'click', '', '', 'forTest', '', 7, 0, 1585327128, 1585328317),
+(12, '打开网页', 'view', 'https://hamm.cn', '', '', '', 5, 0, 1585327252, 1585327252),
+(13, '相册发图', 'pic_weixin', '', '', 'photo', '', 6, 0, 1585327311, 1585327311),
+(14, '随便发图', 'pic_photo_or_album', '', '', 'all', '', 6, 0, 1585327330, 1585327330),
+(15, '自定义扫码', 'scancode_waitmsg', '', '', 'customScaner', '', 7, 0, 1585327447, 1585327447),
+(16, '发送位置', 'location_select', '', '', 'location', '', 7, 0, 1585327482, 1585327482);
+
+--
+-- Indexes for dumped tables
 --
 
 --
--- 表的索引 `sa_access`
+-- Indexes for table `sa_access`
 --
 ALTER TABLE `sa_access`
   ADD PRIMARY KEY (`access_id`) USING BTREE;
 
 --
--- 表的索引 `sa_app`
+-- Indexes for table `sa_app`
 --
 ALTER TABLE `sa_app`
   ADD PRIMARY KEY (`app_id`) USING BTREE,
   ADD KEY `app_secret` (`app_secret`) USING BTREE;
 
 --
--- 表的索引 `sa_applog`
---
-ALTER TABLE `sa_applog`
-  ADD PRIMARY KEY (`applog_id`) USING BTREE,
-  ADD KEY `oauthlog_appid` (`applog_appid`) USING BTREE;
-
---
--- 表的索引 `sa_attach`
+-- Indexes for table `sa_attach`
 --
 ALTER TABLE `sa_attach`
   ADD PRIMARY KEY (`attach_id`) USING BTREE;
 
 --
--- 表的索引 `sa_auth`
+-- Indexes for table `sa_auth`
 --
 ALTER TABLE `sa_auth`
   ADD PRIMARY KEY (`auth_id`) USING BTREE,
@@ -426,26 +448,26 @@ ALTER TABLE `sa_auth`
   ADD KEY `role_auth` (`auth_node`) USING BTREE;
 
 --
--- 表的索引 `sa_code`
+-- Indexes for table `sa_code`
 --
 ALTER TABLE `sa_code`
   ADD PRIMARY KEY (`code_id`) USING BTREE;
 
 --
--- 表的索引 `sa_conf`
+-- Indexes for table `sa_conf`
 --
 ALTER TABLE `sa_conf`
   ADD PRIMARY KEY (`conf_id`) USING BTREE,
   ADD KEY `conf_key` (`conf_key`) USING BTREE;
 
 --
--- 表的索引 `sa_group`
+-- Indexes for table `sa_group`
 --
 ALTER TABLE `sa_group`
   ADD PRIMARY KEY (`group_id`) USING BTREE;
 
 --
--- 表的索引 `sa_log`
+-- Indexes for table `sa_log`
 --
 ALTER TABLE `sa_log`
   ADD PRIMARY KEY (`log_id`) USING BTREE,
@@ -453,7 +475,7 @@ ALTER TABLE `sa_log`
   ADD KEY `log_node` (`log_node`) USING BTREE;
 
 --
--- 表的索引 `sa_node`
+-- Indexes for table `sa_node`
 --
 ALTER TABLE `sa_node`
   ADD PRIMARY KEY (`node_id`) USING BTREE,
@@ -463,7 +485,7 @@ ALTER TABLE `sa_node`
   ADD KEY `node_action` (`node_action`) USING BTREE;
 
 --
--- 表的索引 `sa_sms`
+-- Indexes for table `sa_sms`
 --
 ALTER TABLE `sa_sms`
   ADD PRIMARY KEY (`sms_id`) USING BTREE,
@@ -471,7 +493,7 @@ ALTER TABLE `sa_sms`
   ADD KEY `sms_code` (`sms_code`) USING BTREE;
 
 --
--- 表的索引 `sa_user`
+-- Indexes for table `sa_user`
 --
 ALTER TABLE `sa_user`
   ADD PRIMARY KEY (`user_id`) USING BTREE,
@@ -481,11 +503,17 @@ ALTER TABLE `sa_user`
   ADD KEY `admin_account` (`user_account`) USING BTREE;
 
 --
--- 表的索引 `sa_wechat`
+-- Indexes for table `sa_wechat`
 --
 ALTER TABLE `sa_wechat`
   ADD PRIMARY KEY (`wechat_id`) USING BTREE,
   ADD KEY `wechat_openid` (`wechat_openid`) USING BTREE;
+
+--
+-- Indexes for table `sa_wemenu`
+--
+ALTER TABLE `sa_wemenu`
+  ADD PRIMARY KEY (`wemenu_id`);
 
 --
 -- 在导出的表使用AUTO_INCREMENT
@@ -496,80 +524,66 @@ ALTER TABLE `sa_wechat`
 --
 ALTER TABLE `sa_access`
   MODIFY `access_id` int(9) NOT NULL AUTO_INCREMENT;
-
 --
 -- 使用表AUTO_INCREMENT `sa_app`
 --
 ALTER TABLE `sa_app`
   MODIFY `app_id` int(9) NOT NULL AUTO_INCREMENT COMMENT 'APPID', AUTO_INCREMENT=2;
-
---
--- 使用表AUTO_INCREMENT `sa_applog`
---
-ALTER TABLE `sa_applog`
-  MODIFY `applog_id` int(9) NOT NULL AUTO_INCREMENT COMMENT '授权ID';
-
 --
 -- 使用表AUTO_INCREMENT `sa_attach`
 --
 ALTER TABLE `sa_attach`
   MODIFY `attach_id` int(9) NOT NULL AUTO_INCREMENT;
-
 --
 -- 使用表AUTO_INCREMENT `sa_auth`
 --
 ALTER TABLE `sa_auth`
   MODIFY `auth_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '权限ID';
-
 --
 -- 使用表AUTO_INCREMENT `sa_code`
 --
 ALTER TABLE `sa_code`
   MODIFY `code_id` int(9) NOT NULL AUTO_INCREMENT;
-
 --
 -- 使用表AUTO_INCREMENT `sa_conf`
 --
 ALTER TABLE `sa_conf`
   MODIFY `conf_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
-
 --
 -- 使用表AUTO_INCREMENT `sa_group`
 --
 ALTER TABLE `sa_group`
   MODIFY `group_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
 --
 -- 使用表AUTO_INCREMENT `sa_log`
 --
 ALTER TABLE `sa_log`
   MODIFY `log_id` int(9) NOT NULL AUTO_INCREMENT COMMENT '操作ID';
-
 --
 -- 使用表AUTO_INCREMENT `sa_node`
 --
 ALTER TABLE `sa_node`
-  MODIFY `node_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '功能ID', AUTO_INCREMENT=1091;
-
+  MODIFY `node_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '功能ID', AUTO_INCREMENT=1101;
 --
 -- 使用表AUTO_INCREMENT `sa_sms`
 --
 ALTER TABLE `sa_sms`
   MODIFY `sms_id` int(9) NOT NULL AUTO_INCREMENT;
-
 --
 -- 使用表AUTO_INCREMENT `sa_user`
 --
 ALTER TABLE `sa_user`
   MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'UID', AUTO_INCREMENT=2;
-
 --
 -- 使用表AUTO_INCREMENT `sa_wechat`
 --
 ALTER TABLE `sa_wechat`
   MODIFY `wechat_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID';
-COMMIT;
-
+--
+-- 使用表AUTO_INCREMENT `sa_wemenu`
+--
+ALTER TABLE `sa_wemenu`
+  MODIFY `wemenu_id` int(9) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
