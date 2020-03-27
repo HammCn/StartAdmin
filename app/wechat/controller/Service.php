@@ -11,7 +11,6 @@ class Service extends BaseController
     public function index()
     {
         $postStr = file_get_contents("php://input");
-        file_put_contents("./wechat.xml", $postStr);
         if (!empty($postStr)) {
             $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
             $this->openid = trim($postObj->FromUserName);
