@@ -200,23 +200,7 @@
                 },
                 clickAdd() {
                     var that = this;
-                    that.formAdd = {
-                        tmp_controller_readonly: 0
-                    };
-                    axios.post('/api/tmp_controller/getList', {
-                        ...PostBase
-                    })
-                        .then(function (response) {
-                            that.groupList = response.data.data;
-                            if (response.data.code == CODE_SUCCESS) {
-                                that.dialogFormAdd = true;
-                            } else {
-                                that.$message.error(response.data.msg);
-                            }
-                        })
-                        .catch(function (error) {
-                            that.$message.error('服务器内部错误');
-                        });
+                    that.dialogFormAdd = true;
                 },
                 clickDelete(row) {
                     var that = this;
@@ -272,28 +256,15 @@
                 clickEdit(row) {
                     var that = this;
                     that.formEdit = row;
-                    axios.post('/api/tmp_controller/getList', {
-                        ...PostBase
+                    axios.post('/api/tmp_controller/detail', {
+                        ...PostBase, ...{
+                            tmp_controller_id: row.tmp_controller_id
+                        }
                     })
                         .then(function (response) {
                             if (response.data.code == CODE_SUCCESS) {
-                                that.groupList = response.data.data;
-                                axios.post('/api/tmp_controller/detail', {
-                                    ...PostBase, ...{
-                                        tmp_controller_id: row.tmp_controller_id
-                                    }
-                                })
-                                    .then(function (response) {
-                                        if (response.data.code == CODE_SUCCESS) {
-                                            that.formEdit = response.data.data;
-                                            that.dialogFormEdit = true;
-                                        } else {
-                                            that.$message.error(response.data.msg);
-                                        }
-                                    })
-                                    .catch(function (error) {
-                                        that.$message.error('服务器内部错误');
-                                    });
+                                that.formEdit = response.data.data;
+                                that.dialogFormEdit = true;
                             } else {
                                 that.$message.error(response.data.msg);
                             }

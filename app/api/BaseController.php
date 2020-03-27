@@ -43,7 +43,7 @@ abstract class BaseController
     protected $table = '';
     //主键value
     protected $pk_value = 0;
-    
+
 
     //模型
     protected $userModel;
@@ -67,18 +67,18 @@ abstract class BaseController
     protected $app;
     protected $plat = 'all';
     protected $version = 0;
-    
-    
+
+
     protected $module;
     protected $controller;
     protected $action;
-	/**
-	 * 构造方法
-	 * @access public
-	 * @param  App  $app  应用对象
-	 */
-	public function __construct(App $app)
-	{
+    /**
+     * 构造方法
+     * @access public
+     * @param  App  $app  应用对象
+     */
+    public function __construct(App $app)
+    {
         $this->app     = $app;
         $this->request = $this->app->request;
 
@@ -426,10 +426,10 @@ abstract class BaseController
             if (array_key_exists($k, $this->searchFilter)) {
                 switch ($this->searchFilter[$k]) {
                     case "like":
-                        array_push($map, [$k, 'like', "%" . urldecode($v) . "%"]);
+                        array_push($map, [$k, 'like', "%" . $v . "%"]);
                         break;
                     case "=":
-                        array_push($map, [$k, '=', urldecode($v)]);
+                        array_push($map, [$k, '=', $v]);
                         break;
                     default:
                 }

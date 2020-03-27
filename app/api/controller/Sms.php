@@ -79,10 +79,10 @@ class Sms extends BaseController
             if (array_key_exists($k, $this->searchFilter)) {
                 switch ($this->searchFilter[$k]) {
                     case "like":
-                        array_push($map, [$k, 'like', "%" . urldecode($v) . "%"]);
+                        array_push($map, [$k, 'like', "%" . $v . "%"]);
                         break;
                     case "=":
-                        array_push($map, [$k, '=', urldecode($v)]);
+                        array_push($map, [$k, '=', $v]);
                         break;
                     default:
                 }

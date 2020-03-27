@@ -50,7 +50,7 @@
                         <el-table-column label="字段长度" width="100">
                             <template slot-scope="scope">
                                 <el-input placeholder="输入整数" v-model="scope.row.length"
-                                    @blur="changeDefault(scope.$index)"></el-input>
+                                    @blur="changeLength(scope.$index)"></el-input>
                             </template>
                         </el-table-column>
                         <el-table-column label="默认值" width="120">
@@ -156,11 +156,11 @@
                         }
                     }
                 },
-                changeDefault(_index) {
-                    var _default = this.data.fieldList[_index].default;
+                changeLength(_index) {
+                    var _length = this.data.fieldList[_index].length;
                     re = /^[0-9]+$/;
-                    if (!re.test(_default)) {
-                        this.$alert(name + "不是一个合法字段长度值", '不理想的字段名', {
+                    if (!re.test(_length)) {
+                        this.$alert(_length + "不是一个合法字段长度值", '不理想的字段长度', {
                             confirmButtonText: '我马上改',
                         });
                     }
@@ -181,24 +181,29 @@
                             controller: that.jobs.controller,
                             fieldList: that.data.fieldList
                         };
-                        console.log(JSON.parse(JSON.stringify(postData)));
-
-                        axios.post('/api/system/build', {
-                            ...PostBase, ...JSON.parse(JSON.stringify(postData))
-                        })
-                            .then(function (response) {
-                                if (response.data.code == CODE_SUCCESS) {
-                                    that.$message({
-                                        message: response.data.msg,
-                                        type: 'success'
-                                    });
-                                } else {
-                                    that.$message.error(response.data.msg);
-                                }
+                        this.$confirm('是否确认无误，立即生成相应数据库与代码？', '代码生成提醒', {
+                            confirmButtonText: '生成',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                            axios.post('/api/system/build', {
+                                ...PostBase, ...JSON.parse(JSON.stringify(postData))
                             })
-                            .catch(function (error) {
-                                that.$message.error('服务器内部错误');
-                            });
+                                .then(function (response) {
+                                    if (response.data.code == CODE_SUCCESS) {
+                                        that.$message({
+                                            message: response.data.msg,
+                                            type: 'success'
+                                        });
+                                    } else {
+                                        that.$message.error(response.data.msg);
+                                    }
+                                })
+                                .catch(function (error) {
+                                    that.$message.error('服务器内部错误');
+                                });
+                        }).catch(() => {
+                        });
 
                     });
                 },

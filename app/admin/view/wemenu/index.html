@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+    {include file="common/header"/}
+
+    <el-form :inline="true">
+        <el-form-item>
+            <el-button type="primary" icon="el-icon-edit" size="small" @click="clickAdd">添加</el-button>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="danger" icon="el-icon-delete" size="small" @click="postMultDelete">批量删除</el-button>
+        </el-form-item>
+        <div style="float:right">
+            <el-form-item>
+                <el-button type="primary" size="small" @click="publish">发布这组菜单</el-button>
+            </el-form-item>
+        </div>
+    </el-form>
+    <el-table :data="dataList" @selection-change="changeSelection" v-loading="loading">
+        <el-table-column type="selection" width="50">
+        </el-table-column>
+        <el-table-column prop="wemenu_id" label="ID" width="60">
+        </el-table-column>
+
+        <el-table-column prop="wemenu_name" label="菜单名称">
+        </el-table-column>
+        <el-table-column prop="wemenu_type" label="类型">
+        </el-table-column>
+        <el-table-column prop="wemenu_url" label="菜单链接">
+        </el-table-column>
+        <el-table-column prop="wemenu_appid" label="小程序ID">
+        </el-table-column>
+        <el-table-column prop="wemenu_key" label="点击参数">
+        </el-table-column>
+        <el-table-column prop="wemenu_page" label="小程序页面">
+        </el-table-column>
+        <el-table-column label="操作" width="180">
+            <template slot-scope="scope">
+                <el-link type="info" @click="clickEdit(scope.row)" :underline="false"><i class="el-icon-edit"></i>编辑
+                </el-link>
+                <el-link type="danger" @click="clickDelete(scope.row)" :underline="false"><i
+                        class="el-icon-delete"></i>删除</el-link>
+            </template>
+        </el-table-column>
+    </el-table>
+
+
+
+    <!-- 添加框 -->
+    <el-dialog title="添加微信菜单信息" :visible.sync="dialogFormAdd" :modal-append-to-body='false'>
+        <el-form :model="formAdd" :rules="rules" ref="formAdd">
+
+            <el-form-item prop="wemenu_name" label="菜单名称" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formAdd.wemenu_name"></el-input>
+            </el-form-item>
+            <el-form-item prop="wemenu_type" label="类型" :label-width="formLabelWidth">
+                <el-select size="medium" placeholder="请选择菜单类型" v-model="formAdd.wemenu_type">
+                    <el-option v-for="type in typeList" :value="type.type" :label="type.name">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item prop="wemenu_url" label="菜单链接" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formAdd.wemenu_url"></el-input>
+            </el-form-item>
+            <el-form-item prop="wemenu_appid" label="小程序ID" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formAdd.wemenu_appid"></el-input>
+            </el-form-item>
+            <el-form-item prop="wemenu_key" label="点击参数" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formAdd.wemenu_key"></el-input>
+            </el-form-item>
+            <el-form-item prop="wemenu_page" label="小程序页面" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formAdd.wemenu_page"></el-input>
+            </el-form-item>
+            <el-form-item prop="wemenu_pid" label="父菜单" :label-width="formLabelWidth">
+                <el-select size="medium" placeholder="请选择父菜单" v-model="formAdd.wemenu_pid">
+                    <el-option v-for="parent in parentList" :value="parent.wemenu_id" :label="parent.wemenu_name">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="postAdd('formAdd')">确认添加</el-button>
+        </div>
+    </el-dialog>
+    <!-- 修改框 -->
+    <el-dialog title="修改微信菜单信息" :visible.sync="dialogFormEdit" :modal-append-to-body='false'>
+        <el-form :model="formEdit" :rules="rules" ref="formEdit">
+
+            <el-form-item prop="wemenu_name" label="菜单名称" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formEdit.wemenu_name"></el-input>
+            </el-form-item>
+            <el-form-item prop="wemenu_type" label="类型" :label-width="formLabelWidth">
+                <el-select size="medium" placeholder="请选择菜单类型" v-model="formEdit.wemenu_type">
+                    <el-option v-for="type in typeList" :value="type.type" :label="type.name">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item prop="wemenu_url" label="菜单链接" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formEdit.wemenu_url"></el-input>
+            </el-form-item>
+            <el-form-item prop="wemenu_appid" label="小程序ID" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formEdit.wemenu_appid"></el-input>
+            </el-form-item>
+            <el-form-item prop="wemenu_key" label="点击参数" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formEdit.wemenu_key"></el-input>
+            </el-form-item>
+            <el-form-item prop="wemenu_page" label="小程序页面" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formEdit.wemenu_page"></el-input>
+            </el-form-item>
+            <el-form-item prop="wemenu_pid" label="父菜单" :label-width="formLabelWidth">
+                <el-select size="medium" placeholder="请选择父菜单" v-model="formEdit.wemenu_pid">
+                    </el-option>
+                    <el-option v-for="parent in parentList" :value="parent.wemenu_id" :label="parent.wemenu_name">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="postEdit('formEdit')">确认修改</el-button>
+        </div>
+    </el-dialog>
+
+    {include file="common/footer"/}
+    <script>
+        new Vue({
+            el: '#app',
+            data() {
+                this.getList();
+                return {
+                    parentList: [],
+                    typeList: [
+                        {
+                            "type": "click",
+                            "name": "点击菜单"
+                        },
+                        {
+                            "type": "view",
+                            "name": "链接菜单"
+                        },
+                        {
+                            "type": "scancode_push",
+                            "name": "微信扫码推"
+                        },
+                        {
+                            "type": "scancode_waitmsg",
+                            "name": "自定义扫码推"
+                        },
+                        {
+                            "type": "pic_sysphoto",
+                            "name": "系统拍照发图"
+                        },
+                        {
+                            "type": "pic_photo_or_album",
+                            "name": "系统拍照或相册发图"
+                        },
+                        {
+                            "type": "pic_weixin",
+                            "name": "系统相册发图"
+                        },
+                        {
+                            "type": "location_select",
+                            "name": "发送地理位置"
+                        },
+                        {
+                            "type": "miniprogram",
+                            "name": "打开小程序"
+                        }
+                    ],
+                    search: {
+                        keyword: "",
+                        filter: "wemenu_id"
+                    },
+                    formLabelWidth: '100px',
+                    dialogFormAdd: false,
+                    dialogFormEdit: false,
+                    loading: true,
+                    dataList: [],
+                    selectList: [],
+                    form: {
+                        page: 1
+                    },
+                    formAdd: {
+                        wemenu_type: "click",
+                        wemenu_pid: 0,
+                    },
+                    formEdit: {
+                        wemenu_type: "click",
+                        wemenu_pid: 0,
+                    },
+                    rules: {
+                        wemenu_name: [{ required: true, message: '请输入菜单名称', trigger: 'blur' }],
+                    }
+                }
+            },
+            methods: {
+                postMultDelete() {
+                    var that = this;
+                    if (that.selectList.length == 0) {
+                        that.$message.error('未选择任何微信菜单！');
+                        return;
+                    }
+                    this.$confirm('即将删除选中的微信菜单, 是否确认?', '批量删除', {
+                        confirmButtonText: '删除',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        axios.post('/api/wemenu/delete', {
+                            ...PostBase, ...{
+                                wemenu_id: that.selectList.join(",")
+                            }
+                        })
+                            .then(function (response) {
+                                that.getList();
+                                if (response.data.code == CODE_SUCCESS) {
+                                    that.$message({
+                                        message: response.data.msg,
+                                        type: 'success'
+                                    });
+                                } else {
+                                    that.$message.error(response.data.msg);
+                                }
+                            })
+                            .catch(function (error) {
+                                that.$message.error('服务器内部错误');
+                            });
+                    }).catch(() => {
+                    });
+                },
+                changeSelection(list) {
+                    var that = this;
+                    that.selectList = [];
+                    for (var index in list) {
+                        that.selectList.push(list[index].wemenu_id);
+                    }
+                },
+                postEdit(formName) {
+                    var that = this;
+                    that.$refs[formName].validate((valid) => {
+                        if (valid) {
+                            if (that.formEdit.wemenu_name.length > 5 && that.formEdit.wemenu_pid == 0) {
+                                that.$message.error('父菜单名称最多允许五个字');
+                                return;
+                            }
+                            if (that.formEdit.wemenu_name.length > 7 && that.formEdit.wemenu_pid > 0) {
+                                that.$message.error('子菜单名称最多允许七个字');
+                                return;
+                            }
+                            switch (that.formEdit.wemenu_type) {
+                                case 'click':
+                                    if (!that.formEdit.wemenu_key) {
+                                        that.$message.error('该类菜单必须填写菜单参数');
+                                        return;
+                                    }
+                                    break;
+                                case 'view':
+                                    if (!that.formEdit.wemenu_url) {
+                                        that.$message.error('该类菜单必须填写菜单链接');
+                                        return;
+                                    }
+                                    break;
+                                case 'miniprogram':
+                                    if (!that.formEdit.wemenu_url || !that.formEdit.wemenu_appid || !that.formEdit.wemenu_page) {
+                                        that.$message.error('该类菜单必须填写菜单链接、小程序ID、小程序页面');
+                                        return;
+                                    }
+                                    break;
+                                default:
+                                    if (!that.formEdit.wemenu_key) {
+                                        that.$message.error('该类菜单必须填写菜单参数');
+                                        return;
+                                    }
+                            }
+                            axios.post('/api/wemenu/update', {
+                                ...PostBase, ...that.formEdit
+                            })
+                                .then(function (response) {
+                                    that.getList();
+                                    if (response.data.code == CODE_SUCCESS) {
+                                        that.$message({
+                                            message: response.data.msg,
+                                            type: 'success'
+                                        });
+                                        that.dialogFormEdit = false;
+                                    } else {
+                                        that.$message.error(response.data.msg);
+                                    }
+                                })
+                                .catch(function (error) {
+                                    that.$message.error('服务器内部错误');
+                                });
+                        }
+                    });
+                },
+                postAdd(formName) {
+                    var that = this;
+                    that.$refs[formName].validate((valid) => {
+                        if (valid) {
+                            if (that.formAdd.wemenu_name.length > 5 && that.formAdd.wemenu_pid == 0) {
+                                that.$message.error('父菜单名称最多允许五个字');
+                                return;
+                            }
+                            if (that.formAdd.wemenu_name.length > 7 && that.formAdd.wemenu_pid > 0) {
+                                that.$message.error('子菜单名称最多允许七个字');
+                                return;
+                            }
+                            switch (that.formAdd.wemenu_type) {
+                                case 'click':
+                                    if (!that.formAdd.wemenu_key) {
+                                        that.$message.error('该类菜单必须填写菜单参数');
+                                        return;
+                                    }
+                                    break;
+                                case 'view':
+                                    if (!that.formAdd.wemenu_url) {
+                                        that.$message.error('该类菜单必须填写菜单链接');
+                                        return;
+                                    }
+                                    break;
+                                case 'miniprogram':
+                                    if (!that.formAdd.wemenu_url || !that.formAdd.wemenu_appid || !that.formAdd.wemenu_page) {
+                                        that.$message.error('该类菜单必须填写菜单链接、小程序ID、小程序页面');
+                                        return;
+                                    }
+                                    break;
+                                default:
+                                    if (!that.formAdd.wemenu_key) {
+                                        that.$message.error('该类菜单必须填写菜单参数');
+                                        return;
+                                    }
+                            }
+                            axios.post('/api/wemenu/add', {
+                                ...PostBase, ...that.formAdd
+                            })
+                                .then(function (response) {
+                                    that.getList();
+                                    if (response.data.code == CODE_SUCCESS) {
+                                        that.$message({
+                                            message: response.data.msg,
+                                            type: 'success'
+                                        });
+                                        that.dialogFormAdd = false;
+                                    } else {
+                                        that.$message.error(response.data.msg);
+                                    }
+                                })
+                                .catch(function (error) {
+                                    that.$message.error('服务器内部错误');
+                                });
+                        }
+                    });
+                },
+                clickAdd() {
+                    var that = this;
+                    that.formAdd = {
+                        wemenu_type: "click",
+                        wemenu_pid: 0,
+                    };
+                    axios.post('/api/wemenu/getList', {
+                        ...PostBase
+                    })
+                        .then(function (response) {
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.dialogFormAdd = true;
+                                that.parentList = response.data.data;
+                                that.parentList.unshift({
+                                    'wemenu_id': 0,
+                                    'wemenu_name': '父菜单'
+                                });
+                            } else {
+                                that.$message.error(response.data.msg);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.$message.error('服务器内部错误');
+                        });
+                },
+                publish() {
+                    var that = this;
+                    this.$confirm('即将发布这组菜单到微信, 是否确认?', '删除提醒', {
+                        confirmButtonText: '发布',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        axios.post('/api/wemenu/publish', {
+                            ...PostBase,
+                        })
+                            .then(function (response) {
+                                if (response.data.code == CODE_SUCCESS) {
+                                    that.$message({
+                                        message: response.data.msg,
+                                        type: 'success'
+                                    });
+                                } else {
+                                    that.$message.error(response.data.msg);
+                                }
+                            })
+                            .catch(function (error) {
+                                that.$message.error('服务器内部错误');
+                            });
+                    }).catch(() => {
+                    });
+                },
+                clickDelete(row) {
+                    var that = this;
+                    var msg = '即将删除这个微信菜单, 是否确认?'
+                    if (row.wemenu_pid == 0) {
+                        msg = '删除父菜单将同步删除所有子菜单，是否确认？';
+                    }
+                    this.$confirm(msg, '删除提醒', {
+                        confirmButtonText: '删除',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        axios.post('/api/wemenu/delete', {
+                            ...PostBase, ...{
+                                wemenu_id: row.wemenu_id
+                            }
+                        })
+                            .then(function (response) {
+                                that.getList();
+                                if (response.data.code == CODE_SUCCESS) {
+                                    that.$message({
+                                        message: response.data.msg,
+                                        type: 'success'
+                                    });
+                                } else {
+                                    that.$message.error(response.data.msg);
+                                }
+                            })
+                            .catch(function (error) {
+                                that.$message.error('服务器内部错误');
+                            });
+                    }).catch(() => {
+                    });
+                },
+                clickStatus(row) {
+                    var that = this;
+                    axios.post(row.wemenu_status ? '/api/wemenu/enable' : '/api/wemenu/disable', {
+                        ...PostBase, ...{
+                            wemenu_id: row.wemenu_id
+                        }
+                    })
+                        .then(function (response) {
+                            that.getList();
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.$message({
+                                    message: response.data.msg,
+                                    type: 'success'
+                                });
+                            } else {
+                                that.$message.error(response.data.msg);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.$message.error('服务器内部错误');
+                        });
+                },
+                clickEdit(row) {
+                    var that = this;
+                    that.formEdit = row;
+
+                    axios.post('/api/wemenu/getList', {
+                        ...PostBase
+                    })
+                        .then(function (response) {
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.parentList = response.data.data;
+                                that.parentList.unshift({
+                                    'wemenu_id': 0,
+                                    'wemenu_name': '父菜单'
+                                });
+                                axios.post('/api/wemenu/detail', {
+                                    ...PostBase, ...{
+                                        wemenu_id: row.wemenu_id
+                                    }
+                                })
+                                    .then(function (response) {
+                                        if (response.data.code == CODE_SUCCESS) {
+                                            that.formEdit = response.data.data;
+                                            that.dialogFormEdit = true;
+                                        } else {
+                                            that.$message.error(response.data.msg);
+                                        }
+                                    })
+                                    .catch(function (error) {
+                                        that.$message.error('服务器内部错误');
+                                    });
+
+                            } else {
+                                that.$message.error(response.data.msg);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.$message.error('服务器内部错误');
+                        });
+
+
+                },
+                changeCurrentPage(page) {
+                    this.form.page = page;
+                    this.getList();
+                },
+                getList() {
+                    var that = this;
+                    that.loading = true;
+                    axios.post('/api/wemenu/getList', { ...PostBase, ...that.form, ...that.search })
+                        .then(function (response) {
+                            that.loading = false;
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.dataList = [];
+                                for (parentMenu in response.data.data) {
+                                    parentMenu = response.data.data[parentMenu];
+                                    that.dataList.push(parentMenu);
+                                    for (subMenu in parentMenu.sub) {
+                                        subMenu = parentMenu.sub[subMenu];
+                                        subMenu.wemenu_name = '　　　　' + subMenu.wemenu_name;
+                                        that.dataList.push(subMenu);
+                                    }
+                                }
+                            } else {
+                                that.$message.error(response.data.msg);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.loading = false;
+                            that.$message.error('服务器内部错误');
+                        });
+                }
+            }
+        })
+    </script>
+
+
+</html>

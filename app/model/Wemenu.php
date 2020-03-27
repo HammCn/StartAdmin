@@ -4,6 +4,6 @@ namespace app\model;
 
 use app\model\BaseModel;
 
-class Student extends BaseModel
+class Wemenu extends BaseModel
 {
 }
