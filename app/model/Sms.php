@@ -3,6 +3,8 @@
 namespace app\model;
 
 use AlibabaCloud\Client\AlibabaCloud;
+use AlibabaCloud\Client\Exception\ClientException;
+use AlibabaCloud\Client\Exception\ServerException;
 use app\model\BaseModel;
 
 class Sms extends BaseModel
@@ -16,12 +18,16 @@ class Sms extends BaseModel
      */
     public static function sendSms($phone, $code)
     {
-        AlibabaCloud::accessKeyClient('LTAI4Ffh4KFujekzpX7YugGY', 'c4EK5A6BcR72kAEztnZ3fR14CPCeIR')->regionId('cn-hangzhou')->asDefaultClient();
+        $alisms_appid = config('startadmin.alisms_appid');
+        $alisms_appkey = config('startadmin.alisms_appkey');
+        $alisms_sign = config('startadmin.alisms_sign');
+        $alisms_template = config('startadmin.alisms_template');
+        AlibabaCloud::accessKeyClient($alisms_appid, $alisms_appkey)->regionId('cn-hangzhou')->asDefaultClient();
         $success = false;
         try {
             $result = AlibabaCloud::rpc()
                 ->product('Dysmsapi')
-                // ->scheme('https') // https | http
+                ->scheme('https')
                 ->version('2017-05-25')
                 ->action('SendSms')
                 ->method('POST')
@@ -30,8 +36,8 @@ class Sms extends BaseModel
                     'query' => [
                         'RegionId' => "cn-hangzhou",
                         'PhoneNumbers' => $phone,
-                        'SignName' => "鱼师傅",
-                        'TemplateCode' => "SMS_174020628",
+                        'SignName' => $alisms_sign,
+                        'TemplateCode' => $alisms_template,
                         'TemplateParam' => '{"code":"' . $code . '"}',
                     ],
                 ])
@@ -50,16 +56,20 @@ class Sms extends BaseModel
      *
      * @param string 手机号码
      * @param string 验证码
-     * @return void
+     * @return bool
      */
     public function validSmsCode($phone, $code)
     {
-        $sms = $this->where([
-            'sms_phone' => $phone,
-            'sms_timeout' => [">", time()],
-            'sms_code' => $code
-        ])->order('sms_createtime desc')->find();
+        $sms = $this->where('sms_phone', $phone)
+            ->where('sms_timeout', ">", time())
+            ->where('sms_code', $code)
+            ->where('sms_status', 0)
+            ->order('sms_createtime desc')->find();
         if ($sms) {
+            $this->where('sms_id', $sms['sms_id'])->update([
+                'sms_status' => 1,
+                'sms_updatetime' => time()
+            ]);
             return true;
         } else {
             return false;

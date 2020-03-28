@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace app\wechat;
 
 use think\App;
-use think\facade\View;
 use app\model\Conf as ConfModel;
 use app\model\Wechat as WechatModel;
 
@@ -17,6 +16,8 @@ abstract class BaseController
     protected $confModel;
     protected $wechatModel;
     protected $access_token;
+    protected $wechat_appid;
+    protected $wechat_appkey;
     /**
      * Request实例
      * @var \think\Request
@@ -62,6 +63,11 @@ abstract class BaseController
             $c[$config['conf_key']] = $config['conf_value'];
         }
         config($c, 'startadmin');
+        $this->wechat_appid = config("startadmin.wechat_appid");
+        $this->wechat_appkey = config("startadmin.wechat_appkey");
+        if (!$this->wechat_appid || !$this->wechat_appkey) {
+            die('Input wechat appid and appkey first!');
+        }
         $this->access_token = $this->confModel->getAccessToken();
     }
     /**
@@ -74,8 +80,9 @@ abstract class BaseController
         $wechat_id = cookie('wechat_id');
         $wechat_ticket = cookie('wechat_ticket');
         if ($wechat_ticket == getTicket($wechat_id)) {
-            $this->wechat = $this->wechatModel->where('wechat_id', $wechat_id)->find()->toArray();
+            $this->wechat = $this->wechatModel->where('wechat_id', $wechat_id)->find();
             if ($this->wechat) {
+                $this->wechat = $this->wechat->toArray();
                 return null;
             }
         }
@@ -142,7 +149,7 @@ abstract class BaseController
      */
     private function getJsApiTicket()
     {
-        $appData = $this->confModel->where('conf_key', 'jsticket')->find();
+        $appData = $this->confModel->where('conf_key', 'WECHAT_JS_TICKET')->find();
         $jsapiTicket = "";
         if (time() > $appData['conf_int']) {
             //需要重新请求access_token
@@ -151,7 +158,7 @@ abstract class BaseController
             $retObj = json_decode($retObj);
 
             $jsapiTicket = $retObj->ticket;
-            $this->confModel->where('conf_key', "jsticket")->update(array("conf_value" => $jsapiTicket, "conf_int" => (time() + 5000)));
+            $this->confModel->where('conf_key', "WECHAT_JS_TICKET")->update(array("conf_value" => $jsapiTicket, "conf_int" => (time() + 5000)));
         } else {
             //access_token有效
             $jsapiTicket = $appData['conf_value'];

@@ -5,6 +5,7 @@ namespace app\api\controller;
 use think\App;
 use app\api\BaseController;
 use app\model\User as UserModel;
+use app\model\Sms as SmsModel;
 
 class User extends BaseController
 {
@@ -441,6 +442,47 @@ class User extends BaseController
             }
         } else {
             return jerr("是不是所有的参数都POST过来了");
+        }
+    }
+    /**
+     * 用户注册接口
+     *
+     * @return void
+     */
+    public function reg()
+    {
+        if (!input("phone")) {
+            return jerr("手机号不能为空！");
+        }
+        $phone = input("phone");
+        if (!input("code")) {
+            return jerr("短信验证码不能为空！");
+        }
+        $code = input("code");
+        if (!input("password")) {
+            return jerr("密码不能为空！");
+        }
+        $password = input("password");
+        $name = $phone;
+        if (input("name")) {
+            $name = input("name");
+        }
+        $smsModel = new SmsModel();
+        if ($smsModel->validSmsCode($phone, $code)) {
+            $user = $this->thisModel->where([
+                "user_account" => $phone
+            ])->find();
+            if ($user) {
+                return jerr("该手机号已经注册！");
+            }
+            $result = $this->thisModel->reg($phone, $password, $name);
+            if ($result) {
+                return jok("用户注册成功");
+            } else {
+                return jerr("注册失败，请重试！");
+            }
+        } else {
+            return jerr("短信验证码已过期，请重新获取");
         }
     }
 }

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: 2020-03-28 01:07:22
+-- Generation Time: 2020-03-28 17:48:28
 -- 服务器版本： 5.7.28
 -- PHP Version: 7.3.9
 
@@ -130,18 +130,23 @@ CREATE TABLE `sa_conf` (
 --
 
 INSERT INTO `sa_conf` (`conf_id`, `conf_key`, `conf_value`, `conf_readonly`, `conf_desc`, `conf_int`, `conf_system`, `conf_status`, `conf_createtime`, `conf_updatetime`) VALUES
-(1, 'wechat_appid', '', 0, '微信ID', 0, 1, 0, 0, 0),
-(2, 'wechat_appkey', '', 0, '微信密钥', 0, 1, 0, 0, 0),
+(1, 'wechat_appid', '', 0, '微信ID', 0, 1, 0, 0, 1585379793),
+(2, 'wechat_appkey', '', 0, '微信密钥', 0, 1, 0, 0, 1585379806),
 (3, 'WECHAT_ACCESS_TOKEN', '', 1, 'AccessToken', 0, 1, 0, 0, 0),
 (4, 'WECHAT_JS_TICKET', '', 1, 'JsTicket', 0, 1, 0, 0, 0),
 (5, 'wxapp_appid', '', 0, '小程序APPID', 0, 1, 0, 0, 0),
 (6, 'wxapp_appkey', '', 0, '小程序SECRET', 0, 1, 0, 0, 0),
 (36, 'app_name', 'StartAdmin', 0, '产品名称', 0, 1, 0, 0, 0),
 (37, 'iconfont', '//at.alicdn.com/t/font_666204_u6x6ssnn9sh.css', 0, '阿里图标', 0, 1, 0, 0, 0),
-(39, 'upload_max_file', '2097152', 0, '', 0, 1, 0, 0, 0),
-(40, 'upload_file_type', 'jpg,png,gif,jpeg,bmp,txt,pdf,mp3,mp4,amr,m4a,xls,xlsx,ppt,pptx,doc,docx', 0, '', 0, 1, 0, 0, 0),
-(41, 'upload_max_image', '2097152', 0, '', 0, 1, 0, 0, 0),
-(42, 'upload_image_type', 'jpg,png,gif,jpeg,bmp', 0, '', 0, 1, 0, 0, 0);
+(39, 'upload_max_file', '2097152', 0, '最大文件上传限制', 0, 1, 0, 0, 0),
+(40, 'upload_file_type', 'jpg,png,gif,jpeg,bmp,txt,pdf,mp3,mp4,amr,m4a,xls,xlsx,ppt,pptx,doc,docx', 0, '允许文件上传类型', 0, 1, 0, 0, 0),
+(41, 'upload_max_image', '2097152', 0, '最大图片上传限制', 0, 1, 0, 0, 0),
+(42, 'upload_image_type', 'jpg,png,gif,jpeg,bmp', 0, '允许上传图片类型', 0, 1, 0, 0, 0),
+(43, 'alisms_appkey', '', 0, '阿里云短信key', 0, 1, 0, 0, 0),
+(44, 'alisms_appid', '', 0, '阿里云短信ID', 0, 1, 0, 0, 0),
+(45, 'alisms_sign', '', 0, '阿里云短信签名', 0, 1, 0, 0, 0),
+(46, 'alisms_template', '', 0, '阿里云短信模板', 0, 1, 0, 0, 0),
+(47, 'default_group', '3', 0, '注册默认用户组', 0, 1, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -235,6 +240,9 @@ INSERT INTO `sa_node` (`node_id`, `node_system`, `node_title`, `node_desc`, `nod
 (108, 1, '基础设置', '', 'admin', 'conf', 'base', 3, 0, 1, '', '', 0, 0, 1575948484),
 (109, 1, '访问日志', '', 'admin', 'log', 'index', 5, 0, 1, '', '', 0, 0, 1575984177),
 (110, 1, '访问统计', '', 'admin', 'log', 'state', 5, 0, 1, '', '', 0, 0, 1575984183),
+(111, 0, '微信菜单管理', '', 'admin', 'wemenu', 'index', 6, 0, 1, '', NULL, 0, 1585323009, 1585323009),
+(112, 0, '临时凭证管理', '', 'admin', 'code', 'index', 3, 0, 1, '', '', 0, 1581836878, 1581839323),
+(113, 0, '微信粉丝管理', '', 'admin', 'wechat', 'index', 6, 0, 1, '', NULL, 0, 1585323009, 1585323009),
 (1000, 1, '获取用户列表接口', '', 'api', 'user', 'getList', 4, 0, 1, '', NULL, 0, 0, 1575948484),
 (1001, 1, '获取用户组列表接口', '', 'api', 'group', 'getList', 4, 0, 1, '', NULL, 0, 0, 1575948484),
 (1003, 1, '获取所有配置列表接口', '', 'api', 'conf', 'getList', 4, 0, 1, '', NULL, 0, 0, 1575948484),
@@ -288,12 +296,12 @@ INSERT INTO `sa_node` (`node_id`, `node_system`, `node_title`, `node_desc`, `nod
 (1052, 1, '代码生成接口', '', 'api', 'system', 'build', 4, 0, 1, '', '', 0, 0, 1575948484),
 (1074, 1, '获取基础设置接口', '', 'api', 'conf', 'getBaseConfig', 4, 0, 1, '', NULL, 0, 0, 1575948484),
 (1075, 1, '修改基础设置接口', '', 'api', 'conf', 'updateBaseConfig', 4, 0, 1, '', NULL, 0, 0, 1575948484),
-(1077, 1, '上传图片接口', '', 'api', 'attach', 'uploadimage', 4, 0, 0, '', '', 0, 1575981672, 1575981701),
-(1078, 1, '获取访问统计数据接口', '', 'api', 'log', 'state', 4, 0, 0, '', NULL, 0, 1575981672, 1575981672),
-(1079, 1, '获取日志列表接口', '', 'api', 'log', 'getList', 4, 0, 0, '', NULL, 0, 1575981672, 1575981672),
-(1080, 1, '删除日志接口', '', 'api', 'log', 'delete', 4, 0, 0, '', NULL, 0, 1575981672, 1575981672),
-(1081, 1, '导出节点接口', '', 'api', 'node', 'excel', 4, 0, 0, '', NULL, 0, 1575981672, 1575981672),
-(1082, 1, '导出日志接口', '', 'api', 'log', 'excel', 4, 0, 0, '', NULL, 0, 1575981672, 1575981672),
+(1077, 1, '上传图片接口', '', 'api', 'attach', 'uploadimage', 4, 0, 1, '', '', 0, 1575981672, 1575981701),
+(1078, 1, '获取访问统计数据接口', '', 'api', 'log', 'state', 4, 0, 1, '', NULL, 0, 1575981672, 1575981672),
+(1079, 1, '获取日志列表接口', '', 'api', 'log', 'getList', 4, 0, 1, '', NULL, 0, 1575981672, 1575981672),
+(1080, 1, '删除日志接口', '', 'api', 'log', 'delete', 4, 0, 1, '', NULL, 0, 1575981672, 1575981672),
+(1081, 1, '导出节点接口', '', 'api', 'node', 'excel', 4, 0, 1, '', NULL, 0, 1575981672, 1575981672),
+(1082, 1, '导出日志接口', '', 'api', 'log', 'excel', 4, 0, 1, '', NULL, 0, 1575981672, 1575981672),
 (1083, 0, '获取临时凭证详情接口', '', 'api', 'code', 'detail', 4, 0, 1, '', NULL, 0, 1581836878, 1581836878),
 (1084, 0, '添加临时凭证接口', '', 'api', 'code', 'add', 4, 0, 1, '', NULL, 0, 1581836878, 1581836878),
 (1085, 0, '修改临时凭证接口', '', 'api', 'code', 'update', 4, 0, 1, '', NULL, 0, 1581836878, 1581836878),
@@ -301,7 +309,6 @@ INSERT INTO `sa_node` (`node_id`, `node_system`, `node_title`, `node_desc`, `nod
 (1087, 0, '禁用临时凭证接口', '', 'api', 'code', 'disable', 4, 0, 1, '', NULL, 0, 1581836878, 1581836878),
 (1088, 0, '启用临时凭证接口', '', 'api', 'code', 'enable', 4, 0, 1, '', NULL, 0, 1581836878, 1581836878),
 (1089, 0, '获取临时凭证列表接口', '', 'api', 'code', 'getList', 4, 0, 1, '', NULL, 0, 1581836878, 1581836878),
-(1090, 0, '临时凭证管理', '', 'admin', 'code', 'index', 3, 0, 1, '', '', 0, 1581836878, 1581839323),
 (1091, 0, '获取微信菜单详情接口', '', 'api', 'wemenu', 'detail', 4, 0, 1, '', NULL, 0, 1585323009, 1585323009),
 (1092, 0, '添加微信菜单接口', '', 'api', 'wemenu', 'add', 4, 0, 1, '', NULL, 0, 1585323009, 1585323009),
 (1093, 0, '修改微信菜单接口', '', 'api', 'wemenu', 'update', 4, 0, 1, '', NULL, 0, 1585323009, 1585323009),
@@ -309,8 +316,10 @@ INSERT INTO `sa_node` (`node_id`, `node_system`, `node_title`, `node_desc`, `nod
 (1095, 0, '禁用微信菜单接口', '', 'api', 'wemenu', 'disable', 4, 0, 1, '', NULL, 0, 1585323009, 1585323009),
 (1096, 0, '启用微信菜单接口', '', 'api', 'wemenu', 'enable', 4, 0, 1, '', NULL, 0, 1585323009, 1585323009),
 (1097, 0, '获取微信菜单列表接口', '', 'api', 'wemenu', 'getList', 4, 0, 1, '', NULL, 0, 1585323009, 1585323009),
-(1098, 0, '微信菜单管理', '', 'admin', 'wemenu', 'index', 6, 0, 1, '', NULL, 0, 1585323009, 1585323009),
-(1100, 0, '微信发布自定义菜单接口', '', 'api', 'wemenu', 'publish', 4, 0, 1, '', NULL, 0, 1585323009, 1585323009);
+(1100, 0, '微信发布自定义菜单接口', '', 'api', 'wemenu', 'publish', 4, 0, 1, '', NULL, 0, 1585323009, 1585323009),
+(1101, 1, '获取微信粉丝列表接口', '', 'api', 'wechat', 'getList', 4, 0, 1, '', NULL, 0, 0, 1575948484),
+(1102, 1, '禁用微信粉丝接口', '', 'api', 'wechat', 'disable', 4, 0, 1, '', NULL, 0, 0, 1575948484),
+(1103, 1, '启用微信粉丝接口', '', 'api', 'wechat', 'enable', 4, 0, 1, '', NULL, 0, 0, 1575948484);
 
 -- --------------------------------------------------------
 
@@ -323,6 +332,7 @@ CREATE TABLE `sa_sms` (
   `sms_phone` varchar(255) NOT NULL DEFAULT '' COMMENT '手机号',
   `sms_code` varchar(10) NOT NULL DEFAULT '' COMMENT '验证码',
   `sms_timeout` int(11) NOT NULL DEFAULT '0' COMMENT '超时时间戳',
+  `sms_callback` varchar(255) NOT NULL DEFAULT '' COMMENT '发送短信结果',
   `sms_status` int(9) NOT NULL DEFAULT '0' COMMENT '状态',
   `sms_createtime` int(9) NOT NULL DEFAULT '0' COMMENT '创建时间',
   `sms_updatetime` int(9) NOT NULL DEFAULT '0' COMMENT '修改时间'
@@ -373,6 +383,9 @@ CREATE TABLE `sa_wechat` (
   `wechat_nick` varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '昵称',
   `wechat_head` varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '头像',
   `wechat_sex` int(11) NOT NULL DEFAULT '0' COMMENT '性别',
+  `wechat_province` varchar(255) NOT NULL DEFAULT '' COMMENT '省份',
+  `wechat_city` varchar(255) NOT NULL DEFAULT '' COMMENT '城市',
+  `wechat_country` varchar(255) NOT NULL DEFAULT '' COMMENT '国家',
   `wechat_status` int(11) NOT NULL DEFAULT '0',
   `wechat_createtime` int(11) NOT NULL DEFAULT '0',
   `wechat_updatetime` int(11) NOT NULL DEFAULT '0'
@@ -548,7 +561,7 @@ ALTER TABLE `sa_code`
 -- 使用表AUTO_INCREMENT `sa_conf`
 --
 ALTER TABLE `sa_conf`
-  MODIFY `conf_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+  MODIFY `conf_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 --
 -- 使用表AUTO_INCREMENT `sa_group`
 --
@@ -563,7 +576,7 @@ ALTER TABLE `sa_log`
 -- 使用表AUTO_INCREMENT `sa_node`
 --
 ALTER TABLE `sa_node`
-  MODIFY `node_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '功能ID', AUTO_INCREMENT=1101;
+  MODIFY `node_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '功能ID', AUTO_INCREMENT=1105;
 --
 -- 使用表AUTO_INCREMENT `sa_sms`
 --
@@ -573,7 +586,7 @@ ALTER TABLE `sa_sms`
 -- 使用表AUTO_INCREMENT `sa_user`
 --
 ALTER TABLE `sa_user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'UID', AUTO_INCREMENT=2;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'UID', AUTO_INCREMENT=3;
 --
 -- 使用表AUTO_INCREMENT `sa_wechat`
 --

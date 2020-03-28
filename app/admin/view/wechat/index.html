@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+    {include file="common/header"/}
+    <el-form :inline="true">
+        <el-form-item>
+        </el-form-item>
+        <div style="float:right">
+            <el-form-item style="width:120px;">
+                <el-select placeholder="筛选类别" size="small" v-model="search.filter">
+                    <el-option value="wechat_nick" label="微信昵称">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item>
+                <el-input placeholder="输入关键词搜索" size="small" v-model="search.keyword"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button icon="el-icon-search" size="small" @click="getList">搜索</el-button>
+            </el-form-item>
+        </div>
+    </el-form>
+    <el-table :data="dataList.data" @selection-change="changeSelection" v-loading="loading">
+        <el-table-column type="selection" width="50">
+        </el-table-column>
+        <el-table-column prop="wechat_id" label="ID" width="60">
+        </el-table-column>
+        <el-table-column prop="wechat_openid" label="OPENID">
+        </el-table-column>
+        <el-table-column prop="wechat_nick" label="昵称">
+        </el-table-column>
+        <el-table-column label="头像">
+            <template slot-scope="scope">
+                <img :src="scope.row.wechat_head" height="30" style="cursor: pointer;"
+                    @click="showHeadimg(scope.row.wechat_head)" />
+            </template>
+        </el-table-column>
+        <el-table-column label="性别">
+            <template slot-scope="scope">
+                <el-tag v-if="scope.row.wechat_sex==1">男</el-tag>
+                <el-tag type="danger" v-if="scope.row.wechat_sex==2">女</el-tag>
+                <el-tag type="info" v-if="scope.row.wechat_sex==0">未知</el-tag>
+            </template>
+        </el-table-column>
+        <el-table-column label="位置">
+            <template slot-scope="scope">
+                {{scope.row.wechat_country}}-{{scope.row.wechat_province}}-{{scope.row.wechat_city}}
+            </template>
+        </el-table-column>
+        <el-table-column label="禁用" width="80">
+            <template slot-scope="scope">
+                <el-switch v-model="scope.row.wechat_status==1?true:false" active-color="#ff4949"
+                    @change="clickStatus(scope.row)">
+                </el-switch>
+            </template>
+        </el-table-column>
+        <el-table-column label="操作" width="100">
+            <template slot-scope="scope">
+                <el-link type="danger" @click="clickDelete(scope.row)" :underline="false"><i
+                        class="el-icon-delete"></i>删除</el-link>
+            </template>
+        </el-table-column>
+
+    </el-table>
+
+    <el-pagination background @current-change="changeCurrentPage" layout="prev, pager, next"
+        :current-page="dataList.current_page" :page-count="dataList.last_page" :total="dataList.total"
+        :hide-on-single-page="true" style="margin-top: 10px;text-align: right;">
+    </el-pagination>
+
+
+    {include file="common/footer"/}
+    <script>
+        new Vue({
+            el: '#app',
+            data() {
+                this.getList();
+                return {
+                    search: {
+                        keyword: "",
+                        filter: "wechat_nick"
+                    },
+                    loading: true,
+                    dataList: [],
+                    selectList: [],
+                    form: {
+                        page: 1
+                    },
+                }
+            },
+            methods: {
+                showHeadimg(url) {
+                    this.$alert('<img src="' + url + '" width="400px" height="400px"/>', '头像预览', {
+                        dangerouslyUseHTMLString: true
+                    });
+                },
+                changeCurrentPage(page) {
+                    this.form.page = page;
+                    this.getList();
+                },
+                changeSelection(list) {
+                    var that = this;
+                    that.selectList = [];
+                    for (var index in list) {
+                        that.selectList.push(list[index].conf_id);
+                    }
+                },
+                clickStatus(row) {
+                    var that = this;
+                    axios.post(row.wechat_status ? '/api/wechat/enable' : '/api/wechat/disable', {
+                        ...PostBase, ...{
+                            wechat_id: row.wechat_id
+                        }
+                    })
+                        .then(function (response) {
+                            that.getList();
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.$message({
+                                    message: response.data.msg,
+                                    type: 'success'
+                                });
+                            } else {
+                                that.$message.error(response.data.msg);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.$message.error('服务器内部错误');
+                        });
+                },
+                getList() {
+                    var that = this;
+                    that.loading = true;
+                    axios.post('/api/wechat/getList', { ...PostBase, ...that.form, ...that.search })
+                        .then(function (response) {
+                            that.loading = false;
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.dataList = response.data.data;
+                            } else {
+                                that.$message.error(response.data.msg);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.loading = false;
+                            that.$message.error('服务器内部错误');
+                        });
+                }
+            }
+        })
+    </script>
+
+
+</html>

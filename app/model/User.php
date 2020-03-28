@@ -48,7 +48,7 @@ class User extends BaseModel
             "user_password" => $password,
             "user_salt" => $salt,
             "user_name" => $name,
-            "user_group" => 2, //TODO 默认用户组为2 即普通用户 该组不允许删除
+            "user_group" => config('startadmin.default_group') ?? 0,
             "user_ipreg" => request()->ip(),
             "user_createtime" => time(),
             "user_updatetime" => time()

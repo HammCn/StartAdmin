@@ -12,34 +12,6 @@
         <el-form-item>
             <el-button type="danger" icon="el-icon-delete" size="small" @click="postMultDelete">批量删除</el-button>
         </el-form-item>
-        <!-- <div style="float:right">
-            <el-form-item>
-                <el-select placeholder="请选择状态" size="small" v-model="search.group_status">
-                    <el-option value="" label="全部用户">
-                    </el-option>
-                    <el-option value="0" label="正常用户">
-                    </el-option>
-                    <el-option value="1" label="禁用用户">
-                    </el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item style="width:120px;">
-                <el-select placeholder="筛选类别" size="small" v-model="search.filter">
-                    <el-option value="group_id" label="用户ID">
-                    </el-option>
-                    <el-option value="group_name" label="用户昵称">
-                    </el-option>
-                    <el-option value="group_account" label="用户帐号">
-                    </el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item>
-                <el-input placeholder="输入关键词搜索" size="small" v-model="search.keyword"></el-input>
-            </el-form-item>
-            <el-form-item>
-                <el-button icon="el-icon-search" size="small" @click="getList">搜索</el-button>
-            </el-form-item>
-        </div> -->
     </el-form>
     <el-table :data="dataList" @selection-change="changeSelection" v-loading="loading">
         <el-table-column type="selection" width="50">

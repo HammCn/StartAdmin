@@ -5,6 +5,7 @@ namespace app\api\controller;
 use think\App;
 use think\facade\Db;
 use app\api\BaseController;
+use app\model\Validate as ValidateModel;
 
 class System extends BaseController
 {
@@ -295,5 +296,18 @@ class System extends BaseController
         fwrite($myfile, $file);
         fclose($myfile);
         return jok('生成成功');
+    }
+    public function getCaptcha()
+    {
+        $validateModel = new ValidateModel();
+        $imgData = $validateModel->getImg();
+        $code = $validateModel->getCode();
+        $time = time();
+        $token = sha1(sha1($code . (env('CAPTCHA_SALT') ?? 'StartAdmin') . $time) . $time);
+        return jok('验证码生成成功', [
+            'img' => $imgData,
+            'time' => $time,
+            'token' => $token
+        ]);
     }
 }

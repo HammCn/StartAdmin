@@ -133,18 +133,20 @@ class Service extends BaseController
         if (property_exists($retObj, "errorcode")) {
             return null;
         } else {
-            // print_r($retObj);exit;
-            $nickname = urlencode($retObj->nickname);
-            $sex = urlencode($retObj->sex);
-            $headimgurl = urlencode($retObj->headimgurl);
+            $nickname = $retObj->nickname;
+            $sex = $retObj->sex;
+            $headimgurl = str_replace("http://", 'https://', $retObj->headimgurl);
+            $province = $retObj->province;
+            $city = $retObj->city;
+            $country = $retObj->country;
             $this->wechat = $this->wechatModel->where('wechat_openid', $openid)->find();
             if (!$this->wechat) {
                 //注册
-                $data = ["wechat_openid" => $openid, "wechat_nick" => $nickname, "wechat_head" => $headimgurl, "wechat_sex" => $sex, "wechat_createtime" => time(), "wechat_updatetime" => time()];
+                $data = ["wechat_openid" => $openid, "wechat_nick" => $nickname, "wechat_head" => $headimgurl, "wechat_sex" => $sex, "wechat_country" => $country, "wechat_city" => $city, "wechat_province" => $province, "wechat_createtime" => time(), "wechat_updatetime" => time()];
                 $this->wechatModel->insert($data);
             } else {
                 //更新
-                $this->wechatModel->where('wechat_openid', $openid)->update(["wechat_nick" => $nickname, "wechat_head" => $headimgurl, "wechat_sex" => $sex, "wechat_updatetime" => time()]);
+                $this->wechatModel->where('wechat_openid', $openid)->update(["wechat_nick" => $nickname, "wechat_head" => $headimgurl, "wechat_sex" => $sex, "wechat_country" => $country, "wechat_city" => $city, "wechat_province" => $province,  "wechat_updatetime" => time()]);
             }
             $this->wechat = $this->wechatModel->where('wechat_openid', $openid)->find();
         }

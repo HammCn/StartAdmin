@@ -468,6 +468,33 @@ abstract class BaseController
         }
         return jok('数据加载成功', $item);
     }
+    /**
+     * 验证图形验证码
+     *
+     * @return void
+     */
+    protected function validateImgCode()
+    {
+        if (!input('code')) {
+            return jerr("Code missing");
+        }
+        if (!input('token')) {
+            return jerr("Token missing");
+        }
+        if (!input('time')) {
+            return jerr("time missing");
+        }
+        $code = input('code');
+        $time = input('time');
+        $token = sha1(sha1($code . (env('CAPTCHA_SALT') ?? 'StartAdmin') . $time) . $time);
+        if ($token != input('token')) {
+            return jerr("验证码错误，请重新输入");
+        }
+        if (time() > $time + 60) {
+            return jerr("验证码超时，请重新输入");
+        }
+        return null;
+    }
     public function __call($method, $args)
     {
         return jerr("API接口不存在", 404);

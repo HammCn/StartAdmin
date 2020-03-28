@@ -95,6 +95,37 @@ class Sms extends BaseController
         $dataList = $this->thisModel->getListByPage($map, $order);
         return jok('短信验证码列表获取成功', $dataList);
     }
+    public function send()
+    {
+        //验证图形验证码
+        $error = $this->validateImgCode();
+        if ($error) {
+            return $error;
+        }
+        if (input("phone")) {
+            $phone = input('phone');
+            $sms =  $this->thisModel->where("sms_phone", $phone)->order("sms_createtime desc")->find();
+            if ($sms) {
+                if ($sms['sms_createtime'] + 60 > time()) {
+                    return jerr("验证码发送过于频繁，请稍候后再试！");
+                }
+            }
+            $code = rand(100000, 999999);
+            $ret =  $this->thisModel->sendSms($phone, $code);
+            $this->thisModel->insert([
+                "sms_phone" => $phone,
+                "sms_code" => $code,
+                "sms_timeout" => time() + 600,
+                "sms_createtime" => time(),
+                "sms_updatetime" => time(),
+                "sms_callback" => $ret
+            ]);
+            return jok('短信验证码已经发送至你的手机');
+        } else {
+            return jerr("手机号为必填信息，请填写后提交");
+        }
+    }
+
     public function __call($method, $args)
     {
         return $this->index();

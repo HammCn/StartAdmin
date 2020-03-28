@@ -13,7 +13,7 @@ class Authorize extends BaseController
             $callback = urldecode(input('callback'));
         }
         $callbackWechat = urlencode(getFullDomain() . "/wechat/authorize/callback/");
-        return redirect("https://open.weixin.qq.com/connect/oauth2/authorize?appid=" . config("startadmin.wechat_appid") . "&redirect_uri=" . $callbackWechat . "&response_type=code&scope=snsapi_userinfo&state=" . urlencode($callback) . "#wechat_redirect");
+        return redirect("https://open.weixin.qq.com/connect/oauth2/authorize?appid=" . $this->wechat_appid . "&redirect_uri=" . $callbackWechat . "&response_type=code&scope=snsapi_userinfo&state=" . urlencode($callback) . "#wechat_redirect");
     }
     public function callback()
     {
@@ -38,13 +38,16 @@ class Authorize extends BaseController
                 return redirect($callback);
             } else {
                 $nickname = urlencode($retObj->nickname);
-                $sex = urlencode($retObj->sex);
-                $headimgurl = urlencode($retObj->headimgurl);
+                $sex = $retObj->sex;
+                $headimgurl = str_replace("http://", 'https://', $retObj->headimgurl);
+                $province = $retObj->province;
+                $city = $retObj->city;
+                $country = $retObj->country;
                 $wechat = $this->wechatModel->where('wechat_openid', $openid)->find();
                 $wechat_id = 0;
                 if (!$wechat) {
                     //注册
-                    $data = array("wechat_openid" => $openid, "wechat_nick" => $nickname, "wechat_head" => $headimgurl, "wechat_sex" => $sex, "wechat_createtime" => time(), "wechat_updatetime" => time());
+                    $data = array("wechat_openid" => $openid, "wechat_nick" => $nickname, "wechat_head" => $headimgurl, "wechat_sex" => $sex, "wechat_country" => $country, "wechat_city" => $city, "wechat_province" => $province, "wechat_createtime" => time(), "wechat_updatetime" => time());
                     $wechat_id = $this->wechatModel->insertGetId($data);
                 } else {
                     //更新
@@ -52,7 +55,7 @@ class Authorize extends BaseController
                         //如果设置了个性名称 不修改昵称
                         $nickname = $wechat['wechat_remark'];
                     }
-                    $this->wechatModel->where('wechat_openid', $openid)->update(array("wechat_nick" => $nickname, "wechat_head" => $headimgurl, "wechat_sex" => $sex, "wechat_updatetime" => time()));
+                    $this->wechatModel->where('wechat_openid', $openid)->update(array("wechat_nick" => $nickname, "wechat_head" => $headimgurl, "wechat_sex" => $sex, "wechat_country" => $country, "wechat_city" => $city, "wechat_province" => $province,  "wechat_updatetime" => time()));
                     $wechat_id = $wechat['wechat_id'];
                 }
                 //301到原来的页面
