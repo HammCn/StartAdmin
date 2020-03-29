@@ -508,7 +508,18 @@ abstract class BaseController
     }
     public function excel()
     {
-        $map = [];
+        $error = $this->checkVersion();
+        if ($error) {
+            return $error;
+        }
+        $error = $this->checkLogin();
+        if ($error) {
+            return $error;
+        }
+        $error = $this->checkAccess();
+        if ($error) {
+            return $error;
+        }
         $map = [];
         $filter = input();
         foreach ($filter as $k => $v) {
