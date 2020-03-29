@@ -561,4 +561,56 @@ class User extends BaseController
             return jerr("短信验证码已过期，请重新获取");
         }
     }
+
+    /**
+     * 获取我的信息
+     *
+     * @return void
+     */
+    public function getMyInfo()
+    {
+        $error = $this->checkVersion();
+        if ($error) {
+            return $error;
+        }
+        $error = $this->checkLogin();
+        if ($error) {
+            return $error;
+        }
+        $error = $this->checkAccess();
+        if ($error) {
+            return $error;
+        }
+        $myInfo = $this->user;
+        foreach (['user_password', 'user_salt', 'user_accesstoken', 'user_tokentime', 'user_status'] as $key) {
+            unset($myInfo[$key]);
+        }
+        return jok('数据获取成功', $myInfo);
+    }
+    public function updateMyInfo()
+    {
+        $error = $this->checkVersion();
+        if ($error) {
+            return $error;
+        }
+        $error = $this->checkLogin();
+        if ($error) {
+            return $error;
+        }
+        $error = $this->checkAccess();
+        if ($error) {
+            return $error;
+        }
+        if (!input("user_name")) {
+            return jerr("你确定飘到连名字都可以不要了吗？");
+        }
+        $data = [
+            "user_name" => input("user_name"),
+            "user_truename" => input("user_truename"),
+            "user_email" => input("user_email"),
+            "user_idcard" => input("user_idcard"),
+        ];
+        $this->thisModel->where("user_id", $this->user['user_id'])->update($data);
+        return jok("资料更新成功");
+    }
 }

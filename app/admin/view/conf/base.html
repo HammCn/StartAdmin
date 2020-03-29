@@ -39,8 +39,6 @@
                         .then(function (response) {
                             if (response.data.code == CODE_SUCCESS) {
                                 that.form = response.data.data;
-                                console.log(that.form);
-
                             } else {
                                 that.$message.error(response.data.msg);
                             }

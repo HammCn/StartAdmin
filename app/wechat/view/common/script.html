@@ -9,8 +9,6 @@
             url: location.href.split('#')[0]
         })
             .then(function (response) {
-                console.log(response);
-
                 wx.config({
                     debug: debug,
                     appId: response.data.appId,

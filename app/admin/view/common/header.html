@@ -99,7 +99,8 @@
                     <el-dropdown>
                         <el-link class="el-icon-user-solid" :underline="false">{$userInfo['user_name']}</el-link>
                         <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item>修改资料</el-dropdown-item>
+                            <el-dropdown-item onclick="location.href='/admin/user/updatemyinfo';">修改资料
+                            </el-dropdown-item>
                             <el-dropdown-item onclick="location.href='/admin/user/motifypassword';">修改密码
                             </el-dropdown-item>
                             <el-dropdown-item onclick="location.href='/admin/user/login';">退出登录</el-dropdown-item>

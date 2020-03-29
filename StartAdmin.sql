@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: 2020-03-28 17:48:28
+-- Generation Time: 2020-03-29 21:11:00
 -- 服务器版本： 5.7.28
 -- PHP Version: 7.3.9
 
@@ -130,8 +130,8 @@ CREATE TABLE `sa_conf` (
 --
 
 INSERT INTO `sa_conf` (`conf_id`, `conf_key`, `conf_value`, `conf_readonly`, `conf_desc`, `conf_int`, `conf_system`, `conf_status`, `conf_createtime`, `conf_updatetime`) VALUES
-(1, 'wechat_appid', '', 0, '微信ID', 0, 1, 0, 0, 1585379793),
-(2, 'wechat_appkey', '', 0, '微信密钥', 0, 1, 0, 0, 1585379806),
+(1, 'wechat_appid', '', 0, '微信ID', 0, 1, 0, 0, 0),
+(2, 'wechat_appkey', '', 0, '微信密钥', 0, 1, 0, 0, 0),
 (3, 'WECHAT_ACCESS_TOKEN', '', 1, 'AccessToken', 0, 1, 0, 0, 0),
 (4, 'WECHAT_JS_TICKET', '', 1, 'JsTicket', 0, 1, 0, 0, 0),
 (5, 'wxapp_appid', '', 0, '小程序APPID', 0, 1, 0, 0, 0),
@@ -369,7 +369,7 @@ CREATE TABLE `sa_user` (
 --
 
 INSERT INTO `sa_user` (`user_id`, `user_account`, `user_password`, `user_salt`, `user_name`, `user_idcard`, `user_truename`, `user_email`, `user_money`, `user_group`, `user_wechat`, `user_wxapp`, `user_qq`, `user_ipreg`, `user_status`, `user_createtime`, `user_updatetime`) VALUES
-(1, 'root', '0fe0388535ffefdc4c5a8cab7a80bb6917593731', 'ljTq', '超级管理员', '500000000000000000', '超级管理员', 'admin@hamm.cn', '12346.58', 1, 0, 0, 0, '127.0.0.1', 0, 0, 1575901928);
+(1, 'root', 'bb0ae052a4967ddc3bc18721bd971e093a2226bd', 'meDn', '超级管理员', '500000000000000000', '超级管理员', 'admin@hamm.cn', '12346.58', 1, 0, 0, 0, '127.0.0.1', 0, 0, 1575901928);
 
 -- --------------------------------------------------------
 
@@ -576,7 +576,7 @@ ALTER TABLE `sa_log`
 -- 使用表AUTO_INCREMENT `sa_node`
 --
 ALTER TABLE `sa_node`
-  MODIFY `node_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '功能ID', AUTO_INCREMENT=1105;
+  MODIFY `node_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '功能ID', AUTO_INCREMENT=1104;
 --
 -- 使用表AUTO_INCREMENT `sa_sms`
 --
@@ -586,7 +586,7 @@ ALTER TABLE `sa_sms`
 -- 使用表AUTO_INCREMENT `sa_user`
 --
 ALTER TABLE `sa_user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'UID', AUTO_INCREMENT=3;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'UID', AUTO_INCREMENT=2;
 --
 -- 使用表AUTO_INCREMENT `sa_wechat`
 --
