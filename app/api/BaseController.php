@@ -34,8 +34,16 @@ abstract class BaseController
     protected $insertFields = [];
     //添加时的必须字段
     protected $insertRequire = [];
-    //页码
-    protected $page = 1;
+    //excel查询字段 用来查询
+    protected $excelField = [
+        "id" => "编号",
+        "createtime" => "创建时间",
+        "updatetime" => "修改时间"
+    ];
+    //excel 表头
+    protected $excelTitle = "数据导出表";
+    //EXCEL 单元格字母
+    private $excelCells = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD'];
 
     //主键key
     protected $pk = '';
@@ -498,8 +506,140 @@ abstract class BaseController
         }
         return null;
     }
+    public function excel()
+    {
+        $map = [];
+        $map = [];
+        $filter = input();
+        foreach ($filter as $k => $v) {
+            if ($k == 'filter') {
+                $k = input('filter');
+                $v = input('keyword');
+            }
+            if ($v === '' || $v === null) {
+                continue;
+            }
+            if (array_key_exists($k, $this->searchFilter)) {
+                switch ($this->searchFilter[$k]) {
+                    case "like":
+                        array_push($map, [$k, 'like', "%" . $v . "%"]);
+                        break;
+                    case "=":
+                        array_push($map, [$k, '=', $v]);
+                        break;
+                    default:
+                }
+            }
+        }
+        $order = strtolower($this->controller) . "_id desc";
+        if (input('order')) {
+            $order = urldecode(input('order'));
+        }
+        if (input('per_page')) {
+            $this->thisModel->per_page = intval(input('per_page'));
+        }
+        $datalist = $this->thisModel->getList($map, $order);
+        $datalist = $datalist ? $datalist->toArray() : [];
+        $field = "";
+        $excelField = [];
+        foreach ($this->excelField as $k => $v) {
+            if ($k == "*") {
+                continue;
+            } else {
+                array_push($excelField, [
+                    $k, $v
+                ]);
+                if ($field) {
+                    $field .= "," . $this->table . "_" . $k;
+                } else {
+                    $field .= $this->table . "_" . $k;
+                }
+            }
+        }
+        $PHPExcel = new \PHPExcel(); //实例化
+
+        $PHPExcel
+            ->getProperties()  //获得文件属性对象，给下文提供设置资源  
+            ->setCreator("FuckAdmin")                 //设置文件的创建者  
+            ->setLastModifiedBy("FuckAdmin")          //设置最后修改者  
+            ->setDescription("Export by FuckAdmin"); //设置备注  
+
+        $PHPSheet = $PHPExcel->getActiveSheet();
+        $PHPSheet->setTitle($this->excelTitle); //给当前活动sheet设置名称
+
+        $PHPSheet->mergeCells('A1:' . $this->excelCells[count($excelField) - 1] . "1");
+        $PHPSheet->setCellValue('A1', $this->excelTitle);
+        $PHPSheet->getRowDimension(1)->setRowHeight(40);
+        $PHPSheet->getStyle('A1')->getFont()->setSize(18)->setBold(true); //字体大小
+
+        $PHPSheet->getStyle('A1')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);    //水平方向上对齐  
+        $PHPSheet->getStyle('A1')->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_CENTER);       //垂直方向上中间居中  
+        $PHPSheet->getStyle('A1')->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_CENTER);       //垂直方向上中间居中  
+
+        if (count($excelField) > count($this->excelCells)) {
+            echo 'Error and you need check Excel Cells Keys...';
+            die;
+        }
+        $PHPSheet->getRowDimension(2)->setRowHeight(30);
+        for ($column = 0; $column < count($excelField); $column++) {
+            $PHPSheet->setCellValue($this->excelCells[$column] . "2", $excelField[$column][1]);
+            $PHPSheet->getStyle($this->excelCells[$column])->getNumberFormat()
+                ->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+            for ($line = 0; $line < count($datalist); $line++) {
+                $string = $datalist[$line][$this->table . "_" . $excelField[$column][0]];
+                switch ($excelField[$column][0]) {
+                    case 'createtime':
+                    case 'updatetime':
+                        $PHPSheet->getColumnDimension($this->excelCells[$column])->setWidth(25);
+                        $PHPSheet->setCellValue($this->excelCells[$column] . ($line + 3), date('Y-m-d H:i:s', $string));
+                        break;
+                    default:
+                        if ($column != 0) {
+                            $PHPSheet->getColumnDimension($this->excelCells[$column])->setWidth(20);
+                        }
+                        $PHPSheet->setCellValueExplicit($this->excelCells[$column] . ($line + 3), $string, \PHPExcel_Cell_DataType::TYPE_STRING);
+                }
+            }
+        }
+
+        //***********************画出单元格边框*****************************
+        $styleArray = array(
+            'borders' => array(
+                'inside' => array(
+                    'style' => \PHPExcel_Style_Border::BORDER_THIN, //细边框
+                    //'color' => array('argb' => 'FFFF0000'),
+                ),
+                'outline' => array(
+                    'style' => \PHPExcel_Style_Border::BORDER_THICK, //边框是粗的
+                    //'color' => array('argb' => 'FFFF0000'),
+                ),
+            ),
+        );
+        $PHPSheet->getStyle('A2:' . $this->excelCells[count($excelField) - 1] . (count(
+            $datalist
+        ) + 2))->applyFromArray($styleArray);
+        //***********************画出单元格边框结束*****************************
+
+        //设置全部居中对齐
+        $PHPSheet->getStyle('A1:' . $this->excelCells[count($excelField) - 1] . (count(
+            $datalist
+        ) + 2))->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER)->setVertical(\PHPExcel_Style_Alignment::VERTICAL_CENTER)->setVertical(\PHPExcel_Style_Alignment::VERTICAL_CENTER);
+        //设置全部字体
+        $PHPSheet->getStyle('A1:' . $this->excelCells[count($excelField) - 1] . (count(
+            $datalist
+        ) + 2))->getFont()->setName('微软雅黑');
+        //设置格式为文本
+        // $PHPSheet->getStyle('A1:' . $this->excelCells[count($excelField) - 1] . (count(
+        //     $datalist
+        // ) + 2))->getNumberFormat()
+        //     ->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+        $PHPWriter = \PHPExcel_IOFactory::createWriter($PHPExcel, "Excel2007"); //创建生成的格式
+        header('Content-Disposition: attachment;filename="' . $this->excelTitle . "_" . date('Y-m-d_H:i:s') . '.xlsx"'); //下载下来的表格名
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $PHPWriter->save("php://output"); //表示在$path路径下面生成demo.xlsx文件
+    }
     public function __call($method, $args)
     {
-        return jerr("API接口不存在", 404);
+        return jerr("API接口方法不存在", 404);
     }
 }

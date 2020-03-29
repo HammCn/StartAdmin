@@ -30,13 +30,24 @@ class User extends BaseController
             "user_account", "user_password", "user_name", "user_idcard", "user_email", "user_group", "user_truename"
         ];
         $this->insertRequire = [
+            'user_name' => "用户昵称必须填写",
             'user_account' => "用户帐号必须填写",
             'user_password' => "密码必须填写",
             'user_group' => "用户组必须填写",
         ];
         $this->updateRequire = [
+            'user_name' => "用户昵称必须填写",
             'user_account' => "用户帐号必须填写",
             'user_group' => "用户组必须填写",
+        ];
+        $this->excelField = [
+            "id" => "编号",
+            "account" => "帐号",
+            "name" => "昵称",
+            "idcard" => "身份证",
+            "email" => "邮箱",
+            "createtime" => "创建时间",
+            "updatetime" => "修改时间"
         ];
         $this->thisModel = new thisModel();
     }

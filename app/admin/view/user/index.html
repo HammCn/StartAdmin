@@ -39,6 +39,9 @@
             <el-form-item>
                 <el-button icon="el-icon-search" size="small" @click="getList">搜索</el-button>
             </el-form-item>
+            <el-form-item>
+                <el-button icon="el-icon-document-copy" size="small" @click="exports">导出</el-button>
+            </el-form-item>
         </div>
     </el-form>
     <el-table :data="dataList.data" @selection-change="changeSelection" v-loading="loading">
@@ -386,6 +389,16 @@
                             that.loading = false;
                             that.$message.error('服务器内部错误');
                         });
+                },
+                exports() {
+                    var that = this;
+                    var filters = { ...PostBase, ...that.form, ...that.search };
+                    var url = '/api/user/excel?';
+                    for (let key in filters) {
+                        url += key + "=" + filters[key] + "&";
+                    }
+                    window.open(url);
+                    that.$message.success('数据导出成功');
                 }
             }
         })
