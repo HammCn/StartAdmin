@@ -303,7 +303,7 @@ class System extends BaseController
         $imgData = $validateModel->getImg();
         $code = $validateModel->getCode();
         $time = time();
-        $token = sha1(sha1($code . (env('CAPTCHA_SALT') ?? 'StartAdmin') . $time) . $time);
+        $token = sha1(sha1($code . (env('SYSTEM_SALT') ?? 'StartAdmin') . $time) . $time);
         return jok('验证码生成成功', [
             'img' => $imgData,
             'time' => $time,

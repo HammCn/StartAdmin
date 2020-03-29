@@ -489,7 +489,7 @@ abstract class BaseController
         }
         $code = input('code');
         $time = input('time');
-        $token = sha1(sha1($code . (env('CAPTCHA_SALT') ?? 'StartAdmin') . $time) . $time);
+        $token = sha1(sha1($code . (env('SYSTEM_SALT') ?? 'StartAdmin') . $time) . $time);
         if ($token != input('token')) {
             return jerr("验证码错误，请重新输入");
         }

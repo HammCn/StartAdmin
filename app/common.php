@@ -1,8 +1,4 @@
 <?php
-//登录态有效期
-define("KEEP_LOGIN_STATUS", 86400 * 31);
-//验证码加密盐
-define("CAPTCHA_SALT", "Hamm.cn");
 //全局错误代码
 $GLOBALS['API_CODE_GLOBAL'] = [
     [
@@ -298,39 +294,6 @@ function is_mobile_request()
         return false;
 }
 /**
- * 移除指定key的数组元素并返回
- *
- * @param array 原数组
- * @param string 指定的key
- * @return void
- */
-function array_remove($arr, $key)
-{
-    if (!array_key_exists($key, $arr)) {
-        return $arr;
-    }
-    $keys = array_keys($arr);
-    $index = array_search($key, $keys);
-    if ($index !== FALSE) {
-        array_splice($arr, $index, 1);
-    }
-    return $arr;
-}
-function getArrFromString($query)
-{
-    try {
-        $queryParts = explode('&', $query);
-        $params = array();
-        foreach ($queryParts as $param) {
-            $item = explode('=', $param);
-            $params[$item[0]] = $item[1];
-        }
-        return $params;
-    } catch (Exception $e) {
-        return null;
-    }
-}
-/**
  * 是否是整数
  *
  * @param string 输入内容
@@ -348,7 +311,7 @@ function isInteger($input)
  */
 function getTicket($key)
 {
-    return sha1($key . "Hamm" . $key);
+    return sha1($key . (env('SYSTEM_SALT') ?? 'StartAdmin') . $key);
 }
 /**
  * CURL POST
