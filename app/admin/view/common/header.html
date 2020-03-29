@@ -42,6 +42,8 @@
     .el-header .title {
         font-size: 20px;
         font-weight: 500;
+        color: #fff;
+        text-decoration: none;
     }
 
     .el-header .topArea {
@@ -91,15 +93,16 @@
     <div id="app" v-cloak>
         <el-container>
             <el-header>
-                <span class="title">StartAdmin</span>
+                <el-link class="title" href="/admin" underline="false">StartAdmin</el-link>
                 <span class="topArea">
-                    <el-link :underline="false">消息管理</el-link>
+                    <!-- <el-link :underline="false">消息管理</el-link> -->
                     <el-dropdown>
-                        <el-link class="el-icon-user-solid" :underline="false">周杰伦</el-link>
+                        <el-link class="el-icon-user-solid" :underline="false">{$userInfo['user_name']}</el-link>
                         <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item>消息中心</el-dropdown-item>
                             <el-dropdown-item>修改资料</el-dropdown-item>
-                            <el-dropdown-item>退出登录</el-dropdown-item>
+                            <el-dropdown-item onclick="location.href='/admin/user/motifypassword';">修改密码
+                            </el-dropdown-item>
+                            <el-dropdown-item onclick="location.href='/admin/user/login';">退出登录</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
                 </span>

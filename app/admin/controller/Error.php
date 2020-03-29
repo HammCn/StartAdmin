@@ -9,6 +9,9 @@ class Error extends BaseController
 {
     public function __call($method, $args)
     {
+        if (strtolower($this->request->controller()) == 'user' && $method == 'login') {
+            cookie('access_token', null);
+        }
         if (file_exists(app_path() . "/view/" . strtolower($this->request->controller()) . "/" . $method . ".html")) {
             if (key_exists('callback', $args)) {
                 View::assign('callback', $args['callback']);

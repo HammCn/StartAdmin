@@ -77,16 +77,18 @@ class User extends BaseModel
     /**
      * 重置密码
      *
-     * @param string 帐号
+     * @param string UID
      * @param string 密码
      * @return void
      */
-    public function resetPassword($phone, $password)
+    public function motifyPassword($user_id, $password)
     {
+        $access = new Access();
+        $access->where('access_user', $user_id)->delete();
         $salt = getRandString(4);
         $password = encodePassword($password, $salt);
         return $this->where([
-            "user_account" => $phone
+            "user_id" => $user_id
         ])->update([
             "user_password" => $password,
             "user_salt" => $salt,

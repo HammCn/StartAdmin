@@ -4,7 +4,7 @@ namespace app\api\controller;
 
 use think\App;
 use app\api\BaseController;
-use app\model\User as UserModel;
+use app\model\User as thisModel;
 use app\model\Sms as SmsModel;
 
 class User extends BaseController
@@ -38,7 +38,7 @@ class User extends BaseController
             'user_account' => "用户帐号必须填写",
             'user_group' => "用户组必须填写",
         ];
-        $this->thisModel = new UserModel();
+        $this->thisModel = new thisModel();
     }
     public function add()
     {
@@ -481,6 +481,79 @@ class User extends BaseController
             $result = $this->thisModel->reg($phone, $password, $name);
             if ($result) {
                 return jok("用户注册成功");
+            } else {
+                return jerr("注册失败，请重试！");
+            }
+        } else {
+            return jerr("短信验证码已过期，请重新获取");
+        }
+    }
+    public function motifyPassword()
+    {
+        $error = $this->checkVersion();
+        if ($error) {
+            return $error;
+        }
+        $error = $this->checkLogin();
+        if ($error) {
+            return $error;
+        }
+        $error = $this->checkAccess();
+        if ($error) {
+            return $error;
+        }
+        if (!input("oldPassword")) {
+            return jerr("你必须要输入你的原密码！");
+        }
+        if (!input("newPassword")) {
+            return jerr("你必须输入一个新的密码！");
+        }
+        $old_password = input("oldPassword");
+        $new_password = input("newPassword");
+        if (strlen($new_password) < 6 || strlen($new_password) > 16) {
+            return jerr("新密码因为6-16位！");
+        }
+        if ($this->user['user_password'] != encodePassword($old_password, $this->user['user_salt'])) {
+            return jerr("原密码输入不正确，请重试！");
+        }
+        $result = $this->thisModel->motifyPassword($this->user['user_id'], $new_password);
+        if ($result) {
+            return jok("密码已重置，请使用新密码登录");
+        } else {
+            return jerr("注册失败，请重试！");
+        }
+    }
+
+    /**
+     * 重置密码
+     *
+     * @return void
+     */
+    public function resetPassword()
+    {
+        if (!input("phone")) {
+            return jerr("手机号不能为空！");
+        }
+        if (!input("code")) {
+            return jerr("短信验证码不能为空！");
+        }
+        if (!input("password")) {
+            return jerr("密码不能为空！");
+        }
+        $phone = input("phone");
+        $code = input("code");
+        $password = input("password");
+        $smsModel = new SmsModel();
+        if ($smsModel->validSmsCode($phone, $code)) {
+            $user = $this->thisModel->where([
+                "user_account" => $phone
+            ])->find();
+            if (!$user) {
+                return jerr("该手机号尚未注册！");
+            }
+            $result = $this->thisModel->motifyPassword($user['user_id'], $password);
+            if ($result) {
+                return jok("密码已重置，请使用新密码登录");
             } else {
                 return jerr("注册失败，请重试！");
             }
