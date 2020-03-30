@@ -96,8 +96,8 @@
 
     <!-- 添加框 -->
     <el-dialog title="添加节点" :visible.sync="dialogFormAdd" :modal-append-to-body='false'>
-        <el-form>
-            <el-form-item label="节点名称" :label-width="formLabelWidth">
+        <el-form :model="formAdd" status-icon :rules="rules" ref="formAdd">
+            <el-form-item label="节点名称" :label-width="formLabelWidth" prop="node_title">
                 <el-input size="medium" autocomplete="off" v-model="formAdd.node_title"></el-input>
             </el-form-item>
             <el-form-item label="节点描述" :label-width="formLabelWidth">
@@ -106,13 +106,13 @@
             <el-form-item label="节点图标" :label-width="formLabelWidth">
                 <el-input size="medium" autocomplete="off" v-model="formAdd.node_icon"></el-input>
             </el-form-item>
-            <el-form-item label="所属模块" :label-width="formLabelWidth">
+            <el-form-item label="所属模块" :label-width="formLabelWidth" prop="node_module">
                 <el-input size="medium" autocomplete="off" v-model="formAdd.node_module"></el-input>
             </el-form-item>
-            <el-form-item label="控制器" :label-width="formLabelWidth">
+            <el-form-item label="控制器" :label-width="formLabelWidth" prop="node_controller">
                 <el-input size="medium" autocomplete="off" v-model="formAdd.node_controller"></el-input>
             </el-form-item>
-            <el-form-item label="方法" :label-width="formLabelWidth">
+            <el-form-item label="方法" :label-width="formLabelWidth" prop="node_action">
                 <el-input size="medium" autocomplete="off" v-model="formAdd.node_action"></el-input>
             </el-form-item>
             <el-form-item label="是否显示" :label-width="formLabelWidth">
@@ -127,7 +127,7 @@
                     </el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="显示顺序" :label-width="formLabelWidth">
+            <el-form-item label="显示顺序" :label-width="formLabelWidth" prop="node_order">
                 <el-input size="medium" autocomplete="off" v-model="formAdd.node_order"></el-input>
             </el-form-item>
         </el-form>
@@ -137,8 +137,8 @@
     </el-dialog>
     <!-- 修改框 -->
     <el-dialog title="修改节点" :visible.sync="dialogFormEdit" :modal-append-to-body='false'>
-        <el-form>
-            <el-form-item label="节点名称" :label-width="formLabelWidth">
+        <el-form :model="formEdit" status-icon :rules="rules" ref="formEdit">
+            <el-form-item label="节点名称" :label-width="formLabelWidth" prop="node_title">
                 <el-input size="medium" autocomplete="off" v-model="formEdit.node_title"></el-input>
             </el-form-item>
             <el-form-item label="节点描述" :label-width="formLabelWidth">
@@ -147,13 +147,13 @@
             <el-form-item label="节点图标" :label-width="formLabelWidth">
                 <el-input size="medium" autocomplete="off" v-model="formEdit.node_icon"></el-input>
             </el-form-item>
-            <el-form-item label="所属模块" :label-width="formLabelWidth">
+            <el-form-item label="所属模块" :label-width="formLabelWidth" prop="node_module">
                 <el-input size="medium" autocomplete="off" v-model="formEdit.node_module"></el-input>
             </el-form-item>
-            <el-form-item label="控制器" :label-width="formLabelWidth">
+            <el-form-item label="控制器" :label-width="formLabelWidth" prop="node_controller">
                 <el-input size="medium" autocomplete="off" v-model="formEdit.node_controller"></el-input>
             </el-form-item>
-            <el-form-item label="方法" :label-width="formLabelWidth">
+            <el-form-item label="方法" :label-width="formLabelWidth" prop="node_action">
                 <el-input size="medium" autocomplete="off" v-model="formEdit.node_action"></el-input>
             </el-form-item>
             <el-form-item label="是否显示" :label-width="formLabelWidth">
@@ -168,7 +168,7 @@
                     </el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="显示顺序" :label-width="formLabelWidth">
+            <el-form-item label="显示顺序" :label-width="formLabelWidth" prop="node_order">
                 <el-input size="medium" autocomplete="off" v-model="formEdit.node_order"></el-input>
             </el-form-item>
         </el-form>
@@ -227,6 +227,23 @@
                         node_readonly: 0,
                         node_pid: 0,
                     },
+                    rules: {
+                        node_title: [
+                            { required: true, message: '节点名称必须填写', trigger: 'blur' },
+                        ],
+                        node_controller: [
+                            { required: true, pattern: /^[a-z]+$/, message: '控制器为有效小写字母', trigger: 'blur' },
+                        ],
+                        node_module: [
+                            { required: true, pattern: /^[a-z]+$/, message: '模块名为有效小写字母', trigger: 'blur' },
+                        ],
+                        node_action: [
+                            { required: true, pattern: /^[a-z]+$/, message: '方法名为有效小写字母', trigger: 'blur' },
+                        ],
+                        node_order: [
+                            { required: true, pattern: /^\d$/, message: '顺序为有效自然数', trigger: 'blur' },
+                        ],
+                    }
                 }
             },
             methods: {

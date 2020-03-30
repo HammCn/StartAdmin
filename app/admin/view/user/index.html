@@ -86,20 +86,20 @@
 
     <!-- 添加框 -->
     <el-dialog title="添加用户" :visible.sync="dialogFormAdd" :modal-append-to-body='false'>
-        <el-form>
-            <el-form-item label="帐号" :label-width="formLabelWidth">
+        <el-form :model="formAdd" status-icon :rules="rules" ref="formAdd">
+            <el-form-item label="帐号" :label-width="formLabelWidth" prop="user_account">
                 <el-input size="medium" autocomplete="off" v-model="formAdd.user_account"></el-input>
             </el-form-item>
-            <el-form-item label="密码" :label-width="formLabelWidth">
+            <el-form-item label="密码" :label-width="formLabelWidth" prop="user_password">
                 <el-input size="medium" autocomplete="off" v-model="formAdd.user_password"></el-input>
             </el-form-item>
-            <el-form-item label="昵称" :label-width="formLabelWidth">
+            <el-form-item label="昵称" :label-width="formLabelWidth" prop="user_name">
                 <el-input size="medium" autocomplete="off" v-model="formAdd.user_name"></el-input>
             </el-form-item>
-            <el-form-item label="邮箱" :label-width="formLabelWidth">
+            <el-form-item label="邮箱" :label-width="formLabelWidth" prop="user_email">
                 <el-input size="medium" autocomplete="off" v-model="formAdd.user_email"></el-input>
             </el-form-item>
-            <el-form-item label="身份证" :label-width="formLabelWidth">
+            <el-form-item label="身份证" :label-width="formLabelWidth" prop="user_idcard">
                 <el-input size="medium" autocomplete="off" v-model="formAdd.user_idcard"></el-input>
             </el-form-item>
             <el-form-item label="真实姓名" :label-width="formLabelWidth">
@@ -118,17 +118,17 @@
     </el-dialog>
     <!-- 修改框 -->
     <el-dialog title="修改用户" :visible.sync="dialogFormEdit" :modal-append-to-body='false'>
-        <el-form>
-            <el-form-item label="帐号" :label-width="formLabelWidth">
+        <el-form :model="formEdit" status-icon :rules="rules" ref="formEdit">
+            <el-form-item label="帐号" :label-width="formLabelWidth" prop="user_account">
                 <el-input size="medium" autocomplete="off" v-model="formEdit.user_account"></el-input>
             </el-form-item>
-            <el-form-item label="昵称" :label-width="formLabelWidth">
+            <el-form-item label="昵称" :label-width="formLabelWidth" prop="user_name">
                 <el-input size="medium" autocomplete="off" v-model="formEdit.user_name"></el-input>
             </el-form-item>
-            <el-form-item label="邮箱" :label-width="formLabelWidth">
+            <el-form-item label="邮箱" :label-width="formLabelWidth" prop="user_email">
                 <el-input size="medium" autocomplete="off" v-model="formEdit.user_email"></el-input>
             </el-form-item>
-            <el-form-item label="身份证" :label-width="formLabelWidth">
+            <el-form-item label="身份证" :label-width="formLabelWidth" prop="user_idcard">
                 <el-input size="medium" autocomplete="off" v-model="formEdit.user_idcard"></el-input>
             </el-form-item>
             <el-form-item label="真实姓名" :label-width="formLabelWidth">
@@ -175,6 +175,23 @@
                     formEdit: {
                         user_group: 3
                     },
+                    rules: {
+                        user_account: [
+                            { required: true, pattern: /^1[3456789]\d{9}$/, message: '请输入一个有效的手机号', trigger: 'blur' },
+                        ],
+                        user_name: [
+                            { required: true, message: '昵称必须填写', trigger: 'blur' },
+                        ],
+                        user_password: [
+                            { required: true, pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,16}$/, message: '密码必须包含大小写字母和数字(6-16位)', trigger: 'blur' },
+                        ],
+                        user_email: [
+                            { pattern: /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/, message: '邮箱格式不正确', trigger: 'blur' },
+                        ],
+                        user_idcard: [
+                            { pattern: /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/, message: '身份证格式不正确', trigger: 'blur' },
+                        ],
+                    }
                 }
             },
             methods: {
@@ -224,45 +241,57 @@
                 },
                 postEdit() {
                     var that = this;
-                    axios.post('/api/user/update', {
-                        ...PostBase, ...that.formEdit
-                    })
-                        .then(function (response) {
-                            that.getList();
-                            if (response.data.code == CODE_SUCCESS) {
-                                that.$message({
-                                    message: response.data.msg,
-                                    type: 'success'
-                                });
-                                that.dialogFormEdit = false;
-                            } else {
-                                that.$message.error(response.data.msg);
-                            }
+                    that.$refs['formEdit'].validate((valid) => {
+                        if (!valid) {
+                            that.$message.error('仔细检查检查，是不是有个地方写得不对？');
+                            return;
+                        }
+                        axios.post('/api/user/update', {
+                            ...PostBase, ...that.formEdit
                         })
-                        .catch(function (error) {
-                            that.$message.error('服务器内部错误');
-                        });
+                            .then(function (response) {
+                                that.getList();
+                                if (response.data.code == CODE_SUCCESS) {
+                                    that.$message({
+                                        message: response.data.msg,
+                                        type: 'success'
+                                    });
+                                    that.dialogFormEdit = false;
+                                } else {
+                                    that.$message.error(response.data.msg);
+                                }
+                            })
+                            .catch(function (error) {
+                                that.$message.error('服务器内部错误');
+                            });
+                    });
                 },
                 postAdd() {
                     var that = this;
-                    axios.post('/api/user/add', {
-                        ...PostBase, ...that.formAdd
-                    })
-                        .then(function (response) {
-                            that.getList();
-                            if (response.data.code == CODE_SUCCESS) {
-                                that.$message({
-                                    message: response.data.msg,
-                                    type: 'success'
-                                });
-                                that.dialogFormAdd = false;
-                            } else {
-                                that.$message.error(response.data.msg);
-                            }
+                    that.$refs['formAdd'].validate((valid) => {
+                        if (!valid) {
+                            that.$message.error('仔细检查检查，是不是有个地方写得不对？');
+                            return;
+                        }
+                        axios.post('/api/user/add', {
+                            ...PostBase, ...that.formAdd
                         })
-                        .catch(function (error) {
-                            that.$message.error('服务器内部错误');
-                        });
+                            .then(function (response) {
+                                that.getList();
+                                if (response.data.code == CODE_SUCCESS) {
+                                    that.$message({
+                                        message: response.data.msg,
+                                        type: 'success'
+                                    });
+                                    that.dialogFormAdd = false;
+                                } else {
+                                    that.$message.error(response.data.msg);
+                                }
+                            })
+                            .catch(function (error) {
+                                that.$message.error('服务器内部错误');
+                            });
+                    });
                 },
                 clickAdd() {
                     var that = this;

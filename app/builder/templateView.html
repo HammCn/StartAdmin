@@ -67,7 +67,7 @@
             tmp_add
         </el-form>
         <div slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="postAdd('formAdd')">确认添加</el-button>
+            <el-button type="primary" @click="postAdd()">确认添加</el-button>
         </div>
     </el-dialog>
     <!-- 修改框 -->
@@ -76,7 +76,7 @@
             tmp_update
         </el-form>
         <div slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="postEdit('formEdit')">确认修改</el-button>
+            <el-button type="primary" @click="postEdit()">确认修改</el-button>
         </div>
     </el-dialog>
 
@@ -155,9 +155,9 @@
                         that.selectList.push(list[index].tmp_controller_id);
                     }
                 },
-                postEdit(formName) {
+                postEdit() {
                     var that = this;
-                    that.$refs[formName].validate((valid) => {
+                    that.$refs["formEdit"].validate((valid) => {
                         if (valid) {
                             axios.post('/api/tmp_controller/update', {
                                 ...PostBase, ...that.formEdit
@@ -180,9 +180,9 @@
                         }
                     });
                 },
-                postAdd(formName) {
+                postAdd() {
                     var that = this;
-                    that.$refs[formName].validate((valid) => {
+                    that.$refs['formAdd'].validate((valid) => {
                         if (valid) {
                             axios.post('/api/tmp_controller/add', {
                                 ...PostBase, ...that.formAdd

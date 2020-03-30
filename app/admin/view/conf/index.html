@@ -90,8 +90,8 @@
 
     <!-- 添加框 -->
     <el-dialog title="添加配置" :visible.sync="dialogFormAdd" :modal-append-to-body='false'>
-        <el-form>
-            <el-form-item label="配置名称" :label-width="formLabelWidth">
+        <el-form :model="formAdd" status-icon :rules="rules" ref="formAdd">
+            <el-form-item label="配置名称" :label-width="formLabelWidth" prop="conf_key">
                 <el-input size="medium" autocomplete="off" v-model="formAdd.conf_key"></el-input>
             </el-form-item>
             <el-form-item label="配置内容" :label-width="formLabelWidth">
@@ -114,8 +114,8 @@
     </el-dialog>
     <!-- 修改框 -->
     <el-dialog title="修改配置" :visible.sync="dialogFormEdit" :modal-append-to-body='false'>
-        <el-form>
-            <el-form-item label="配置名称" :label-width="formLabelWidth">
+        <el-form :model="formEdit" status-icon :rules="rules" ref="formEdit">
+            <el-form-item label="配置名称" :label-width="formLabelWidth" prop="conf_key">
                 <el-input size="medium" autocomplete="off" v-model="formEdit.conf_key"></el-input>
             </el-form-item>
             <el-form-item label="配置内容" :label-width="formLabelWidth">
@@ -175,6 +175,11 @@
                     formEdit: {
                         conf_readonly: 0
                     },
+                    rules: {
+                        conf_key: [
+                            { required: true, message: '配置名称必须填写', trigger: 'blur' },
+                        ],
+                    }
                 }
             },
             methods: {
@@ -224,45 +229,57 @@
                 },
                 postEdit() {
                     var that = this;
-                    axios.post('/api/conf/update', {
-                        ...PostBase, ...that.formEdit
-                    })
-                        .then(function (response) {
-                            that.getList();
-                            if (response.data.code == CODE_SUCCESS) {
-                                that.$message({
-                                    message: response.data.msg,
-                                    type: 'success'
-                                });
-                                that.dialogFormEdit = false;
-                            } else {
-                                that.$message.error(response.data.msg);
-                            }
+                    that.$refs['formEdit'].validate((valid) => {
+                        if (!valid) {
+                            that.$message.error('仔细检查检查，是不是有个地方写得不对？');
+                            return;
+                        }
+                        axios.post('/api/conf/update', {
+                            ...PostBase, ...that.formEdit
                         })
-                        .catch(function (error) {
-                            that.$message.error('服务器内部错误');
-                        });
+                            .then(function (response) {
+                                that.getList();
+                                if (response.data.code == CODE_SUCCESS) {
+                                    that.$message({
+                                        message: response.data.msg,
+                                        type: 'success'
+                                    });
+                                    that.dialogFormEdit = false;
+                                } else {
+                                    that.$message.error(response.data.msg);
+                                }
+                            })
+                            .catch(function (error) {
+                                that.$message.error('服务器内部错误');
+                            });
+                    });
                 },
                 postAdd() {
                     var that = this;
-                    axios.post('/api/conf/add', {
-                        ...PostBase, ...that.formAdd
-                    })
-                        .then(function (response) {
-                            that.getList();
-                            if (response.data.code == CODE_SUCCESS) {
-                                that.$message({
-                                    message: response.data.msg,
-                                    type: 'success'
-                                });
-                                that.dialogFormAdd = false;
-                            } else {
-                                that.$message.error(response.data.msg);
-                            }
+                    that.$refs['formAdd'].validate((valid) => {
+                        if (!valid) {
+                            that.$message.error('仔细检查检查，是不是有个地方写得不对？');
+                            return;
+                        }
+                        axios.post('/api/conf/add', {
+                            ...PostBase, ...that.formAdd
                         })
-                        .catch(function (error) {
-                            that.$message.error('服务器内部错误');
-                        });
+                            .then(function (response) {
+                                that.getList();
+                                if (response.data.code == CODE_SUCCESS) {
+                                    that.$message({
+                                        message: response.data.msg,
+                                        type: 'success'
+                                    });
+                                    that.dialogFormAdd = false;
+                                } else {
+                                    that.$message.error(response.data.msg);
+                                }
+                            })
+                            .catch(function (error) {
+                                that.$message.error('服务器内部错误');
+                            });
+                    });
                 },
                 clickAdd() {
                     var that = this;

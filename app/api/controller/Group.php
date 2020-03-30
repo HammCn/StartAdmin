@@ -23,10 +23,10 @@ class Group extends BaseController
             "group_name", "group_desc"
         ];
         $this->insertRequire = [
-            'group_name' => "組名稱必須填寫"
+            'group_name' => "组名称必須填寫"
         ];
         $this->updateRequire = [
-            'group_name' => "組名稱必須填寫"
+            'group_name' => "组名称必須填寫"
         ];
         $this->thisModel = new GroupModel();
     }
