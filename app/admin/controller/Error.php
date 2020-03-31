@@ -20,6 +20,7 @@ class Error extends BaseController
             }
             return View::fetch();
         } else {
+            echo app_path() . "/view/" . strtolower($this->request->controller()) . "/" . strtolower($method) . ".html");die;
             return 404;
         }
     }
