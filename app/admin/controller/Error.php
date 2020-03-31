@@ -12,15 +12,11 @@ class Error extends BaseController
         if (strtolower($this->request->controller()) == 'user' && strtolower($method) == 'login') {
             cookie('access_token', null);
         }
-        if (file_exists(app_path() . "view/" . strtolower($this->request->controller()) . "/" . strtolower($method) . ".html")) {
-            if (key_exists('callback', $args)) {
-                View::assign('callback', $args['callback']);
-            } else {
-                View::assign('callback', '/admin');
-            }
-            return View::fetch();
+        if (key_exists('callback', $args)) {
+            View::assign('callback', $args['callback']);
         } else {
-            return 404;
+            View::assign('callback', '/admin');
         }
+        return View::fetch();
     }
 }
