@@ -46,6 +46,11 @@
                 </el-popover>
             </template>
         </el-table-column>
+        <el-table-column label="访问时间" width="200">
+            <template slot-scope="scope">
+                {{time2string(scope.row.log_createtime)}}
+            </template>
+        </el-table-column>
         <el-table-column label="操作" width="100">
             <template slot-scope="scope">
                 <el-link type="danger" @click="clickDelete(scope.row)" :underline="false"><i
@@ -84,6 +89,13 @@
                 }
             },
             methods: {
+                time2string(timestamps, formatStr = 'MM-dd hh:mm') {
+                    var now = new Date(timestamps * 1000),
+                        y = now.getFullYear(),
+                        m = now.getMonth() + 1,
+                        d = now.getDate();
+                    return y + "-" + (m < 10 ? "0" + m : m) + "-" + (d < 10 ? "0" + d : d) + " " + now.toTimeString().substr(0, 8);
+                },
                 handleSizeChange(per_page) {
                     this.form.per_page = per_page;
                     this.getList();
