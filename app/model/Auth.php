@@ -84,7 +84,6 @@ class Auth extends BaseModel
         if ($group_id == 1) {
             return $NodeModel
                 ->where([
-                    // "node_module"   =>  "admin",
                     "node_pid"   =>  $node_id,
                     "node_show"   =>  1
                 ])
@@ -96,7 +95,6 @@ class Auth extends BaseModel
                 ->view('node', '*')
                 ->view('auth', '*', 'node.node_id=auth.auth_node', 'left')
                 ->where([
-                    // "node_module"   =>  "admin",
                     "node_pid"   =>  $node_id,
                     "node_show"   =>  1,
                     "auth_group"    => $group_id
