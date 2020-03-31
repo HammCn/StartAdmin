@@ -10,6 +10,7 @@ class Service extends BaseController
     protected $wechat;
     public function index()
     {
+        $this->getWechatConfig();
         $postStr = file_get_contents("php://input");
         if (!empty($postStr)) {
             $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);

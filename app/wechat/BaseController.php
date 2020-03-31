@@ -63,12 +63,19 @@ abstract class BaseController
             $c[$config['conf_key']] = $config['conf_value'];
         }
         config($c, 'startadmin');
+    }    
+    /**
+     * 初始化微信的相关配置
+     *
+     * @return void
+     */
+    protected function getWechatConfig()
+    {
         $this->wechat_appid = config("startadmin.wechat_appid");
         $this->wechat_appkey = config("startadmin.wechat_appkey");
         if (!$this->wechat_appid || !$this->wechat_appkey) {
             die('Input wechat appid and appkey first!');
         }
-        $this->access_token = $this->confModel->getAccessToken();
     }
     /**
      * 调用微信授权
@@ -77,6 +84,8 @@ abstract class BaseController
      */
     protected function authorize()
     {
+        $this->getWechatConfig();
+        $this->access_token = $this->confModel->getAccessToken();
         $wechat_id = cookie('wechat_id');
         $wechat_ticket = cookie('wechat_ticket');
         if ($wechat_ticket == getTicket($wechat_id)) {
