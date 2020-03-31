@@ -1,6 +1,8 @@
 <p align="center">
 <img width="400" src="https://images.gitee.com/uploads/images/2020/0401/021130_0f534901_145025.png"/>
 </p>
+<p align="center">
+
 <img src="https://svg.hamm.cn?key=gitee&value=star&project=hamm/StartAdmin">
 <img src="https://svg.hamm.cn?key=gitee&value=fork&project=hamm/StartAdmin">
 <img src="https://svg.hamm.cn?key=gitee&value=watch&project=hamm/StartAdmin">
@@ -8,6 +10,8 @@
 <img src="https://svg.hamm.cn/?key=框架&value=ThinkPHP6"/>
 <img src="https://svg.hamm.cn/?key=数据库&value=MySQL5.5+"/>
 <img src="https://svg.hamm.cn/?key=运行时&value=PHP7.1+"/>
+
+</p>
 
 ### 介绍
 
@@ -54,3 +58,6 @@ Vue.js / ElementUI / WeUI / ThinkPHP6
 4. 新建 Pull Request
 ```
 ### 晒个截图
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0401/021330_e8b2482f_145025.png "截屏2020-04-0101.36.11.png")
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0401/021415_b9ec454e_145025.png "截屏2020-04-0101.38.26.png")
