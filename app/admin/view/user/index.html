@@ -91,7 +91,8 @@
                 <el-input size="medium" autocomplete="off" v-model="formAdd.user_account"></el-input>
             </el-form-item>
             <el-form-item label="密码" :label-width="formLabelWidth" prop="user_password">
-                <el-input size="medium" autocomplete="off" v-model="formAdd.user_password"></el-input>
+                <el-input size="medium" show-password="true" autocomplete="off" v-model="formAdd.user_password">
+                </el-input>
             </el-form-item>
             <el-form-item label="昵称" :label-width="formLabelWidth" prop="user_name">
                 <el-input size="medium" autocomplete="off" v-model="formAdd.user_name"></el-input>
@@ -121,6 +122,11 @@
         <el-form :model="formEdit" status-icon :rules="rules" ref="formEdit">
             <el-form-item label="帐号" :label-width="formLabelWidth" prop="user_account">
                 <el-input size="medium" autocomplete="off" v-model="formEdit.user_account"></el-input>
+            </el-form-item>
+            <el-form-item label="密码" :label-width="formLabelWidth" prop="new_password">
+                <el-input size="medium" show-password="true" autocomplete="off" v-model="formEdit.new_password"
+                    placeholder="不修改请留空">
+                </el-input>
             </el-form-item>
             <el-form-item label="昵称" :label-width="formLabelWidth" prop="user_name">
                 <el-input size="medium" autocomplete="off" v-model="formEdit.user_name"></el-input>
@@ -184,6 +190,9 @@
                         ],
                         user_password: [
                             { required: true, pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,16}$/, message: '密码必须包含大小写字母和数字(6-16位)', trigger: 'blur' },
+                        ],
+                        new_password: [
+                            { pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,16}$/, message: '密码必须包含大小写字母和数字(6-16位)', trigger: 'blur' },
                         ],
                         user_email: [
                             { pattern: /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/, message: '邮箱格式不正确', trigger: 'blur' },

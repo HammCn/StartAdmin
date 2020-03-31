@@ -40,9 +40,11 @@ class Auth extends BaseModel
         $NodeModel = new NodeModel();
         if ($group_id == 1) {
             $list =  $NodeModel
+                ->view('node', '*')
+                ->view('auth', '*', 'node.node_id=auth.auth_node', 'left')
                 ->where([
                     "node_pid"   =>  0,
-                    "node_show"   =>  1
+                    "node_show"   =>  1,
                 ])
                 ->order("node_order desc,node_id asc")
                 ->select();
@@ -51,16 +53,14 @@ class Auth extends BaseModel
             }
             return $list;
         } else {
-            $join = [
-                ["auth auth", "node.node_id=auth.auth_node"]
-            ];
             $list = $NodeModel
                 ->alias("node")
-                ->join($join)
+                ->view('node', '*')
+                ->view('auth', '*', 'node.node_id=auth.auth_node', 'left')
                 ->where([
                     "node_pid"   =>  0,
                     "node_show"   =>  1,
-                    "auth_group"    =>$group_id
+                    "auth_group"    => $group_id
                 ])
                 ->order("node_order desc,node_id asc")
                 ->select();
@@ -91,16 +91,15 @@ class Auth extends BaseModel
                 ->order("node_order desc,node_id asc")
                 ->select();
         } else {
-            $join = [
-                ["auth auth", "node.node_id=auth.auth_node"]
-            ];
             return $NodeModel
                 ->alias("node")
-                ->join($join)
+                ->view('node', '*')
+                ->view('auth', '*', 'node.node_id=auth.auth_node', 'left')
                 ->where([
                     // "node_module"   =>  "admin",
                     "node_pid"   =>  $node_id,
-                    "node_show"   =>  1
+                    "node_show"   =>  1,
+                    "auth_group"    => $group_id
                 ])
                 ->order("node_order desc,node_id asc")
                 ->select();

@@ -134,12 +134,10 @@ class User extends BaseController
         if ($user && $user[$this->pk] != $item[$this->pk]) {
             return jerr("帐号已存在，请重新输入");
         }
-        if (empty($data[$this->table . "_password"])) {
-            unset($data[$this->table . "_password"]);
-        } else {
+        if (input('new_password')) {
             //设置密码
             $salt = getRandString(4);
-            $password = $data[$this->table . "_password"];
+            $password = input('new_password');
             $password = encodePassword($password, $salt);
             $data[$this->table . "_salt"] = $salt;
             $data[$this->table . "_password"] = $password;
