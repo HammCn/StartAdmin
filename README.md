@@ -1,4 +1,6 @@
-# StartAdmin
+<p align="center">
+<img width="400" src="https://images.gitee.com/uploads/images/2020/0401/021130_0f534901_145025.png"/>
+</p>
 <img src="https://svg.hamm.cn?key=gitee&value=star&project=hamm/StartAdmin">
 <img src="https://svg.hamm.cn?key=gitee&value=fork&project=hamm/StartAdmin">
 <img src="https://svg.hamm.cn?key=gitee&value=watch&project=hamm/StartAdmin">
@@ -19,7 +21,6 @@ Clone代码到运行目录，配置站点和ThinkPHP伪静态
 Composer install 
 Good Start!
 ```
-
 ### 配置说明
 ```
 LNMP环境：
