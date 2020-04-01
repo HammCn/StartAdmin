@@ -96,7 +96,12 @@ abstract class BaseController
         if (!($this->controller == "User" && in_array($this->action, ['login', 'resetPassword', 'reg']))) {
             $this->auth();
         }
-    }
+    }    
+    /**
+     * 后台简单的身份判断
+     *
+     * @return void
+     */
     protected function auth()
     {
         $access_token = cookie('access_token');
