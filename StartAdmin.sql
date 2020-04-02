@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: 2020-03-29 21:11:00
+-- Generation Time: 2020-04-03 03:38:46
 -- 服务器版本： 5.7.28
 -- PHP Version: 7.3.9
 
@@ -132,10 +132,10 @@ CREATE TABLE `sa_conf` (
 INSERT INTO `sa_conf` (`conf_id`, `conf_key`, `conf_value`, `conf_readonly`, `conf_desc`, `conf_int`, `conf_system`, `conf_status`, `conf_createtime`, `conf_updatetime`) VALUES
 (1, 'wechat_appid', '', 0, '微信ID', 0, 1, 0, 0, 0),
 (2, 'wechat_appkey', '', 0, '微信密钥', 0, 1, 0, 0, 0),
-(3, 'WECHAT_ACCESS_TOKEN', '', 1, 'AccessToken', 0, 1, 0, 0, 0),
-(4, 'WECHAT_JS_TICKET', '', 1, 'JsTicket', 0, 1, 0, 0, 0),
-(5, 'wxapp_appid', '', 0, '小程序APPID', 0, 1, 0, 0, 0),
-(6, 'wxapp_appkey', '', 0, '小程序SECRET', 0, 1, 0, 0, 0),
+(3, 'wechat_token', 'StartAdmin', 0, '微信TOKEN', 0, 1, 0, 0, 1585844226),
+(4, 'wechat_aes_key', 'StartAdmin', 0, '微信AES密钥', 0, 1, 0, 0, 1585844226),
+(11, 'weapp_appid', '', 0, '小程序APPID', 0, 1, 0, 0, 0),
+(12, 'weapp_appkey', '', 0, '小程序SECRET', 0, 1, 0, 0, 0),
 (36, 'app_name', 'StartAdmin', 0, '产品名称', 0, 1, 0, 0, 0),
 (37, 'iconfont', '//at.alicdn.com/t/font_666204_u6x6ssnn9sh.css', 0, '阿里图标', 0, 1, 0, 0, 0),
 (39, 'upload_max_file', '2097152', 0, '最大文件上传限制', 0, 1, 0, 0, 0),
@@ -319,7 +319,16 @@ INSERT INTO `sa_node` (`node_id`, `node_system`, `node_title`, `node_desc`, `nod
 (1100, 0, '微信发布自定义菜单接口', '', 'api', 'wemenu', 'publish', 4, 0, 1, '', NULL, 0, 1585323009, 1585323009),
 (1101, 1, '获取微信粉丝列表接口', '', 'api', 'wechat', 'getList', 4, 0, 1, '', NULL, 0, 0, 1575948484),
 (1102, 1, '禁用微信粉丝接口', '', 'api', 'wechat', 'disable', 4, 0, 1, '', NULL, 0, 0, 1575948484),
-(1103, 1, '启用微信粉丝接口', '', 'api', 'wechat', 'enable', 4, 0, 1, '', NULL, 0, 0, 1575948484);
+(1103, 1, '启用微信粉丝接口', '', 'api', 'wechat', 'enable', 4, 0, 1, '', NULL, 0, 0, 1575948484),
+(1104, 1, '用户导出Excel接口', '', 'api', 'user', 'excel', 4, 0, 1, '', NULL, 0, 0, 1575948484),
+(1113, 0, '获取小程序用户详情接口', '', 'api', 'weapp', 'detail', 4, 0, 1, '', NULL, 0, 1585854558, 1585854558),
+(1114, 0, '添加小程序用户接口', '', 'api', 'weapp', 'add', 4, 0, 1, '', NULL, 0, 1585854558, 1585854558),
+(1115, 0, '修改小程序用户接口', '', 'api', 'weapp', 'update', 4, 0, 1, '', NULL, 0, 1585854558, 1585854558),
+(1116, 0, '删除小程序用户接口', '', 'api', 'weapp', 'delete', 4, 0, 1, '', NULL, 0, 1585854558, 1585854558),
+(1117, 0, '禁用小程序用户接口', '', 'api', 'weapp', 'disable', 4, 0, 1, '', NULL, 0, 1585854558, 1585854558),
+(1118, 0, '启用小程序用户接口', '', 'api', 'weapp', 'enable', 4, 0, 1, '', NULL, 0, 1585854558, 1585854558),
+(1119, 0, '获取小程序用户列表接口', '', 'api', 'weapp', 'getList', 4, 0, 1, '', NULL, 0, 1585854558, 1585854558),
+(1120, 0, '小程序用户管理', '', 'admin', 'weapp', 'index', 0, 0, 1, '', NULL, 0, 1585854558, 1585854558);
 
 -- --------------------------------------------------------
 
@@ -374,6 +383,20 @@ INSERT INTO `sa_user` (`user_id`, `user_account`, `user_password`, `user_salt`, 
 -- --------------------------------------------------------
 
 --
+-- 表的结构 `sa_weapp`
+--
+
+CREATE TABLE `sa_weapp` (
+  `weapp_id` int(9) NOT NULL,
+  `weapp_openid` varchar(255) NOT NULL DEFAULT '' COMMENT 'OPENID',
+  `weapp_status` int(9) NOT NULL DEFAULT '0' COMMENT '状态',
+  `weapp_createtime` int(9) NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `weapp_updatetime` int(9) NOT NULL DEFAULT '0' COMMENT '修改时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='小程序用户表';
+
+-- --------------------------------------------------------
+
+--
 -- 表的结构 `sa_wechat`
 --
 
@@ -416,7 +439,7 @@ CREATE TABLE `sa_wemenu` (
 --
 
 INSERT INTO `sa_wemenu` (`wemenu_id`, `wemenu_name`, `wemenu_type`, `wemenu_url`, `wemenu_appid`, `wemenu_key`, `wemenu_page`, `wemenu_pid`, `wemenu_status`, `wemenu_createtime`, `wemenu_updatetime`) VALUES
-(5, '普通菜单', 'click', '', '', 'normal_menu', '', 0, 0, 1585325798, 1585327206),
+(5, '普通菜单', 'click', '', '', 'normal_menu', '', 0, 0, 1585325798, 1585567064),
 (6, '富媒体', 'click', '', '', 'media', '', 0, 0, 1585325806, 1585327224),
 (7, '高级菜单', 'click', '', '', 'system', '', 0, 0, 1585325814, 1585327395),
 (8, '点击菜单', 'click', '', '', 'click', '', 5, 0, 1585325831, 1585327202),
@@ -516,6 +539,12 @@ ALTER TABLE `sa_user`
   ADD KEY `admin_account` (`user_account`) USING BTREE;
 
 --
+-- Indexes for table `sa_weapp`
+--
+ALTER TABLE `sa_weapp`
+  ADD PRIMARY KEY (`weapp_id`);
+
+--
 -- Indexes for table `sa_wechat`
 --
 ALTER TABLE `sa_wechat`
@@ -561,7 +590,7 @@ ALTER TABLE `sa_code`
 -- 使用表AUTO_INCREMENT `sa_conf`
 --
 ALTER TABLE `sa_conf`
-  MODIFY `conf_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `conf_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 --
 -- 使用表AUTO_INCREMENT `sa_group`
 --
@@ -576,7 +605,7 @@ ALTER TABLE `sa_log`
 -- 使用表AUTO_INCREMENT `sa_node`
 --
 ALTER TABLE `sa_node`
-  MODIFY `node_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '功能ID', AUTO_INCREMENT=1104;
+  MODIFY `node_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '功能ID', AUTO_INCREMENT=1121;
 --
 -- 使用表AUTO_INCREMENT `sa_sms`
 --
@@ -587,6 +616,11 @@ ALTER TABLE `sa_sms`
 --
 ALTER TABLE `sa_user`
   MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'UID', AUTO_INCREMENT=2;
+--
+-- 使用表AUTO_INCREMENT `sa_weapp`
+--
+ALTER TABLE `sa_weapp`
+  MODIFY `weapp_id` int(9) NOT NULL AUTO_INCREMENT;
 --
 -- 使用表AUTO_INCREMENT `sa_wechat`
 --

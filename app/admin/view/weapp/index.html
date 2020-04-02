@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+    {include file="common/header"/}
+
+    <el-form :inline="true">
+        <el-form-item>
+            <el-button type="primary" icon="el-icon-edit" size="small" @click="clickAdd">添加</el-button>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="danger" icon="el-icon-delete" size="small" @click="postMultDelete">批量删除</el-button>
+        </el-form-item>
+        <div style="float:right">
+            <el-form-item style="width:120px;">
+                <el-select placeholder="筛选类别" size="small" v-model="search.filter">
+                    <el-option value="weapp_id" label="小程序用户ID">
+                    </el-option>
+                    
+            <el-option value="weapp_openid" label="OPENID">
+            </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item>
+                <el-input placeholder="输入关键词搜索" size="small" v-model="search.keyword"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button icon="el-icon-search" size="small" @click="getList">搜索</el-button>
+            </el-form-item>
+        </div>
+    </el-form>
+    <el-table :data="dataList.data" @selection-change="changeSelection" v-loading="loading">
+        <el-table-column type="selection" width="50">
+        </el-table-column>
+        <el-table-column prop="weapp_id" label="ID" width="60">
+        </el-table-column>
+        
+            <el-table-column prop="weapp_openid" label="OPENID">
+            </el-table-column>
+        <el-table-column label="禁用" width="80">
+            <template slot-scope="scope">
+                <el-switch v-model="scope.row.weapp_status==1?true:false" active-color="#ff4949"
+                    @change="clickStatus(scope.row)">
+                </el-switch>
+            </template>
+        </el-table-column>
+        <el-table-column label="操作" width="180">
+            <template slot-scope="scope">
+                <el-link type="info" @click="clickEdit(scope.row)" :underline="false"><i class="el-icon-edit"></i>编辑
+                </el-link>
+                <el-link type="danger" @click="clickDelete(scope.row)" :underline="false"><i
+                        class="el-icon-delete"></i>删除</el-link>
+            </template>
+        </el-table-column>
+
+    </el-table>
+
+
+    <el-pagination @size-change="handleSizeChange" :page-sizes="[10, 20, 50, 100,200,500]" :page-size="10"
+        layout="total, sizes, prev, pager, next, jumper" background @current-change="changeCurrentPage"
+        layout="prev, pager, next" :current-page="dataList.current_page" :page-count="dataList.last_page"
+        :total="dataList.total" :hide-on-single-page="true" style="margin-top: 10px;text-align: right;">
+    </el-pagination>
+
+
+
+    <!-- 添加框 -->
+    <el-dialog title="添加小程序用户信息" :visible.sync="dialogFormAdd" :modal-append-to-body='false'>
+        <el-form :model="formAdd" :rules="rules" ref="formAdd">
+            
+            <el-form-item prop="weapp_openid" label="OPENID" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formAdd.weapp_openid"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="postAdd()">确认添加</el-button>
+        </div>
+    </el-dialog>
+    <!-- 修改框 -->
+    <el-dialog title="修改小程序用户信息" :visible.sync="dialogFormEdit" :modal-append-to-body='false'>
+        <el-form :model="formEdit" :rules="rules" ref="formEdit">
+            
+            <el-form-item prop="weapp_openid" label="OPENID" :label-width="formLabelWidth">
+                <el-input size="medium" autocomplete="off" v-model="formEdit.weapp_openid"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="postEdit()">确认修改</el-button>
+        </div>
+    </el-dialog>
+
+    {include file="common/footer"/}
+    <script>
+        new Vue({
+            el: '#app',
+            data() {
+                this.getList();
+                return {
+                    search: {
+                        keyword: "",
+                        filter: "weapp_id"
+                    },
+                    formLabelWidth: '80px',
+                    dialogFormAdd: false,
+                    dialogFormEdit: false,
+                    loading: true,
+                    dataList: [],
+                    selectList: [],
+                    form: {
+                        page: 1,
+                        per_page: 10
+                    },
+                    formAdd: {
+                    },
+                    formEdit: {
+                    },
+                    rules: {
+                        
+                    }
+                }
+            },
+            methods: {
+                handleSizeChange(per_page) {
+                    this.form.per_page = per_page;
+                    this.getList();
+                },
+                postMultDelete() {
+                    var that = this;
+                    if (that.selectList.length == 0) {
+                        that.$message.error('未选择任何小程序用户！');
+                        return;
+                    }
+                    this.$confirm('即将删除选中的小程序用户, 是否确认?', '批量删除', {
+                        confirmButtonText: '删除',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        axios.post('/api/weapp/delete', {
+                            ...PostBase, ...{
+                                weapp_id: that.selectList.join(",")
+                            }
+                        })
+                            .then(function (response) {
+                                that.getList();
+                                if (response.data.code == CODE_SUCCESS) {
+                                    that.$message({
+                                        message: response.data.msg,
+                                        type: 'success'
+                                    });
+                                } else {
+                                    that.$message.error(response.data.msg);
+                                }
+                            })
+                            .catch(function (error) {
+                                that.$message.error('服务器内部错误');
+                            });
+                    }).catch(() => {
+                    });
+                },
+                changeSelection(list) {
+                    var that = this;
+                    that.selectList = [];
+                    for (var index in list) {
+                        that.selectList.push(list[index].weapp_id);
+                    }
+                },
+                postEdit() {
+                    var that = this;
+                    that.$refs["formEdit"].validate((valid) => {
+                        if (valid) {
+                            axios.post('/api/weapp/update', {
+                                ...PostBase, ...that.formEdit
+                            })
+                                .then(function (response) {
+                                    that.getList();
+                                    if (response.data.code == CODE_SUCCESS) {
+                                        that.$message({
+                                            message: response.data.msg,
+                                            type: 'success'
+                                        });
+                                        that.dialogFormEdit = false;
+                                    } else {
+                                        that.$message.error(response.data.msg);
+                                    }
+                                })
+                                .catch(function (error) {
+                                    that.$message.error('服务器内部错误');
+                                });
+                        }
+                    });
+                },
+                postAdd() {
+                    var that = this;
+                    that.$refs['formAdd'].validate((valid) => {
+                        if (valid) {
+                            axios.post('/api/weapp/add', {
+                                ...PostBase, ...that.formAdd
+                            })
+                                .then(function (response) {
+                                    that.getList();
+                                    if (response.data.code == CODE_SUCCESS) {
+                                        that.$message({
+                                            message: response.data.msg,
+                                            type: 'success'
+                                        });
+                                        that.dialogFormAdd = false;
+                                    } else {
+                                        that.$message.error(response.data.msg);
+                                    }
+                                })
+                                .catch(function (error) {
+                                    that.$message.error('服务器内部错误');
+                                });
+                        }
+                    });
+                },
+                clickAdd() {
+                    var that = this;
+                    that.dialogFormAdd = true;
+                },
+                clickDelete(row) {
+                    var that = this;
+                    this.$confirm('即将删除这个小程序用户, 是否确认?', '删除提醒', {
+                        confirmButtonText: '删除',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        axios.post('/api/weapp/delete', {
+                            ...PostBase, ...{
+                                weapp_id: row.weapp_id
+                            }
+                        })
+                            .then(function (response) {
+                                that.getList();
+                                if (response.data.code == CODE_SUCCESS) {
+                                    that.$message({
+                                        message: response.data.msg,
+                                        type: 'success'
+                                    });
+                                } else {
+                                    that.$message.error(response.data.msg);
+                                }
+                            })
+                            .catch(function (error) {
+                                that.$message.error('服务器内部错误');
+                            });
+                    }).catch(() => {
+                    });
+                },
+                clickStatus(row) {
+                    var that = this;
+                    axios.post(row.weapp_status ? '/api/weapp/enable' : '/api/weapp/disable', {
+                        ...PostBase, ...{
+                            weapp_id: row.weapp_id
+                        }
+                    })
+                        .then(function (response) {
+                            that.getList();
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.$message({
+                                    message: response.data.msg,
+                                    type: 'success'
+                                });
+                            } else {
+                                that.$message.error(response.data.msg);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.$message.error('服务器内部错误');
+                        });
+                },
+                clickEdit(row) {
+                    var that = this;
+                    that.formEdit = row;
+                    axios.post('/api/weapp/detail', {
+                        ...PostBase, ...{
+                            weapp_id: row.weapp_id
+                        }
+                    })
+                        .then(function (response) {
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.formEdit = response.data.data;
+                                that.dialogFormEdit = true;
+                            } else {
+                                that.$message.error(response.data.msg);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.$message.error('服务器内部错误');
+                        });
+
+                },
+                changeCurrentPage(page) {
+                    this.form.page = page;
+                    this.getList();
+                },
+                getList() {
+                    var that = this;
+                    that.loading = true;
+                    axios.post('/api/weapp/getList', { ...PostBase, ...that.form, ...that.search })
+                        .then(function (response) {
+                            that.loading = false;
+                            if (response.data.code == CODE_SUCCESS) {
+                                that.dataList = response.data.data;
+                            } else {
+                                that.$message.error(response.data.msg);
+                            }
+                        })
+                        .catch(function (error) {
+                            that.loading = false;
+                            that.$message.error('服务器内部错误');
+                        });
+                }
+            }
+        })
+    </script>
+
+
+</html>

@@ -39,7 +39,7 @@ LNMP环境：
 基于用户组的RBAC权限控制
 基于VUE+ElementUI的后端管理
 基于WeUI+VUE的移动Web页面管理
-微信接入 登录 支付 小程序登录 小程序手机号登录
+集成EasyWechat的微信开发工具包
 第三方登录(QQ/Weibo登录的DEMO)
 基于标准协议的OAuth2.0授权
 后端代码生成 数据表与模型生成 API生成
@@ -47,7 +47,7 @@ Excel数据导出
 ```
 ### 感谢(以下排名不分先后)
 ``` 
-Vue.js / ElementUI / WeUI / ThinkPHP6
+Vue.js / ElementUI / WeUI / ThinkPHP6 / EasyWechat
 ```
 
 ### 参与贡献

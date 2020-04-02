@@ -4,56 +4,12 @@
 <script src="/static/js/jweixin-1.2.0.min.js"></script>
 <script src="/static/js/weui-1.2.1.min.js"></script>
 <script>
-    function jssdkInit(debug = false) {
-        axios.post('/wechat/jssdk/getJsPackage', {
+    function jssdkInit() {
+        axios.post('/wechat/jssdk', {
             url: location.href.split('#')[0]
         })
             .then(function (response) {
-                wx.config({
-                    debug: debug,
-                    appId: response.data.appId,
-                    timestamp: response.data.timestamp,
-                    nonceStr: response.data.nonceStr,
-                    signature: response.data.signature,
-                    jsApiList: [
-                        'onMenuShareTimeline',
-                        'onMenuShareAppMessage',
-                        'onMenuShareQQ',
-                        'onMenuShareWeibo',
-                        'onMenuShareQZone',
-                        'startRecord',
-                        'stopRecord',
-                        'onVoiceRecordEnd',
-                        'playVoice',
-                        'pauseVoice',
-                        'stopVoice',
-                        'onVoicePlayEnd',
-                        'uploadVoice',
-                        'downloadVoice',
-                        'chooseImage',
-                        'previewImage',
-                        'uploadImage',
-                        'downloadImage',
-                        'translateVoice',
-                        'getNetworkType',
-                        'openLocation',
-                        'getLocation',
-                        'hideOptionMenu',
-                        'showOptionMenu',
-                        'hideMenuItems',
-                        'showMenuItems',
-                        'hideAllNonBaseMenuItem',
-                        'showAllNonBaseMenuItem',
-                        'closeWindow',
-                        'scanQRCode',
-                        'chooseWXPay',
-                        'openProductSpecificView',
-                        'addCard',
-                        'chooseCard',
-                        'openCard',
-                        'openAddress'
-                    ]
-                });
+                wx.config(response.data);
             })
             .catch(function (error) {
                 that.$message.error('服务器内部错误');

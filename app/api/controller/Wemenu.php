@@ -4,6 +4,7 @@ namespace app\api\controller;
 
 use think\App;
 use app\api\BaseController;
+use EasyWeChat\Factory;
 use app\model\Wemenu as WemenuModel;
 
 class Wemenu extends BaseController
@@ -195,10 +196,26 @@ class Wemenu extends BaseController
             }
             array_push($wechatMenu, $menu);
         }
-        $access_token = $this->confModel->getAccessToken();
-        $ret = httpPostFull('https://api.weixin.qq.com/cgi-bin/menu/create?access_token=' . $access_token, urldecode(json_encode(['button' => $wechatMenu])));
-        // print_r($ret);
-        // print_r(urldecode(json_encode(['button' => $wechatMenu])));
-        return jok('菜单已成功发布到微信');
+        $wechat_appid = config('startadmin.wechat_appid');
+        $wechat_appkey = config('startadmin.wechat_appkey');
+        if (!$wechat_appid || !$wechat_appkey) {
+            return jerr('请先配置微信appid和secret!');
+        }
+        $this->wechat_config = [
+            'app_id' =>  $wechat_appid,
+            'secret' => $wechat_appkey,
+            //必须添加部分
+            'http' => [ // 配置
+                'verify' => false,
+                'timeout' => 4.0,
+            ],
+        ];
+        $easyWeChat = Factory::officialAccount($this->wechat_config);
+        $ret = $easyWeChat->menu->create(json_decode(urldecode(json_encode($wechatMenu))));
+        if ($ret['errcode'] == 0) {
+            return jok('菜单已成功发布到微信');
+        } else {
+            return jerr($ret['errmsg']);
+        }
     }
 }
