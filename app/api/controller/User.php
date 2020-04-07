@@ -6,7 +6,6 @@ use think\App;
 use app\api\BaseController;
 use app\model\User as thisModel;
 use app\model\Sms as SmsModel;
-use app\model\Code as CodeModel;
 
 class User extends BaseController
 {
@@ -378,40 +377,6 @@ class User extends BaseController
             return jerr('帐号或密码错误');
         }
     }
-    public function authorize()
-    {
-        if (!input("user_account")) {
-            return jerr('请确认帐号是否正确填写');
-        }
-        if (!input("user_password")) {
-            return jerr('请确认密码是否正确填写');
-        }
-        $plat = input("plat");
-        $user_account = input("user_account");
-        $user_password = input("user_password");
-        //登录获取用户信息
-        $user = $this->thisModel->login($user_account, $user_password);
-        if ($user) {
-            $codeModel = new CodeModel();
-            //生成一个临时code
-            $code = sha1(time()) . rand(100000, 999999);
-            //将之前的code全部设置失效
-            $codeModel->where('code_user', $user['user_id'])->update([
-                'code_status' => 1,
-            ]);
-            //保存新的code
-            $codeModel->insert([
-                'code_user' => $user['user_id'],
-                'code_code' => $code,
-                'code_createtime' => time(),
-                'code_updatetime' => time()
-            ]);
-            //重定向回第三方页面
-            return jok('授权登录成功', ['code' => $code]);
-        } else {
-            return jerr('帐号或密码错误');
-        }
-    }
     /**
      * 用户注册接口
      *
@@ -427,9 +392,9 @@ class User extends BaseController
             return jerr("短信验证码不能为空！");
         }
         $code = input("code");
-        // if (!input("password")) {
-        //     return jerr("密码不能为空！");
-        // }
+        if (!input("password")) {
+            return jerr("密码不能为空！");
+        }
         $password = input("password");
         $name = $phone;
         if (input("name")) {
@@ -437,8 +402,6 @@ class User extends BaseController
         }
         $smsModel = new SmsModel();
         if ($smsModel->validSmsCode($phone, $code)) {
-
-            echo 123;die;
             $user = $this->thisModel->where([
                 "user_account" => $phone
             ])->find();
@@ -504,9 +467,9 @@ class User extends BaseController
         if (!input("code")) {
             return jerr("短信验证码不能为空！");
         }
-        // if (!input("password")) {
-        //     return jerr("密码不能为空！");
-        // }
+        if (!input("password")) {
+            return jerr("密码不能为空！");
+        }
         $phone = input("phone");
         $code = input("code");
         $password = input("password");

@@ -95,7 +95,6 @@ class Weapp extends BaseController
         } else {
             return jerr("你应该传code给我");
         }
-        cache()
     }
     /**
      * 微信小程序手机号解密
