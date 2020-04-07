@@ -58,7 +58,7 @@ class System extends BaseController
         //创建表开始
         $sql = "CREATE TABLE `" . $prefix . $table . "` (`" . $table . "_id` INT(9) NOT NULL AUTO_INCREMENT ";
         foreach ($fieldList as $field) {
-            $field['desc'] = $field['desc'] ?? $field['name'];
+            $field['desc'] = empty($field['desc']) ? $field['name'] : $field['desc'];;
             if (empty($field['name'])) {
                 continue;
             } else {
@@ -206,14 +206,14 @@ class System extends BaseController
 
         $tmp_Fields = '';
         foreach ($fieldList as $field) {
-            $field['desc'] = $field['desc'] ?? $field['name'];
+            $field['desc'] = empty($field['desc']) ? $field['name'] : $field['desc'];;
             $tmp_Fields .= '"' . $table . "_" . $field['name'] . '",';
         }
         $file = str_replace("//tmp_Fields", $tmp_Fields, $file);
 
         $tmp_require = '';
         foreach ($fieldList as $field) {
-            $field['desc'] = $field['desc'] ?? $field['name'];
+            $field['desc'] = empty($field['desc']) ? $field['name'] : $field['desc'];;
             if ($field['require']) {
                 $tmp_require .= '"' . $table . "_" . $field['name'] . '"=>"' . ($field['desc'] ?? $field['name']) . '必须填写",';
             }
@@ -222,7 +222,7 @@ class System extends BaseController
 
         $tmp_searchFilter = '';
         foreach ($fieldList as $field) {
-            $field['desc'] = $field['desc'] ?? $field['name'];
+            $field['desc'] = empty($field['desc']) ? $field['name'] : $field['desc'];;
             $tmp_searchFilter .= '"' . $table . "_" . $field['name'] . '"=>"like",';
         }
         $file = str_replace("//tmp_searchFilter", $tmp_searchFilter, $file);
@@ -254,7 +254,7 @@ class System extends BaseController
 
         $tmp_add = '';
         foreach ($fieldList as $field) {
-            $field['desc'] = $field['desc'] ?? $field['name'];
+            $field['desc'] = empty($field['desc']) ? $field['name'] : $field['desc'];;
             $tmp_add .= '
             <el-form-item prop="' . $table . "_" . $field['name'] . '" label="' . $field['desc'] . '" :label-width="formLabelWidth">
                 <el-input size="medium" autocomplete="off" v-model="formAdd.' . $table . "_" . $field['name'] . '"></el-input>
@@ -264,7 +264,7 @@ class System extends BaseController
 
         $tmp_update = '';
         foreach ($fieldList as $field) {
-            $field['desc'] = $field['desc'] ?? $field['name'];
+            $field['desc'] = empty($field['desc']) ? $field['name'] : $field['desc'];;
             $tmp_update .= '
             <el-form-item prop="' . $table . "_" . $field['name'] . '" label="' . $field['desc'] . '" :label-width="formLabelWidth">
                 <el-input size="medium" autocomplete="off" v-model="formEdit.' . $table . "_" . $field['name'] . '"></el-input>
@@ -274,7 +274,7 @@ class System extends BaseController
 
         $tmp_table = '';
         foreach ($fieldList as $field) {
-            $field['desc'] = $field['desc'] ?? $field['name'];
+            $field['desc'] = empty($field['desc']) ? $field['name'] : $field['desc'];;
             $tmp_table .= '
             <el-table-column prop="' . $table . "_" . $field['name'] . '" label="' . $field['desc'] . '">
             </el-table-column>';
@@ -283,7 +283,7 @@ class System extends BaseController
 
         $tmp_select = '';
         foreach ($fieldList as $field) {
-            $field['desc'] = $field['desc'] ?? $field['name'];
+            $field['desc'] = empty($field['desc']) ? $field['name'] : $field['desc'];;
             $tmp_select .= '
             <el-option value="' . $table . "_" . $field['name'] . '" label="' . $field['desc'] . '">
             </el-option>';
@@ -292,7 +292,7 @@ class System extends BaseController
 
         $tmp_rules = '';
         foreach ($fieldList as $field) {
-            $field['desc'] = $field['desc'] ?? $field['name'];
+            $field['desc'] = empty($field['desc']) ? $field['name'] : $field['desc'];;
             if ($field['require']) {
                 $tmp_rules .= $table . "_" . $field['name'] . ": [ { required: true, message: '请输入" . ($field['desc'] ?? $field['name']) . "', trigger: 'blur' }],";
             }
