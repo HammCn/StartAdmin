@@ -310,12 +310,11 @@ class System extends BaseController
     {
         $validateModel = new ValidateModel();
         $imgData = $validateModel->getImg();
-        $code = $validateModel->getCode();
-        $time = time();
-        $token = sha1(sha1($code . (env('SYSTEM_SALT') ?? 'StartAdmin') . $time) . $time);
+        $code = strtoupper($validateModel->getCode());
+        $token = sha1($code .  time()) . rand(100000, 999999);
+        cache($token, $code, 60);
         return jok('验证码生成成功', [
             'img' => $imgData,
-            'time' => $time,
             'token' => $token
         ]);
     }

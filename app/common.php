@@ -1,43 +1,5 @@
 <?php
-//全局错误代码
-$GLOBALS['API_CODE_GLOBAL'] = [
-    [
-        "code" => 200,
-        "msg" => "success"
-    ],
-    [
-        "code" => 400,
-        "msg" => "Param missing"
-    ],
-    [
-        "code" => 401,
-        "msg" => "Need Relogin"
-    ],
-    [
-        "code" => 301,
-        "msg" => "you must update your app.",
-    ],
-    [
-        "code" => 302,
-        "msg" => "you may update your app.",
-    ],
-    [
-        "code" => 403,
-        "msg" => "Forbidden"
-    ],
-    [
-        "code" => 404,
-        "msg" => "Api Not Found"
-    ],
-    [
-        "code" => 500,
-        "msg" => "error"
-    ],
-    [
-        "code" => 503,
-        "msg" => "Node Not Found"
-    ]
-];
+
 /**
  * 输出正常JSON
  *

@@ -427,9 +427,9 @@ class User extends BaseController
             return jerr("短信验证码不能为空！");
         }
         $code = input("code");
-        if (!input("password")) {
-            return jerr("密码不能为空！");
-        }
+        // if (!input("password")) {
+        //     return jerr("密码不能为空！");
+        // }
         $password = input("password");
         $name = $phone;
         if (input("name")) {
@@ -437,6 +437,8 @@ class User extends BaseController
         }
         $smsModel = new SmsModel();
         if ($smsModel->validSmsCode($phone, $code)) {
+
+            echo 123;die;
             $user = $this->thisModel->where([
                 "user_account" => $phone
             ])->find();
@@ -502,9 +504,9 @@ class User extends BaseController
         if (!input("code")) {
             return jerr("短信验证码不能为空！");
         }
-        if (!input("password")) {
-            return jerr("密码不能为空！");
-        }
+        // if (!input("password")) {
+        //     return jerr("密码不能为空！");
+        // }
         $phone = input("phone");
         $code = input("code");
         $password = input("password");

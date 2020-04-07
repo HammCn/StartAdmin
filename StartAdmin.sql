@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: 2020-04-03 03:42:01
+-- Generation Time: 2020-04-07 23:17:37
 -- 服务器版本： 5.7.28
 -- PHP Version: 7.3.9
 
@@ -232,7 +232,6 @@ INSERT INTO `sa_node` (`node_id`, `node_system`, `node_title`, `node_desc`, `nod
 (100, 1, '用户管理', '', 'admin', 'user', 'index', 2, 0, 1, '', '', 0, 0, 1575948484),
 (101, 1, '用户组管理', '', 'admin', 'group', 'index', 2, 0, 1, '', NULL, 0, 0, 1575948484),
 (102, 1, '系统配置', '', 'admin', 'conf', 'index', 3, 0, 1, '', '', 0, 0, 1575960614),
-(103, 1, '验证码管理', '', 'admin', 'sms', 'index', 3, 0, 1, '', NULL, 0, 0, 1575948484),
 (104, 1, '节点管理', '', 'admin', 'node', 'index', 3, 0, 1, '', '', 0, 0, 1575948484),
 (105, 1, '附件管理', '', 'admin', 'attach', 'index', 3, 0, 1, '', '', 0, 0, 1575948484),
 (106, 1, '清理数据', '', 'admin', 'system', 'clean', 5, 0, 1, '', '', 0, 0, 1575984190),
@@ -247,7 +246,6 @@ INSERT INTO `sa_node` (`node_id`, `node_system`, `node_title`, `node_desc`, `nod
 (1000, 1, '获取用户列表接口', '', 'api', 'user', 'getList', 4, 0, 1, '', NULL, 0, 0, 1575948484),
 (1001, 1, '获取用户组列表接口', '', 'api', 'group', 'getList', 4, 0, 1, '', NULL, 0, 0, 1575948484),
 (1003, 1, '获取所有配置列表接口', '', 'api', 'conf', 'getList', 4, 0, 1, '', NULL, 0, 0, 1575948484),
-(1004, 1, '获取短信验证码列表接口', '', 'api', 'sms', 'getList', 4, 0, 1, '', NULL, 0, 0, 1575948484),
 (1005, 1, '获取节点列表接口', '', 'api', 'node', 'getList', 4, 0, 1, '', NULL, 0, 0, 1575948484),
 (1006, 1, '获取用户详细信息接口', '', 'api', 'user', 'detail', 4, 0, 1, '', NULL, 0, 0, 1575948484),
 (1007, 1, '添加用户接口', '', 'api', 'user', 'add', 4, 0, 1, '', NULL, 0, 0, 1575948484),
@@ -275,7 +273,6 @@ INSERT INTO `sa_node` (`node_id`, `node_system`, `node_title`, `node_desc`, `nod
 (1030, 1, '添加节点信息接口', '', 'api', 'node', 'add', 4, 0, 1, '', NULL, 0, 0, 1575948484),
 (1031, 1, '节点导入接口', '', 'api', 'node', 'import', 4, 0, 1, '', NULL, 0, 0, 1575948484),
 (1032, 1, 'API接口首页', '', 'api', 'index', 'index', 4, 0, 1, '', NULL, 0, 1575948342, 1575948484),
-(1033, 1, '发送短信接口', '', 'api', 'sms', 'send', 4, 0, 1, '', NULL, 0, 1575948342, 1575948484),
 (1034, 1, '获取系统错误信息接口', '', 'api', 'system', 'errors', 4, 0, 1, '', NULL, 0, 1575948342, 1575948484),
 (1035, 1, '获取验证码接口', '', 'api', 'system', 'getcaptcha', 4, 0, 1, '', NULL, 0, 1575948342, 1575948484),
 (1036, 1, '用户登录接口', '', 'api', 'user', 'login', 4, 0, 1, '', NULL, 0, 1575948342, 1575948484),
@@ -293,7 +290,6 @@ INSERT INTO `sa_node` (`node_id`, `node_system`, `node_title`, `node_desc`, `nod
 (1048, 1, '删除附件接口', '', 'api', 'attach', 'delete', 4, 0, 1, '', NULL, 0, 1575948342, 1575948484),
 (1049, 1, '清空授权信息接口', '', 'api', 'auth', 'clean', 4, 0, 1, '', NULL, 0, 1575948342, 1575948484),
 (1050, 1, '清空访问日志接口', '', 'api', 'log', 'clean', 4, 0, 1, '', NULL, 0, 1575948342, 1575948484),
-(1051, 1, '删除短信接口', '', 'api', 'sms', 'delete', 4, 0, 1, '', NULL, 0, 1575948342, 1575948484),
 (1052, 1, '代码生成接口', '', 'api', 'system', 'build', 4, 0, 1, '', '', 0, 0, 1575948484),
 (1074, 1, '获取基础设置接口', '', 'api', 'conf', 'getBaseConfig', 4, 0, 1, '', NULL, 0, 0, 1575948484),
 (1075, 1, '修改基础设置接口', '', 'api', 'conf', 'updateBaseConfig', 4, 0, 1, '', NULL, 0, 0, 1575948484),
@@ -329,23 +325,6 @@ INSERT INTO `sa_node` (`node_id`, `node_system`, `node_title`, `node_desc`, `nod
 (1117, 0, '禁用小程序用户接口', '', 'api', 'weapp', 'disable', 4, 0, 1, '', NULL, 0, 1585854558, 1585854558),
 (1118, 0, '启用小程序用户接口', '', 'api', 'weapp', 'enable', 4, 0, 1, '', NULL, 0, 1585854558, 1585854558),
 (1119, 0, '获取小程序用户列表接口', '', 'api', 'weapp', 'getList', 4, 0, 1, '', NULL, 0, 1585854558, 1585854558);
-
--- --------------------------------------------------------
-
---
--- 表的结构 `sa_sms`
---
-
-CREATE TABLE `sa_sms` (
-  `sms_id` int(9) NOT NULL,
-  `sms_phone` varchar(255) NOT NULL DEFAULT '' COMMENT '手机号',
-  `sms_code` varchar(10) NOT NULL DEFAULT '' COMMENT '验证码',
-  `sms_timeout` int(11) NOT NULL DEFAULT '0' COMMENT '超时时间戳',
-  `sms_callback` varchar(255) NOT NULL DEFAULT '' COMMENT '发送短信结果',
-  `sms_status` int(9) NOT NULL DEFAULT '0' COMMENT '状态',
-  `sms_createtime` int(9) NOT NULL DEFAULT '0' COMMENT '创建时间',
-  `sms_updatetime` int(9) NOT NULL DEFAULT '0' COMMENT '修改时间'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='短信验证码表';
 
 -- --------------------------------------------------------
 
@@ -521,14 +500,6 @@ ALTER TABLE `sa_node`
   ADD KEY `node_action` (`node_action`) USING BTREE;
 
 --
--- Indexes for table `sa_sms`
---
-ALTER TABLE `sa_sms`
-  ADD PRIMARY KEY (`sms_id`) USING BTREE,
-  ADD KEY `sms_phone` (`sms_phone`(191)) USING BTREE,
-  ADD KEY `sms_code` (`sms_code`) USING BTREE;
-
---
 -- Indexes for table `sa_user`
 --
 ALTER TABLE `sa_user`
@@ -590,7 +561,7 @@ ALTER TABLE `sa_code`
 -- 使用表AUTO_INCREMENT `sa_conf`
 --
 ALTER TABLE `sa_conf`
-  MODIFY `conf_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `conf_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 --
 -- 使用表AUTO_INCREMENT `sa_group`
 --
@@ -605,17 +576,12 @@ ALTER TABLE `sa_log`
 -- 使用表AUTO_INCREMENT `sa_node`
 --
 ALTER TABLE `sa_node`
-  MODIFY `node_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '功能ID', AUTO_INCREMENT=1121;
---
--- 使用表AUTO_INCREMENT `sa_sms`
---
-ALTER TABLE `sa_sms`
-  MODIFY `sms_id` int(9) NOT NULL AUTO_INCREMENT;
+  MODIFY `node_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '功能ID', AUTO_INCREMENT=1120;
 --
 -- 使用表AUTO_INCREMENT `sa_user`
 --
 ALTER TABLE `sa_user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'UID', AUTO_INCREMENT=2;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'UID', AUTO_INCREMENT=3;
 --
 -- 使用表AUTO_INCREMENT `sa_weapp`
 --

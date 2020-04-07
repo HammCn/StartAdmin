@@ -5,6 +5,7 @@ namespace app\api\controller;
 use think\App;
 use app\api\BaseController;
 use app\model\Sms as SmsModel;
+use app\model\Validate as ValidateModel;
 
 class Sms extends BaseController
 {
@@ -101,34 +102,29 @@ class Sms extends BaseController
     public function send()
     {
         //验证图形验证码
-        $error = $this->validateImgCode();
+        $validateModel = new ValidateModel();
+        $error = $validateModel->validateImgCode(input('token'), input('code'));
         if ($error) {
             return $error;
         }
         if (input("phone")) {
             $phone = input('phone');
-            $sms =  $this->thisModel->where("sms_phone", $phone)->order("sms_createtime desc")->find();
-            if ($sms) {
-                if ($sms['sms_createtime'] + 60 > time()) {
-                    return jerr("验证码发送过于频繁，请稍候后再试！");
-                }
+            $code = cache("SMS_" . $phone);
+            if ($code) {
+                return jerr('发送短信太频繁，请稍候再试');
             }
+
             $code = rand(100000, 999999);
-            $ret =  $this->thisModel->sendSms($phone, $code);
-            $this->thisModel->insert([
-                "sms_phone" => $phone,
-                "sms_code" => $code,
-                "sms_timeout" => time() + 600,
-                "sms_createtime" => time(),
-                "sms_updatetime" => time(),
-                "sms_callback" => $ret
-            ]);
+            $error = $this->thisModel->sendSms($phone, $code);
+            if ($error) {
+                return $error;
+            }
+            cache('SMS_' . $phone, $code, 300);
             return jok('短信验证码已经发送至你的手机');
         } else {
             return jerr("手机号为必填信息，请填写后提交");
         }
     }
-
     public function __call($method, $args)
     {
         return $this->index();
