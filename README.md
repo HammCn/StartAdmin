@@ -13,7 +13,7 @@
 
 ### 介绍
 
-StartAdmin，基于ThinkPHP6/ElementUI/VUE的后台管理二次开发脚手架 集成了微信接入、微信(登录)支付、第三方登录、oAuth2.0，权限管理，用户(组)管理，WEUI，菜单管理，节点管理，访问日志，访问统计，API生成，后台代码生成，Excel数据导出等常用功能，是轻量级后端脚手架。QQ群: 973087692
+StartAdmin，基于ThinkPHP6/ElementUI/VUE的后台管理二次开发脚手架 集成了微信接入、微信(登录)支付、第三方登录、权限管理，用户(组)管理，WEUI，菜单管理，节点管理，访问日志，访问统计，API生成，后台代码生成，Excel数据导出等常用功能，是轻量级后端脚手架。QQ群: 973087692
 
 ### 使用说明
 ```
@@ -39,7 +39,6 @@ LNMP环境：
 基于WeUI+VUE的移动Web页面管理
 集成EasyWechat的微信开发工具包
 第三方登录(QQ/Weibo登录的DEMO)
-基于标准协议的OAuth2.0授权
 后端代码生成 数据表与模型生成 API生成
 Excel数据导出
 ```
@@ -56,6 +55,6 @@ Vue.js / ElementUI / WeUI / ThinkPHP6 / EasyWechat
 4. 新建 Pull Request
 ```
 ### 晒个截图
-![输入图片说明](https://images.gitee.com/uploads/images/2020/0401/021330_e8b2482f_145025.png "截屏2020-04-0101.36.11.png")
+![StartAdmin](https://images.gitee.com/uploads/images/2020/0401/021330_e8b2482f_145025.png "截屏2020-04-0101.36.11.png")
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/0401/021415_b9ec454e_145025.png "截屏2020-04-0101.38.26.png")
+![StartAdmin](https://images.gitee.com/uploads/images/2020/0401/021415_b9ec454e_145025.png "截屏2020-04-0101.38.26.png")
