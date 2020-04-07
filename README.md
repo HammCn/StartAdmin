@@ -1,5 +1,5 @@
 <p align="center">
-<img width="400" src="https://images.gitee.com/uploads/images/2020/0408/001747_81696e19_145025.png"/>
+<img width="500" src="https://images.gitee.com/uploads/images/2020/0408/002846_2e9986dd_145025.png"/>
 </p>
 <p align="center">
 <img src="https://svg.hamm.cn?key=gitee&value=star&project=hamm/StartAdmin">
