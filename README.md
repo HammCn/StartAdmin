@@ -2,14 +2,10 @@
 <img width="500" src="https://images.gitee.com/uploads/images/2020/0408/002846_2e9986dd_145025.png"/>
 </p>
 <p align="center">
-![StartAdmin](https://svg.hamm.cn?key=gitee&value=star&project=hamm/StartAdmin "StartAdmin")
-  
-<img src="https://svg.hamm.cn?key=gitee&value=fork&project=hamm/StartAdmin">
-<img src="https://svg.hamm.cn?key=gitee&value=watch&project=hamm/StartAdmin">
-<img src="https://svg.hamm.cn?key=gitee&value=commit&project=hamm/StartAdmin">
-<img src="https://svg.hamm.cn/?key=框架&value=ThinkPHP6"/>
-<img src="https://svg.hamm.cn/?key=数据库&value=MySQL5.5+"/>
-<img src="https://svg.hamm.cn/?key=运行时&value=PHP7.1+"/>
+<img src="https://svg.hamm.cn/?key=Base&value=ThinkPHP6"/>
+<img src="https://svg.hamm.cn/?key=Data&value=MySQL5.5"/>
+<img src="https://svg.hamm.cn/?key=Runtime&value=PHP7.1"/>
+<img src="https://svg.hamm.cn/?key=License&value=Apache-2.0"/>
 </p>
 
 ### 介绍
@@ -17,11 +13,8 @@
 StartAdmin，基于ThinkPHP6/ElementUI/VUE的后台管理二次开发脚手架 集成了微信接入、微信(登录)支付、第三方登录、权限管理，用户(组)管理，WEUI，菜单管理，节点管理，访问日志，访问统计，API生成，后台代码生成，Excel数据导出等常用功能，是轻量级后端脚手架。QQ群: 973087692
 
 ### 仓库地址
-
-```
-Gitee: https://gitee.com/hamm/StartAdmin
-Github: https://github.com/HammCn/StartAdmin
-```
+<a href="https://gitee.com/hamm/StartAdmin" target="_blank"><img src="https://svg.hamm.cn/?key=Gitee&value=https://gitee.com/hamm/StartAdmin"/></a>
+<a href="https://github.com/HammCn/StartAdmin" target="_blank"><img src="https://svg.hamm.cn/?key=Github&value=https://github.com/HammCn/StartAdmin"/></a>
 
 ### 使用说明
 ```
