@@ -66,24 +66,6 @@ abstract class BaseController
             $c[$config['conf_key']] = $config['conf_value'];
         }
         config($c, 'startadmin');
-
-        $this->wechat_appid = config("startadmin.wechat_appid");
-        $this->wechat_appkey = config("startadmin.wechat_appkey");
-        if (!$this->wechat_appid || !$this->wechat_appkey) {
-            die('Input wechat appid and appkey first!');
-        }
-        $this->wechat_config = [
-            'app_id' => $this->wechat_appid,
-            'secret' => $this->wechat_appkey,
-            'token' => config('startadmin.wechat_token') ?? 'StartAdmin',
-            'aes_key' => config('startadmin.wechat_aes_key') ?? 'StartAdmin',
-            //必须添加部分
-            'http' => [ // 配置
-                'verify' => false,
-                'timeout' => 4.0,
-            ],
-        ];
-        $this->easyWeChat = Factory::officialAccount($this->wechat_config);
     }
     /**
      * 微信服务登录 $this->wechat将为用户数据
@@ -117,13 +99,25 @@ abstract class BaseController
             return $this->wechat;
         }
     }
-    /**
-     * 调用微信授权
-     *
-     * @return void
-     */
-    protected function authorize()
+    protected function initWechatConfig()
     {
+        $this->wechat_appid = config("startadmin.wechat_appid");
+        $this->wechat_appkey = config("startadmin.wechat_appkey");
+        if (!$this->wechat_appid || !$this->wechat_appkey) {
+            die('Input wechat appid and appkey first!');
+        }
+        $this->wechat_config = [
+            'app_id' => $this->wechat_appid,
+            'secret' => $this->wechat_appkey,
+            'token' => config('startadmin.wechat_token') ?? 'StartAdmin',
+            'aes_key' => config('startadmin.wechat_aes_key') ?? 'StartAdmin',
+            //必须添加部分
+            'http' => [ // 配置
+                'verify' => false,
+                'timeout' => 4.0,
+            ],
+        ];
+        $this->easyWeChat = Factory::officialAccount($this->wechat_config);
         $wechat_id = cookie('wechat_id');
         $wechat_ticket = cookie('wechat_ticket');
         if ($wechat_ticket == getTicket($wechat_id)) {
@@ -132,6 +126,18 @@ abstract class BaseController
                 $this->wechat = $this->wechat->toArray();
                 return null;
             }
+        }
+    }
+    /**
+     * 调用微信授权
+     *
+     * @return void
+     */
+    protected function authorize()
+    {
+        $error = $this->initWechatConfig();
+        if ($error) {
+            return $error;
         }
         //生成授权所需要的回调地址 并重定向到Authorize控制器进行微信授权
         $callback = '/';

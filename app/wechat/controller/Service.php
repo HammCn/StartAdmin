@@ -2,6 +2,8 @@
 
 namespace app\wechat\controller;
 
+use think\App;
+use EasyWeChat\Factory;
 use app\wechat\BaseController;
 use EasyWeChat\Kernel\Messages\Image;
 use EasyWeChat\Kernel\Messages\Voice;
@@ -16,6 +18,10 @@ class Service extends BaseController
     protected $wechat;
     public function index()
     {
+        $error = $this->initWechatConfig();
+        if ($error) {
+            return $error;
+        }
         $this->easyWeChat->server->push(function ($message) {
             $this->openid = $message['FromUserName'];
             $this->wechat = $this->updateWechatUserInfo($this->openid);
