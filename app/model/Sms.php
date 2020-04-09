@@ -5,9 +5,8 @@ namespace app\model;
 use AlibabaCloud\Client\AlibabaCloud;
 use AlibabaCloud\Client\Exception\ClientException;
 use AlibabaCloud\Client\Exception\ServerException;
-use app\model\BaseModel;
 
-class Sms extends BaseModel
+class Sms
 {
     /**
      * 发送短信
@@ -22,8 +21,11 @@ class Sms extends BaseModel
         $alisms_appkey = config('startadmin.alisms_appkey');
         $alisms_sign = config('startadmin.alisms_sign');
         $alisms_template = config('startadmin.alisms_template');
+        $error = null;
+        if (!($alisms_appid && $alisms_appkey && $alisms_sign && $alisms_template)) {
+            $error =  jerr('请先在后台配置阿里云短信相关参数！');
+        }
         AlibabaCloud::accessKeyClient($alisms_appid, $alisms_appkey)->regionId('cn-hangzhou')->asDefaultClient();
-        $success = false;
         try {
             $result = AlibabaCloud::rpc()
                 ->product('Dysmsapi')
@@ -42,13 +44,12 @@ class Sms extends BaseModel
                     ],
                 ])
                 ->request();
-            $success = true;
         } catch (ClientException $e) {
-            $success = false;
+            $error =  jerr('阿里云短信发送异常');
         } catch (ServerException $e) {
-            $success = false;
+            $error =  jerr('阿里云短信发送异常');
         }
-        return $success;
+        return $error;
     }
 
     /**
@@ -60,16 +61,9 @@ class Sms extends BaseModel
      */
     public function validSmsCode($phone, $code)
     {
-        $sms = $this->where('sms_phone', $phone)
-            ->where('sms_timeout', ">", time())
-            ->where('sms_code', $code)
-            ->where('sms_status', 0)
-            ->order('sms_createtime desc')->find();
-        if ($sms) {
-            $this->where('sms_id', $sms['sms_id'])->update([
-                'sms_status' => 1,
-                'sms_updatetime' => time()
-            ]);
+        $_code = cache("SMS_" . $phone);
+        if ($_code == $code) {
+            cache('SMS_' . $phone, null);
             return true;
         } else {
             return false;

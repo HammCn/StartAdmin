@@ -79,4 +79,30 @@ class Validate
     {
         return strtolower($this->code);
     }
+    /**
+     * 验证图形验证码
+     *
+     * @return void
+     */
+    public function validateImgCode($token, $code)
+    {
+        if (!$token) {
+            return jerr("TOKEN参数丢失");
+        }
+        if (!$code) {
+            return jerr("请输入验证码");
+        }
+        $code = strtoupper(input('code'));
+        $token = input('token');
+        $_code = cache($token);
+        if (!$_code) {
+            return jerr("验证码已过期");
+        }
+        if ($code != $_code) {
+            return jerr('验证码错误');
+        }
+        // 删除设置的缓存
+        cache($token, null);
+        return null;
+    }
 }

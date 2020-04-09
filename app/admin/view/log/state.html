@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title></title>
+    <title>{$node.node_title}</title>
     {include file="common/header"/}
     <el-table :data="dataList" v-loading="loading">
         <el-table-column prop="node_id" label="节点ID">

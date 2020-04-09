@@ -43,19 +43,18 @@ class Weapp extends BaseController
 
         ];
         $this->thisModel = new WeappModel();
-        $this->initWeAppConfig();
     }
     /**
      * 初始化微信小程序配置
      *
      * @return void
      */
-    public function initWeAppConfig()
+    private function initWeAppConfig()
     {
         $this->weapp_appid = config('startadmin.weapp_appid'); //小程序APPID
         $this->weapp_appkey = config("startadmin.weapp_appkey"); //小程序的APPKEY
         if (!$this->weapp_appid || !$this->weapp_appkey) {
-            die("请先配置微信小程序appid和secret");
+            return jerr("请先配置微信小程序appid和secret");
         }
         $weapp_config = [
             'app_id' => $this->weapp_appid,
@@ -67,6 +66,7 @@ class Weapp extends BaseController
             ],
         ];
         $this->easyWeApp = Factory::miniProgram($weapp_config);
+        return null;
     }
     /**
      * 微信小程序登录
@@ -75,6 +75,10 @@ class Weapp extends BaseController
      */
     public function wxAppLogin()
     {
+        $error = $this->initWeAppConfig();
+        if ($error) {
+            return $error;
+        }
         if (input("?code")) {
             $code = input("code");
             $ret = $this->easyWeApp->auth->session($code);
@@ -99,6 +103,10 @@ class Weapp extends BaseController
      */
     public function wxPhoneDecodeLogin()
     {
+        $error = $this->initWeAppConfig();
+        if ($error) {
+            return $error;
+        }
         if (input("?iv") && input("?encryptedData") && input("?session_key")) {
             $iv = input("iv");
             $encryptedData = input("encryptedData");
