@@ -4,27 +4,61 @@
 <head>
     <title>Start Admin</title>
     {include file="common/header"/}
-    <div style="margin-top:5%;text-align: center;">
-        <img src="/static/StartAdmin/StartAdmin.png" width="500px" /><br>
-        <el-link href="https://gitee.com/hamm/StartAdmin" target="_blank" :underline="false">StartAdmin</el-link>
-        <el-link href="https://element.eleme.cn/" target="_blank" :underline="false">ElementUI</el-link>
-        <el-link href="https://cn.vuejs.org/v2/api/" target="_blank" :underline="false">VUE.js</el-link>
-        <el-link href="https://weui.hamm.cn/" target="_blank" :underline="false">WeUI Pro</el-link>
-        <el-link href="https://www.kancloud.cn/manual/thinkphp6_0/1037479" target="_blank" :underline="false">ThinkPHP6
-        </el-link>
-        <el-link href="https://www.easywechat.com/docs" target="_blank" :underline="false">EasyWeChat</el-link>
-    </div>
+    <style>
+    </style>
+    <div id="editor"></div>
+    <br>
+    <el-link href="https://gitee.com/hamm/StartAdmin" target="_blank" :underline="false">StartAdmin</el-link>
+    <el-link href="https://element.eleme.cn/" target="_blank" :underline="false">ElementUI</el-link>
+    <el-link href="https://cn.vuejs.org/v2/api/" target="_blank" :underline="false">VUE.js</el-link>
+    <el-link href="https://weui.hamm.cn/" target="_blank" :underline="false">WeUI Pro</el-link>
+    <el-link href="https://www.kancloud.cn/manual/thinkphp6_0/1037479" target="_blank" :underline="false">ThinkPHP6
+    </el-link>
+    <el-link href="https://www.easywechat.com/docs" target="_blank" :underline="false">EasyWeChat</el-link>
     {include file="common/footer"/}
+    <link href="/static/mavonEditor/css/mavon-editor.css" rel="stylesheet">
+    <script src="/static/mavonEditor/mavon-editor.js"></script>
     <script>
-        new Vue({
+        Vue.use(MavonEditor);
+        var app = new Vue({
             el: '#app',
-            data: function () {
-                return {
-                }
+            created() {
             },
             methods: {
             }
-        })
+        });
+        var editor = new Vue({
+            el: '#editor',
+            data: function () {
+                return {
+                    htmlVlue: '# StartAdmin \n\n![StartAdmin](/static/StartAdmin/StartAdmin.png)',
+                    imgs: [],
+                }
+            },
+            template: '<mavon-editor previewBackground="#fff" v-model="htmlVlue" style="height:500px" @imgAdd="addImg" @imgDel="delImg" @save="save" ref="md"></mavon-editor>',
+            methods: {
+                addImg() {
+                    alert('图片上传成功');
+                    // var formdata = new FormData();
+                    // formdata.append('image', file);
+                    // this.$http({
+                    //     url: '/api/edit/uploadimg',
+                    //     method: 'post',
+                    //     data: formdata,
+                    //     headers: { 'Content-Type': 'multipart/form-data' },
+                    // }).then((res) => {
+                    //     let _res = res.data;
+                    //     this.$refs.md.$img2Url(str, _res.url);
+                    // })
+                },
+                delImg() {
+                    alert('delete')
+                },
+                save(md, html) {
+                    console.log(md);
+                }
+            }
+        });
     </script>
 
 
