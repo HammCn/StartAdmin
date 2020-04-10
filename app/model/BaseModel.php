@@ -22,9 +22,9 @@ class BaseModel extends Model
      * @param  string 排序方式
      * @return void
      */
-    public function getListByPage($maps, $order)
+    public function getListByPage($maps, $order, $field = "*")
     {
-        $resource = $this;
+        $resource = $this->field($field);
         foreach ($maps as $map) {
             switch (count($map)) {
                 case 1:
@@ -48,9 +48,9 @@ class BaseModel extends Model
      * @param  string 排序方式
      * @return void
      */
-    public function getList($maps, $order)
+    public function getList($maps, $order, $field = "*")
     {
-        $resource = $this;
+        $resource = $this->field($field);
         foreach ($maps as $map) {
             switch (count($map)) {
                 case 1:

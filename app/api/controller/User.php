@@ -344,7 +344,7 @@ class User extends BaseController
         if (input('per_page')) {
             $this->thisModel->per_page = intval(input('per_page'));
         }
-        $dataList = $this->thisModel->getListByPage($map, $order);
+        $dataList = $this->thisModel->getListByPage($map, $order, $this->selectList);
         return jok('用户列表获取成功', $dataList);
     }
     public function login()

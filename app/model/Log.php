@@ -8,9 +8,9 @@ use app\model\BaseModel;
 
 class Log extends BaseModel
 {
-    public function getListByPage($maps, $order)
+    public function getListByPage($maps, $order, $field = "*")
     {
-        $resource = $this->view('log', '*')->view('user', '*', 'user.user_id = log.log_user', 'left')->view('node', '*', 'node.node_id=log.log_node', 'left');
+        $resource = $this->view('log', $field)->view('user', 'user_id,user_name', 'user.user_id = log.log_user', 'left')->view('node', '*', 'node.node_id=log.log_node', 'left');
         foreach ($maps as $map) {
             switch (count($map)) {
                 case 1:

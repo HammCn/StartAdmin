@@ -54,9 +54,9 @@ class User extends BaseModel
             "user_updatetime" => time()
         ]);
     }
-    public function getListByPage($maps, $order)
+    public function getListByPage($maps, $order, $field = "*")
     {
-        $resource = $this->view('user', '*')->view('group', '*', 'group.group_id = user.user_group', 'left');
+        $resource = $this->view('user', $field)->view('group', '*', 'group.group_id = user.user_group', 'left');
         foreach ($maps as $map) {
             switch (count($map)) {
                 case 1:
