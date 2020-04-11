@@ -2,12 +2,12 @@
 <img width="500" src="https://images.gitee.com/uploads/images/2020/0408/002846_2e9986dd_145025.png"/>
 </p>
 <p align="center">
-<a href="https://gitee.com/hamm/StartAdmin/stargazers" target="_blank"><img src="https://svg.hamm.cn/?key=Gitee&value=star&project=hamm/StartAdmin"/></a>
-<a href="https://gitee.com/hamm/StartAdmin/members" target="_blank"><img src="https://svg.hamm.cn/?key=Gitee&value=fork&project=hamm/StartAdmin"/></a>
-<img src="https://svg.hamm.cn/?key=Base&value=ThinkPHP6"/>
-<img src="https://svg.hamm.cn/?key=Data&value=MySQL5.5"/>
-<img src="https://svg.hamm.cn/?key=Runtime&value=PHP7.1"/>
-<img src="https://svg.hamm.cn/?key=License&value=Apache-2.0"/>
+<a href="https://gitee.com/hamm/StartAdmin/stargazers" target="_blank"><img src="https://svg.hamm.cn/gitee.svg?type=star&user=hamm&project=StartAdmin"/></a>
+<a href="https://gitee.com/hamm/StartAdmin/members" target="_blank"><img src="https://svg.hamm.cn/gitee.svg?type=fork&user=hamm&project=StartAdmin"/></a>
+<img src="https://svg.hamm.cn/badge.svg?key=Base&value=ThinkPHP6"/>
+<img src="https://svg.hamm.cn/badge.svg?key=Data&value=MySQL5.5"/>
+<img src="https://svg.hamm.cn/badge.svg?key=Runtime&value=PHP7.1"/>
+<img src="https://svg.hamm.cn/badge.svg?key=License&value=Apache-2.0"/>
 </p>
 
 ### 介绍
