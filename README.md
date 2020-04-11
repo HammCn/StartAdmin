@@ -1,7 +1,4 @@
 <p align="center">
-    <img src="https://svg.hamm.cn/gitee_project.svg?user=hamm&project=StartAdmin"/>
-</p>
-<p align="center">
 <img width="500" src="https://images.gitee.com/uploads/images/2020/0408/002846_2e9986dd_145025.png"/>
 </p>
 <p align="center">
