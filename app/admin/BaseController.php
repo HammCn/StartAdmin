@@ -50,13 +50,13 @@ abstract class BaseController
     protected $table = '';
     //主键value
     protected $pk_value = '';
-	/**
-	 * 构造方法
-	 * @access public
-	 * @param  App  $app  应用对象
-	 */
-	public function __construct(App $app)
-	{
+    /**
+     * 构造方法
+     * @access public
+     * @param  App  $app  应用对象
+     */
+    public function __construct(App $app)
+    {
         $this->app     = $app;
         $this->request = $this->app->request;
 
@@ -85,7 +85,7 @@ abstract class BaseController
         $this->confModel = new ConfModel();
         $this->logModel = new LogModel();
 
-        
+
         $configs = $this->confModel->select()->toArray();
         $c = [];
         foreach ($configs as $config) {
@@ -96,7 +96,7 @@ abstract class BaseController
         if (!($this->controller == "User" && in_array($this->action, ['login', 'resetPassword', 'reg']))) {
             $this->auth();
         }
-    }    
+    }
     /**
      * 后台简单的身份判断
      *
@@ -104,9 +104,6 @@ abstract class BaseController
      */
     protected function auth()
     {
-        $access_token = cookie('access_token');
-        View::assign("access_token", $access_token);
-        cookie("access_token", $access_token);
         $callback = "/admin";
         if (strtolower($this->controller) != "index") {
             $callback .= "/" . strtolower($this->controller);
@@ -114,10 +111,13 @@ abstract class BaseController
         if ($this->action != "index") {
             $callback .= "/" . $this->action;
         }
+        $access_token = cookie('access_token');
         if (!$access_token) {
             header('Location: /admin/user/login/?callback=' . urlencode($callback));
             die;
         }
+        View::assign("access_token", $access_token);
+        // setCookie("access_token", $access_token, time() + 3600, "/");
         $this->user = $this->userModel->getUserByAccessToken($access_token);
         if (!$this->user) {
             header('Location: /admin/user/login/?callback=' . urlencode($callback));

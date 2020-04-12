@@ -39,25 +39,13 @@ class Wemenu extends BaseController
             // "字段名称"=>"该字段不能为空"
             "wemenu_name" => "菜单名称必须填写",
         ];
-        $this->thisModel = new WemenuModel();
+        $this->model = new WemenuModel();
     }
     public function add()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
-        if ($error) {
-            return $error;
-        }
         foreach ($this->insertRequire as $k => $v) {
             if (!input($k)) {
-                return jerr($v);
+                jerr($v);
             }
         }
         $data = [];
@@ -67,15 +55,15 @@ class Wemenu extends BaseController
             }
         }
         if ($data['wemenu_pid'] == 0) {
-            $parentCount = $this->thisModel->where('wemenu_pid', 0)->count();
+            $parentCount = $this->model->where('wemenu_pid', 0)->count();
             if ($parentCount >= 3) {
-                return jerr("父菜单最多允许三个，添加失败！");
+                jerr("父菜单最多允许三个，添加失败！");
             }
         }
         $data[$this->table . "_updatetime"] = time();
         $data[$this->table . "_createtime"] = time();
-        $this->thisModel->insert($data);
-        return jok('添加成功');
+        $this->model->insert($data);
+        jok('添加成功');
     }
     /**
      * 获取列表
@@ -84,75 +72,39 @@ class Wemenu extends BaseController
      */
     public function getList()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
-        if ($error) {
-            return $error;
-        }
-        $dataList = $this->thisModel->where('wemenu_pid', 0)->select()->toArray();
+        $dataList = $this->model->where('wemenu_pid', 0)->select()->toArray();
         for ($i = 0; $i < count($dataList); $i++) {
-            $itemList = $this->thisModel->where("wemenu_pid", $dataList[$i]['wemenu_id'])->select()->toArray();
+            $itemList = $this->model->where("wemenu_pid", $dataList[$i]['wemenu_id'])->select()->toArray();
             $dataList[$i]['sub'] = $itemList;
         }
-        return jok('数据获取成功', $dataList);
+        jok('数据获取成功', $dataList);
     }
     public function delete()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
-        if ($error) {
-            return $error;
-        }
         if (!input($this->pk)) {
-            return jerr($this->pk . "必须填写");
+            jerr($this->pk . "必须填写");
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
-            $item = $this->thisModel->where($map)->find();
+            $item = $this->model->where($map)->find();
             if (empty($item)) {
-                return jerr("数据查询失败");
+                jerr("数据查询失败");
             }
-            $this->thisModel->where($map)->delete();
-            $this->thisModel->where('wemenu_pid', $this->pk_value)->delete();
+            $this->model->where($map)->delete();
+            $this->model->where('wemenu_pid', $this->pk_value)->delete();
         } else {
             $list = explode(',', $this->pk_value);
-            $this->thisModel->where($this->pk, 'in', $list)->delete();
-            $this->thisModel->where('wemenu_pid', 'in', $list)->delete();
+            $this->model->where($this->pk, 'in', $list)->delete();
+            $this->model->where('wemenu_pid', 'in', $list)->delete();
         }
-        return jok('删除成功');
+        jok('删除成功');
     }
     public function publish()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
-        if ($error) {
-            return $error;
-        }
-        $dataList = $this->thisModel->where('wemenu_pid', 0)->select()->toArray();
+        $dataList = $this->model->where('wemenu_pid', 0)->select()->toArray();
         $wechatMenu = [];
         foreach ($dataList as $parent) {
-            $children = $this->thisModel->where('wemenu_pid', $parent['wemenu_id'])->select()->toArray();
+            $children = $this->model->where('wemenu_pid', $parent['wemenu_id'])->select()->toArray();
 
             $menu = [
                 'name' => urlencode($parent['wemenu_name']),
@@ -199,7 +151,7 @@ class Wemenu extends BaseController
         $wechat_appid = config('startadmin.wechat_appid');
         $wechat_appkey = config('startadmin.wechat_appkey');
         if (!$wechat_appid || !$wechat_appkey) {
-            return jerr('请先配置微信appid和secret!');
+            jerr('请先配置微信appid和secret!');
         }
         $this->wechat_config = [
             'app_id' =>  $wechat_appid,
@@ -213,9 +165,9 @@ class Wemenu extends BaseController
         $easyWeChat = Factory::officialAccount($this->wechat_config);
         $ret = $easyWeChat->menu->create(json_decode(urldecode(json_encode($wechatMenu))));
         if ($ret['errcode'] == 0) {
-            return jok('菜单已成功发布到微信');
+            jok('菜单已成功发布到微信');
         } else {
-            return jerr($ret['errmsg']);
+            jerr($ret['errmsg']);
         }
     }
 }

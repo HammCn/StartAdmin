@@ -20,34 +20,22 @@ class System extends BaseController
      */
     public function build()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
-        if ($error) {
-            return $error;
-        }
         $table = strtolower(input("controller"));
         if (empty($table)) {
-            return jerr("请输入控制器名称");
+            jerr("请输入控制器名称");
         }
         $prefix = config('database.connections.mysql.prefix');
         $database = config('database.connections.mysql.database');
         if (empty(input("nodeTitle"))) {
-            return jerr("请输入节点名称");
+            jerr("请输入节点名称");
         }
         $files = scandir(__DIR__);
         if (in_array(ucfirst($table) . ".php", $files)) {
-            return jerr("控制器已存在，生成失败");
+            jerr("控制器已存在，生成失败");
         }
         $tableExist =  Db::query('SHOW TABLES LIKE "' . $prefix . $table . '"');
         if (count($tableExist) > 0) {
-            return jerr("生成失败，该表已存在");
+            jerr("生成失败，该表已存在");
         }
         $fieldBlackList = [$table . '_id', $table . '_status', $table . '_createtime', $table . '_updatetime'];
         $fieldList = input('fieldList');
@@ -304,7 +292,7 @@ class System extends BaseController
         $myfile = fopen(__DIR__ . "/../../admin/view/" . $table . "/index.html", "w") or die("Unable to open file!");
         fwrite($myfile, $file);
         fclose($myfile);
-        return jok('生成成功');
+        jok('生成成功');
     }
     public function getCaptcha()
     {
@@ -313,7 +301,7 @@ class System extends BaseController
         $code = strtoupper($validateModel->getCode());
         $token = sha1($code .  time()) . rand(100000, 999999);
         cache($token, $code, 60);
-        return jok('验证码生成成功', [
+        jok('验证码生成成功', [
             'img' => $imgData,
             'token' => $token
         ]);

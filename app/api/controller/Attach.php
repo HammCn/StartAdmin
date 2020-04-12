@@ -21,22 +21,10 @@ class Attach extends BaseController
             "attach_desc" => "like", //相似筛选
             "attach_readonly" => "=", //相似筛选
         ];
-        $this->thisModel = new AttachModel();
+        $this->model = new AttachModel();
     }
     public function uploadImage()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
-        if ($error) {
-            return $error;
-        }
         $file = request()->file('file');
         try {
             validate(['file' => 'filesize:' . config("startadmin.upload_max_image") . '|fileExt:' . config("startadmin.upload_image_type")])
@@ -50,30 +38,18 @@ class Attach extends BaseController
                 'attach_updatetime' => time(),
                 'attach_user' => $this->user['user_id']
             );
-            $attach_id = $this->thisModel->insertGetId($attach_data);
-            $attach_data = $this->thisModel->where(["attach_id" => $attach_id])->find();
+            $attach_id = $this->model->insertGetId($attach_data);
+            $attach_data = $this->model->where(["attach_id" => $attach_id])->find();
             if (input("?extend")) {
                 $attach_data['extend'] = input("extend");
             }
-            return jok('上传成功！', $attach_data);
+            jok('上传成功！', $attach_data);
         } catch (ValidateException $e) {
-            return jerr($e);
+            jerr($e);
         }
     }
     public function uploadFile()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
-        if ($error) {
-            return $error;
-        }
         $file = request()->file('file');
         try {
             validate(['file' => 'filesize:' . config("startadmin.upload_max_file") . '|fileExt:' . config("startadmin.upload_file_type")])
@@ -87,14 +63,14 @@ class Attach extends BaseController
                 'attach_updatetime' => time(),
                 'attach_user' => $this->user['user_id']
             );
-            $attach_id = $this->thisModel->insertGetId($attach_data);
-            $attach_data = $this->thisModel->where(["attach_id" => $attach_id])->find();
+            $attach_id = $this->model->insertGetId($attach_data);
+            $attach_data = $this->model->where(["attach_id" => $attach_id])->find();
             if (input("?extend")) {
                 $attach_data['extend'] = input("extend");
             }
-            return jok('上传成功！', $attach_data);
+            jok('上传成功！', $attach_data);
         } catch (ValidateException $e) {
-            return jerr($e);
+            jerr($e);
         }
     }
 }

@@ -15,7 +15,7 @@ class Auth extends BaseController
         $this->searchFilter = [
             "auth_id" => "=", //相同筛选
         ];
-        $this->thisModel = new AuthModel();
+        $this->model = new AuthModel();
     }
 
     /**
@@ -25,19 +25,7 @@ class Auth extends BaseController
      */
     public function clean()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
-        if ($error) {
-            return $error;
-        }
-        $this->thisModel->cleanAuth();
-        return jok('授权信息清理成功');
+        $this->model->cleanAuth();
+        jok('授权信息清理成功');
     }
 }
