@@ -32,15 +32,7 @@ class Group extends BaseController
     }
     public function update()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -84,15 +76,7 @@ class Group extends BaseController
      */
     public function disable()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -129,15 +113,7 @@ class Group extends BaseController
      */
     public function enable()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -173,15 +149,7 @@ class Group extends BaseController
      */
     public function delete()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -226,15 +194,7 @@ class Group extends BaseController
      */
     public function authorize()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -276,15 +236,7 @@ class Group extends BaseController
      */
     public function getAuthorize()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -304,23 +256,11 @@ class Group extends BaseController
     }
     public function getList()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
         $dataList = $this->thisModel->select();
         return jok('用户组列表获取成功', $dataList);
-    }
-    public function __call($method, $args)
-    {
-        return $this->index();
     }
 }

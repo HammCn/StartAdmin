@@ -94,7 +94,7 @@ abstract class BaseController
         config($c, 'startadmin');
 
         if (!($this->controller == "User" && in_array($this->action, ['login', 'resetPassword', 'reg']))) {
-            $this->auth();
+            $this->access();
         }
     }    
     /**
@@ -102,7 +102,7 @@ abstract class BaseController
      *
      * @return void
      */
-    protected function auth()
+    protected function access()
     {
         $access_token = cookie('access_token');
         View::assign("access_token", $access_token);

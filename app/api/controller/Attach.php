@@ -25,15 +25,7 @@ class Attach extends BaseController
     }
     public function uploadImage()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -62,15 +54,7 @@ class Attach extends BaseController
     }
     public function uploadFile()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }

@@ -23,10 +23,10 @@ class Node extends BaseController
             "node_action" => "like", //相似筛选
         ];
         $this->insertFields = [
-            "node_title", "node_desc", "node_module", "node_action", "node_controller", "node_icon", "node_show", "node_pid", "node_order"
+            "node_title", "node_desc", "node_module", "node_action", "node_controller", "node_icon", "node_show", "node_pid", "node_order", "node_login", "node_access"
         ];
         $this->updateFields = [
-            "node_title", "node_desc", "node_module", "node_action", "node_controller", "node_icon", "node_show", "node_pid", "node_order"
+            "node_title", "node_desc", "node_module", "node_action", "node_controller", "node_icon", "node_show", "node_pid", "node_order", "node_login", "node_access"
         ];
         $this->insertRequire = [
             'node_title' => "节点名称必须填写",
@@ -41,15 +41,7 @@ class Node extends BaseController
 
     public function add()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -74,15 +66,7 @@ class Node extends BaseController
     }
     public function update()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -123,15 +107,7 @@ class Node extends BaseController
      */
     public function disable()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -168,15 +144,7 @@ class Node extends BaseController
      */
     public function enable()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -212,15 +180,7 @@ class Node extends BaseController
      */
     public function delete()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -250,15 +210,7 @@ class Node extends BaseController
 
     public function getList()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -305,19 +257,10 @@ class Node extends BaseController
      */
     public function show_menu()
     {
-        $error = $this->checkVersion();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
-        if ($error) {
-            return $error;
-        }
-        $map = [];
         if (isInteger($this->pk_value)) {
             $this->thisModel->where($this->pk, $this->pk_value)->update([
                 $this->table . "_show" => 1,
@@ -340,19 +283,10 @@ class Node extends BaseController
      */
     public function hide_menu()
     {
-        $error = $this->checkVersion();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
-        if ($error) {
-            return $error;
-        }
-        $map = [];
         if (isInteger($this->pk_value)) {
             $this->thisModel->where($this->pk, $this->pk_value)->update([
                 $this->table . "_show" => 0,

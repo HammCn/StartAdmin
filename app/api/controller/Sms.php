@@ -40,8 +40,4 @@ class Sms
             return jerr("手机号为必填信息，请填写后提交");
         }
     }
-    public function __call($method, $args)
-    {
-        return $this->index();
-    }
 }

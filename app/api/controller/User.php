@@ -53,15 +53,7 @@ class User extends BaseController
     }
     public function add()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -93,15 +85,7 @@ class User extends BaseController
     }
     public function update()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -154,15 +138,7 @@ class User extends BaseController
      */
     public function disable()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -199,15 +175,7 @@ class User extends BaseController
      */
     public function enable()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -244,15 +212,7 @@ class User extends BaseController
      */
     public function delete()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -277,15 +237,7 @@ class User extends BaseController
     }
     public function detail()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -303,15 +255,7 @@ class User extends BaseController
     }
     public function getList()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -349,10 +293,6 @@ class User extends BaseController
     }
     public function login()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
         if (!input("user_account")) {
             return jerr('请确认帐号是否正确填写');
         }
@@ -420,15 +360,7 @@ class User extends BaseController
     }
     public function motifyPassword()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -499,15 +431,7 @@ class User extends BaseController
      */
     public function getMyInfo()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -519,15 +443,7 @@ class User extends BaseController
     }
     public function updateMyInfo()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }

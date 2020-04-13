@@ -20,15 +20,7 @@ class System extends BaseController
      */
     public function build()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -308,6 +300,10 @@ class System extends BaseController
     }
     public function getCaptcha()
     {
+        $error = $this->access();
+        if ($error) {
+            return $error;
+        }
         $validateModel = new ValidateModel();
         $imgData = $validateModel->getImg();
         $code = strtoupper($validateModel->getCode());

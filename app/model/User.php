@@ -122,10 +122,20 @@ class User extends BaseModel
     {
         $Access = new Access();
         $access = $Access->where([
-            "access_token" => $access_token,
-            "access_status" => 0
+            "access_token" => $access_token
         ])->find();
         if ($access) {
+            if (time() > $access['access_updatetime'] + 7200) {
+                return false;
+            }
+            if ($access['access_updatetime'] - $access['access_createtime'] > 86400) {
+                return false;
+            }
+            $Access->where([
+                "access_id" => $access['access_id'],
+            ])->update([
+                'access_updatetime' => time()
+            ]);
             $user = $this->where("user_id", $access['access_user'])->find();
             return $user->toArray() ?? false;
         } else {
