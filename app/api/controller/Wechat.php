@@ -20,6 +20,6 @@ class Wechat extends BaseController
             "wechat_id" => "=",
             "wechat_nick" => "like"
         ];
-        $this->thisModel = new WechatModel();
+        $this->model = new WechatModel();
     }
 }

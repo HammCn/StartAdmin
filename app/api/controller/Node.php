@@ -36,7 +36,7 @@ class Node extends BaseController
             'node_title' => "节点名称必须填写",
             'node_module' => "节点模块必须填写",
         ];
-        $this->thisModel = new NodeModel();
+        $this->model = new NodeModel();
     }
 
     public function add()
@@ -47,7 +47,7 @@ class Node extends BaseController
         }
         foreach ($this->insertRequire as $k => $v) {
             if (!input($k)) {
-                return jerr($v);
+                jerr($v);
             }
         }
         $data = [];
@@ -61,8 +61,8 @@ class Node extends BaseController
         $data['node_action'] = input("node_action") ? strtolower($data['node_action']) : "";
         $data[$this->table . "_updatetime"] = time();
         $data[$this->table . "_createtime"] = time();
-        $this->thisModel->insert($data);
-        return jok('用户添加成功');
+        $this->model->insert($data);
+        jok('用户添加成功');
     }
     public function update()
     {
@@ -71,19 +71,19 @@ class Node extends BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            return jerr($this->pk . "必须填写");
+            jerr($this->pk . "必须填写");
         }
         if (!isInteger($this->pk_value)) {
-            return jerr("修改失败,参数错误");
+            jerr("修改失败,参数错误");
         }
         $map[$this->pk] = $this->pk_value;
-        $item = $this->thisModel->where($map)->find();
+        $item = $this->model->where($map)->find();
         if (empty($item)) {
-            return jerr("数据查询失败");
+            jerr("数据查询失败");
         }
         foreach ($this->updateRequire as $k => $v) {
             if (!input($k)) {
-                return jerr($v);
+                jerr($v);
             }
         }
         $data = [];
@@ -96,8 +96,8 @@ class Node extends BaseController
         $data['node_controller'] = input("node_controller") ? strtolower($data['node_controller']) : "";
         $data['node_action'] = input("node_action") ? strtolower($data['node_action']) : "";
         $data[$this->table . "_updatetime"] = time();
-        $this->thisModel->where($this->pk, $this->pk_value)->update($data);
-        return jok('节点信息更新成功');
+        $this->model->where($this->pk, $this->pk_value)->update($data);
+        jok('节点信息更新成功');
     }
 
     /**
@@ -112,29 +112,29 @@ class Node extends BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            return jerr($this->pk . "参数必须填写");
+            jerr($this->pk . "参数必须填写");
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
-            $item = $this->thisModel->where($map)->find();
+            $item = $this->model->where($map)->find();
             if (empty($item)) {
-                return jerr("数据查询失败");
+                jerr("数据查询失败");
             }
             if ($item[$this->table . "_system"] == 1) {
-                return jerr("系统节点不允许操作！");
+                jerr("系统节点不允许操作！");
             }
-            $this->thisModel->where($map)->where($this->pk . " > 1")->update([
+            $this->model->where($map)->where($this->pk . " > 1")->update([
                 $this->table . "_status" => 1,
                 $this->table . "_updatetime" => time(),
             ]);
         } else {
             $list = explode(',', $this->pk_value);
-            $this->thisModel->where($this->pk, 'in', $list)->where($this->table . "_system", 0)->update([
+            $this->model->where($this->pk, 'in', $list)->where($this->table . "_system", 0)->update([
                 $this->table . "_status" => 1,
                 $this->table . "_updatetime" => time(),
             ]);
         }
-        return jok("禁用节点成功");
+        jok("禁用节点成功");
     }
 
     /**
@@ -149,28 +149,28 @@ class Node extends BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            return jerr($this->pk . "参数必须填写");
+            jerr($this->pk . "参数必须填写");
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
-            $item = $this->thisModel->where($map)->find();
+            $item = $this->model->where($map)->find();
             if (empty($item)) {
-                return jerr("数据查询失败");
+                jerr("数据查询失败");
             }
             if ($item[$this->table . "_system"] == 1) {
-                return jerr("系统节点不允许操作！");
+                jerr("系统节点不允许操作！");
             }
-            $this->thisModel->where($map)->where($this->pk . " > 1")->update([
+            $this->model->where($map)->where($this->pk . " > 1")->update([
                 $this->table . "_status" => 0,
                 $this->table . "_updatetime" => time(),
             ]);
         } else {
             $list = explode(',', $this->pk_value);
-            $this->thisModel->where($this->pk, 'in', $list)->where($this->table . "_system", 0)->update([
+            $this->model->where($this->pk, 'in', $list)->where($this->table . "_system", 0)->update([
                 $this->table . "_updatetime" => time(),
             ]);
         }
-        return jok("启用节点成功");
+        jok("启用节点成功");
     }
 
     /**
@@ -185,27 +185,27 @@ class Node extends BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            return jerr($this->pk . "必须填写");
+            jerr($this->pk . "必须填写");
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
-            $item = $this->thisModel->where($map)->find();
+            $item = $this->model->where($map)->find();
             if (empty($item)) {
-                return jerr("数据查询失败");
+                jerr("数据查询失败");
             }
             if ($item[$this->table . "_system"] == 1) {
-                return jerr("系统节点不允许操作！");
+                jerr("系统节点不允许操作！");
             }
-            $this->thisModel->where($map)->where($this->table . "_system", 0)->delete();
+            $this->model->where($map)->where($this->table . "_system", 0)->delete();
             //删除对应ID的授权记录
             $this->authModel->where("auth_node", $this->pk_value)->delete();
         } else {
             $list = explode(',', $this->pk_value);
-            $this->thisModel->where($this->pk, 'in', $list)->where($this->table . "_system", 0)->delete();
+            $this->model->where($this->pk, 'in', $list)->where($this->table . "_system", 0)->delete();
             //删除对应ID的授权记录
             $this->authModel->where("auth_node", 'in', $list)->delete();
         }
-        return jok('删除节点成功');
+        jok('删除节点成功');
     }
 
     public function getList()
@@ -218,7 +218,7 @@ class Node extends BaseController
         $map = [
             "node_pid" => 0
         ];
-        $datalist = $this->thisModel->where($map)->order($order)->select();
+        $datalist = $this->model->where($map)->order($order)->select();
         $subMap = [];
         $filter = input();
         foreach ($filter as $k => $v) {
@@ -242,10 +242,10 @@ class Node extends BaseController
             }
         }
         for ($i = 0; $i < count($datalist); $i++) {
-            $subDatalist = $this->thisModel->field($this->selectList)->where($subMap)->where($this->table . "_pid", $datalist[$i][$this->pk])->order($order)->select();
+            $subDatalist = $this->model->field($this->selectList)->where($subMap)->where($this->table . "_pid", $datalist[$i][$this->pk])->order($order)->select();
             $datalist[$i]['sub'] = $subDatalist;
         }
-        return jok('success', [
+        jok('success', [
             'data'  => $datalist,
             'map'   => $map
         ]);
@@ -262,18 +262,18 @@ class Node extends BaseController
             return $error;
         }
         if (isInteger($this->pk_value)) {
-            $this->thisModel->where($this->pk, $this->pk_value)->update([
+            $this->model->where($this->pk, $this->pk_value)->update([
                 $this->table . "_show" => 1,
                 $this->table . "_updatetime" => time(),
             ]);
         } else {
             $list = explode(',', $this->pk_value);
-            $this->thisModel->where($this->pk, 'in', $list)->update([
+            $this->model->where($this->pk, 'in', $list)->update([
                 $this->table . "_show" => 1,
                 $this->table . "_updatetime" => time(),
             ]);
         }
-        return jok("显示成功");
+        jok("显示成功");
     }
 
     /**
@@ -288,17 +288,17 @@ class Node extends BaseController
             return $error;
         }
         if (isInteger($this->pk_value)) {
-            $this->thisModel->where($this->pk, $this->pk_value)->update([
+            $this->model->where($this->pk, $this->pk_value)->update([
                 $this->table . "_show" => 0,
                 $this->table . "_updatetime" => time(),
             ]);
         } else {
             $list = explode(',', $this->pk_value);
-            $this->thisModel->where($this->pk, 'in', $list)->update([
+            $this->model->where($this->pk, 'in', $list)->update([
                 $this->table . "_show" => 0,
                 $this->table . "_updatetime" => time(),
             ]);
         }
-        return jok("隐藏成功");
+        jok("隐藏成功");
     }
 }

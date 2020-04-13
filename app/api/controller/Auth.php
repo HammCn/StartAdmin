@@ -15,7 +15,7 @@ class Auth extends BaseController
         $this->searchFilter = [
             "auth_id" => "=", //相同筛选
         ];
-        $this->thisModel = new AuthModel();
+        $this->model = new AuthModel();
     }
 
     /**

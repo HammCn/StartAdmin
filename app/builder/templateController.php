@@ -38,6 +38,6 @@ class TMP_controller extends BaseController
             // "字段名称"=>"该字段不能为空"
             //tmp_require
         ];
-        $this->thisModel = new TMP_controllerModel();
+        $this->model = new TMP_controllerModel();
     }
 }

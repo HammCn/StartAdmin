@@ -87,19 +87,19 @@ class Validate
     public function validateImgCode($token, $code)
     {
         if (!$token) {
-            return jerr("TOKEN参数丢失");
+            jerr("TOKEN参数丢失");
         }
         if (!$code) {
-            return jerr("请输入验证码");
+            jerr("请输入验证码");
         }
         $code = strtoupper(input('code'));
         $token = input('token');
         $_code = cache($token);
         if (!$_code) {
-            return jerr("验证码已过期");
+            jerr("验证码已过期");
         }
         if ($code != $_code) {
-            return jerr('验证码错误');
+            jerr('验证码错误');
         }
         // 删除设置的缓存
         cache($token, null);

@@ -15,7 +15,7 @@ class Log extends BaseController
         $this->searchFilter = [
             "log_id" => "=", //相同筛选
         ];
-        $this->thisModel = new LogModel();
+        $this->model = new LogModel();
     }
     /**
      * 清除访问日志

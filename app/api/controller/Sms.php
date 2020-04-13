@@ -8,10 +8,10 @@ use app\model\Validate as ValidateModel;
 
 class Sms
 {
-    protected $thisModel = null;
+    protected $model = null;
     public function __construct(App $app)
     {
-        $this->thisModel = new SmsModel();
+        $this->model = new SmsModel();
     }
 
     public function send()
@@ -26,18 +26,18 @@ class Sms
             $phone = input('phone');
             $code = cache("SMS_" . $phone);
             if ($code) {
-                return jerr('发送短信太频繁，请稍候再试');
+                jerr('发送短信太频繁，请稍候再试');
             }
 
             $code = rand(100000, 999999);
-            $error = $this->thisModel->sendSms($phone, $code);
+            $error = $this->model->sendSms($phone, $code);
             if ($error) {
                 return $error;
             }
             cache('SMS_' . $phone, $code, 300);
-            return jok('短信验证码已经发送至你的手机');
+            jok('短信验证码已经发送至你的手机');
         } else {
-            return jerr("手机号为必填信息，请填写后提交");
+            jerr("手机号为必填信息，请填写后提交");
         }
     }
 }

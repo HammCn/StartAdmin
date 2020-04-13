@@ -42,7 +42,7 @@ class Weapp extends BaseController
             // "字段名称"=>"该字段不能为空"
 
         ];
-        $this->thisModel = new WeappModel();
+        $this->model = new WeappModel();
     }
     /**
      * 初始化微信小程序配置
@@ -54,7 +54,7 @@ class Weapp extends BaseController
         $this->weapp_appid = config('startadmin.weapp_appid'); //小程序APPID
         $this->weapp_appkey = config("startadmin.weapp_appkey"); //小程序的APPKEY
         if (!$this->weapp_appid || !$this->weapp_appkey) {
-            return jerr("请先配置微信小程序appid和secret");
+            jerr("请先配置微信小程序appid和secret");
         }
         $weapp_config = [
             'app_id' => $this->weapp_appid,
@@ -85,15 +85,15 @@ class Weapp extends BaseController
             if (array_key_exists("session_key", $ret)) {
                 $session_key = $ret['session_key'];
                 $openid = $ret['openid'];
-                return jok('', [
+                jok('', [
                     "session_key" => $session_key,
                     "openid" => $openid
                 ]);
             } else {
-                return jerr("获取session_key失败");
+                jerr("获取session_key失败");
             }
         } else {
-            return jerr("你应该传code给我");
+            jerr("你应该传code给我");
         }
     }
     /**
@@ -115,17 +115,17 @@ class Weapp extends BaseController
                 $decryptedData = $this->easyWeApp->encryptor->decryptData($session_key, $iv, $encryptedData);
 
                 if (array_key_exists("phoneNumber", $decryptedData)) {
-                    return jok('success', [
+                    jok('success', [
                         'phone' => $decryptedData['phoneNumber']
                     ]);
                 } else {
-                    return jerr("解密出了问题");
+                    jerr("解密出了问题");
                 }
             } catch (\Exception $e) {
-                return jerr($e->getMessage());
+                jerr($e->getMessage());
             }
         } else {
-            return jerr("是不是所有的参数都POST过来了");
+            jerr("是不是所有的参数都POST过来了");
         }
     }
 }
