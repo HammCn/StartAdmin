@@ -8,6 +8,6 @@ class Index extends BaseController
 {
     public function index()
     {
-        jok("Hello World!");
+        return jok("Hello World!");
     }
 }

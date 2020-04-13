@@ -54,7 +54,7 @@ class Weapp extends BaseController
         $this->weapp_appid = config('startadmin.weapp_appid'); //小程序APPID
         $this->weapp_appkey = config("startadmin.weapp_appkey"); //小程序的APPKEY
         if (!$this->weapp_appid || !$this->weapp_appkey) {
-            jerr("请先配置微信小程序appid和secret");
+            return jerr("请先配置微信小程序appid和secret");
         }
         $weapp_config = [
             'app_id' => $this->weapp_appid,
@@ -85,15 +85,15 @@ class Weapp extends BaseController
             if (array_key_exists("session_key", $ret)) {
                 $session_key = $ret['session_key'];
                 $openid = $ret['openid'];
-                jok('', [
+                return jok('', [
                     "session_key" => $session_key,
                     "openid" => $openid
                 ]);
             } else {
-                jerr("获取session_key失败");
+                return jerr("获取session_key失败");
             }
         } else {
-            jerr("你应该传code给我");
+            return jerr("你应该传code给我");
         }
     }
     /**
@@ -115,17 +115,17 @@ class Weapp extends BaseController
                 $decryptedData = $this->easyWeApp->encryptor->decryptData($session_key, $iv, $encryptedData);
 
                 if (array_key_exists("phoneNumber", $decryptedData)) {
-                    jok('success', [
+                    return jok('success', [
                         'phone' => $decryptedData['phoneNumber']
                     ]);
                 } else {
-                    jerr("解密出了问题");
+                    return jerr("解密出了问题");
                 }
             } catch (\Exception $e) {
-                jerr($e->getMessage());
+                return jerr($e->getMessage());
             }
         } else {
-            jerr("是不是所有的参数都POST过来了");
+            return jerr("是不是所有的参数都POST过来了");
         }
     }
 }

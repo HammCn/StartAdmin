@@ -8,6 +8,6 @@ class Error extends BaseController
 {
     public function index()
     {
-        jerr("Api not found", 404);
+        return jerr("Api not found", 404);
     }
 }

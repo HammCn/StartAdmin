@@ -42,7 +42,7 @@ class Conf extends BaseController
         }
         foreach ($this->insertRequire as $k => $v) {
             if (!input($k)) {
-                jerr($v);
+                return jerr($v);
             }
         }
         $data = [];
@@ -54,7 +54,7 @@ class Conf extends BaseController
         $data[$this->table . "_updatetime"] = time();
         $data[$this->table . "_createtime"] = time();
         $this->model->insert($data);
-        jok('用户添加成功');
+        return jok('用户添加成功');
     }
     public function update()
     {
@@ -63,19 +63,19 @@ class Conf extends BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            jerr($this->pk . "必须填写");
+            return jerr($this->pk . "必须填写");
         }
         if (!isInteger($this->pk_value)) {
-            jerr("修改失败,参数错误");
+            return jerr("修改失败,参数错误");
         }
         $map[$this->pk] = $this->pk_value;
         $item = $this->model->where($map)->find();
         if (empty($item)) {
-            jerr("数据查询失败");
+            return jerr("数据查询失败");
         }
         foreach ($this->updateRequire as $k => $v) {
             if (!input($k)) {
-                jerr($v);
+                return jerr($v);
             }
         }
         $data = [];
@@ -93,7 +93,7 @@ class Conf extends BaseController
             unset($data[$this->table . "_value"]);
         }
         $this->model->where($this->pk, $this->pk_value)->update($data);
-        jok('配置信息更新成功');
+        return jok('配置信息更新成功');
     }
 
     /**
@@ -108,16 +108,16 @@ class Conf extends BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            jerr($this->pk . "参数必须填写");
+            return jerr($this->pk . "参数必须填写");
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
             $item = $this->model->where($map)->find();
             if (empty($item)) {
-                jerr("数据查询失败");
+                return jerr("数据查询失败");
             }
             if ($item[$this->table . "_system"] == 1) {
-                jerr("系统配置不允许操作！");
+                return jerr("系统配置不允许操作！");
             }
             $this->model->where($map)->where($this->pk . " > 1")->update([
                 $this->table . "_status" => 1,
@@ -130,7 +130,7 @@ class Conf extends BaseController
                 $this->table . "_updatetime" => time(),
             ]);
         }
-        jok("禁用配置成功");
+        return jok("禁用配置成功");
     }
 
     /**
@@ -145,16 +145,16 @@ class Conf extends BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            jerr($this->pk . "参数必须填写");
+            return jerr($this->pk . "参数必须填写");
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
             $item = $this->model->where($map)->find();
             if (empty($item)) {
-                jerr("数据查询失败");
+                return jerr("数据查询失败");
             }
             if ($item[$this->table . "_system"] == 1) {
-                jerr("系统配置不允许操作！");
+                return jerr("系统配置不允许操作！");
             }
             $this->model->where($map)->where($this->pk . " > 1")->update([
                 $this->table . "_status" => 0,
@@ -166,7 +166,7 @@ class Conf extends BaseController
                 $this->table . "_updatetime" => time(),
             ]);
         }
-        jok("启用配置成功");
+        return jok("启用配置成功");
     }
 
     /**
@@ -181,16 +181,16 @@ class Conf extends BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            jerr($this->pk . "必须填写");
+            return jerr($this->pk . "必须填写");
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
             $item = $this->model->where($map)->find();
             if (empty($item)) {
-                jerr("数据查询失败");
+                return jerr("数据查询失败");
             }
             if ($item[$this->table . "_system"] == 1) {
-                jerr("系统配置不允许操作！");
+                return jerr("系统配置不允许操作！");
             }
             $this->model->where($map)->where($this->table . "_system", 0)->delete();
         } else {
@@ -204,7 +204,7 @@ class Conf extends BaseController
                 }
             }
         }
-        jok('删除配置成功');
+        return jok('删除配置成功');
     }
 
     /**
@@ -219,21 +219,21 @@ class Conf extends BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            jerr($this->pk . "必须填写");
+            return jerr($this->pk . "必须填写");
         }
         if (!isInteger($this->pk_value)) {
-            jerr("修改失败,参数错误");
+            return jerr("修改失败,参数错误");
         }
         $map[$this->pk] = $this->pk_value;
         $item = $this->model->where($map)->find();
         if (empty($item)) {
-            jerr("数据查询失败");
+            return jerr("数据查询失败");
         }
         $this->authModel->where([
             "auth_conf" => $this->pk_value
         ])->delete();
         if ($item[$this->pk] == 1) {
-            jerr("超级管理组无需授权！");
+            return jerr("超级管理组无需授权！");
         }
         $node_ids = explode(",", input("node_ids"));
         foreach ($node_ids as $node_id) {
@@ -247,7 +247,7 @@ class Conf extends BaseController
                 "auth_updatetime" => time()
             ]);
         }
-        jok('配置授权成功');
+        return jok('配置授权成功');
     }
     /**
      * 读取基本配置
@@ -285,6 +285,6 @@ class Conf extends BaseController
             }
             $this->model->where("conf_key", $k)->update(["conf_value" => $v]);
         }
-        jok("配置修改成功");
+        return jok("配置修改成功");
     }
 }

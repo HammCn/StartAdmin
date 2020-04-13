@@ -49,7 +49,7 @@ class Wemenu extends BaseController
         }
         foreach ($this->insertRequire as $k => $v) {
             if (!input($k)) {
-                jerr($v);
+                return jerr($v);
             }
         }
         $data = [];
@@ -61,13 +61,13 @@ class Wemenu extends BaseController
         if ($data['wemenu_pid'] == 0) {
             $parentCount = $this->model->where('wemenu_pid', 0)->count();
             if ($parentCount >= 3) {
-                jerr("父菜单最多允许三个，添加失败！");
+                return jerr("父菜单最多允许三个，添加失败！");
             }
         }
         $data[$this->table . "_updatetime"] = time();
         $data[$this->table . "_createtime"] = time();
         $this->model->insert($data);
-        jok('添加成功');
+        return jok('添加成功');
     }
     /**
      * 获取列表
@@ -85,7 +85,7 @@ class Wemenu extends BaseController
             $itemList = $this->model->where("wemenu_pid", $dataList[$i]['wemenu_id'])->select()->toArray();
             $dataList[$i]['sub'] = $itemList;
         }
-        jok('数据获取成功', $dataList);
+        return jok('数据获取成功', $dataList);
     }
     public function delete()
     {
@@ -94,13 +94,13 @@ class Wemenu extends BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            jerr($this->pk . "必须填写");
+            return jerr($this->pk . "必须填写");
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
             $item = $this->model->where($map)->find();
             if (empty($item)) {
-                jerr("数据查询失败");
+                return jerr("数据查询失败");
             }
             $this->model->where($map)->delete();
             $this->model->where('wemenu_pid', $this->pk_value)->delete();
@@ -109,7 +109,7 @@ class Wemenu extends BaseController
             $this->model->where($this->pk, 'in', $list)->delete();
             $this->model->where('wemenu_pid', 'in', $list)->delete();
         }
-        jok('删除成功');
+        return jok('删除成功');
     }
     public function publish()
     {
@@ -167,7 +167,7 @@ class Wemenu extends BaseController
         $wechat_appid = config('startadmin.wechat_appid');
         $wechat_appkey = config('startadmin.wechat_appkey');
         if (!$wechat_appid || !$wechat_appkey) {
-            jerr('请先配置微信appid和secret!');
+            return jerr('请先配置微信appid和secret!');
         }
         $this->wechat_config = [
             'app_id' =>  $wechat_appid,
@@ -181,9 +181,9 @@ class Wemenu extends BaseController
         $easyWeChat = Factory::officialAccount($this->wechat_config);
         $ret = $easyWeChat->menu->create(json_decode(urldecode(json_encode($wechatMenu))));
         if ($ret['errcode'] == 0) {
-            jok('菜单已成功发布到微信');
+            return jok('菜单已成功发布到微信');
         } else {
-            jerr($ret['errmsg']);
+            return jerr($ret['errmsg']);
         }
     }
 }

@@ -37,22 +37,22 @@ class Group extends BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            jerr($this->pk . "必须填写");
+            return jerr($this->pk . "必须填写");
         }
         if (!isInteger($this->pk_value)) {
-            jerr("修改失败,参数错误");
+            return jerr("修改失败,参数错误");
         }
         $map[$this->pk] = $this->pk_value;
         $item = $this->model->where($map)->find();
         if (empty($item)) {
-            jerr("数据查询失败");
+            return jerr("数据查询失败");
         }
         if (intval($this->pk_value) == 1) {
-            jerr("无法修改超管用户信息");
+            return jerr("无法修改超管用户信息");
         }
         foreach ($this->updateRequire as $k => $v) {
             if (!input($k)) {
-                jerr($v);
+                return jerr($v);
             }
         }
         $data = [];
@@ -62,11 +62,11 @@ class Group extends BaseController
             }
         }
         if (!input($this->table . "_name")) {
-            jerr("组名称必须填写");
+            return jerr("组名称必须填写");
         }
         $data[$this->table . "_updatetime"] = time();
         $this->model->where($this->pk, $this->pk_value)->update($data);
-        jok('用户组信息更新成功');
+        return jok('用户组信息更新成功');
     }
 
     /**
@@ -81,16 +81,16 @@ class Group extends BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            jerr($this->pk . "参数必须填写");
+            return jerr($this->pk . "参数必须填写");
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
             $item = $this->model->where($map)->find();
             if (empty($item)) {
-                jerr("数据查询失败");
+                return jerr("数据查询失败");
             }
             if ($item[$this->table . "_system"] == 1) {
-                jerr("系统用户组不允许操作！");
+                return jerr("系统用户组不允许操作！");
             }
             $this->model->where($map)->where($this->pk . " > 1")->update([
                 $this->table . "_status" => 1,
@@ -103,7 +103,7 @@ class Group extends BaseController
                 $this->table . "_updatetime" => time(),
             ]);
         }
-        jok("禁用用户组成功");
+        return jok("禁用用户组成功");
     }
 
     /**
@@ -118,16 +118,16 @@ class Group extends BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            jerr($this->pk . "参数必须填写");
+            return jerr($this->pk . "参数必须填写");
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
             $item = $this->model->where($map)->find();
             if (empty($item)) {
-                jerr("数据查询失败");
+                return jerr("数据查询失败");
             }
             if ($item[$this->table . "_system"] == 1) {
-                jerr("系统用户组不允许操作！");
+                return jerr("系统用户组不允许操作！");
             }
             $this->model->where($map)->where($this->pk . " > 1")->update([
                 $this->table . "_status" => 0,
@@ -139,7 +139,7 @@ class Group extends BaseController
                 $this->table . "_updatetime" => time(),
             ]);
         }
-        jok("启用用户组成功");
+        return jok("启用用户组成功");
     }
 
     /**
@@ -154,16 +154,16 @@ class Group extends BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            jerr($this->pk . "必须填写");
+            return jerr($this->pk . "必须填写");
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
             $item = $this->model->where($map)->find();
             if (empty($item)) {
-                jerr("数据查询失败");
+                return jerr("数据查询失败");
             }
             if ($item[$this->table . "_system"] == 1) {
-                jerr("系统用户组不允许操作！");
+                return jerr("系统用户组不允许操作！");
             }
             $this->model->where($map)->where($this->table . "_system", 0)->delete();
             //删除对应ID的授权记录
@@ -184,7 +184,7 @@ class Group extends BaseController
                 ])->delete();
             }
         }
-        jok('删除用户组成功');
+        return jok('删除用户组成功');
     }
 
     /**
@@ -199,21 +199,21 @@ class Group extends BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            jerr($this->pk . "必须填写");
+            return jerr($this->pk . "必须填写");
         }
         if (!isInteger($this->pk_value)) {
-            jerr("修改失败,参数错误");
+            return jerr("修改失败,参数错误");
         }
         $map[$this->pk] = $this->pk_value;
         $item = $this->model->where($map)->find();
         if (empty($item)) {
-            jerr("用户组信息查询失败，授权失败");
+            return jerr("用户组信息查询失败，授权失败");
         }
         $this->authModel->where([
             "auth_group" => $this->pk_value
         ])->delete();
         if ($item[$this->pk] == 1) {
-            jerr("超级管理组无需授权！");
+            return jerr("超级管理组无需授权！");
         }
         $node_ids = explode(",", input("node_ids"));
         foreach ($node_ids as $node_id) {
@@ -227,7 +227,7 @@ class Group extends BaseController
                 "auth_updatetime" => time()
             ]);
         }
-        jok('用户组授权成功');
+        return ('用户组授权成功');
     }
     /**
      * 获取用户组拥有的权限
@@ -241,18 +241,18 @@ class Group extends BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            jerr($this->pk . "必须填写");
+            return jerr($this->pk . "必须填写");
         }
         if (!isInteger($this->pk_value)) {
-            jerr("修改失败,参数错误");
+            return jerr("修改失败,参数错误");
         }
         $map[$this->pk] = $this->pk_value;
         $item = $this->model->where($map)->find();
         if (empty($item)) {
-            jerr("用户组信息查询失败，授权失败");
+            return jerr("用户组信息查询失败，授权失败");
         }
         $myAuthorizeList = $this->authModel->where("auth_group", $this->pk_value)->select();
-        jok('ok', $myAuthorizeList);
+        return jok('ok', $myAuthorizeList);
     }
     public function getList()
     {

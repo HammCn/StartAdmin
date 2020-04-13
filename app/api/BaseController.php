@@ -132,17 +132,17 @@ abstract class BaseController
         //查询当前访问的节点
         $this->node = $this->nodeModel->where(['node_module' => $this->module, 'node_controller' => strtolower($this->controller), 'node_action' => $this->action])->find();
         if (!$this->node) {
-            jerr("请勿访问没有声明的API节点！", 503);
+            return ("请勿访问没有声明的API节点！", 503);
         }
         if ($this->node['node_status'] == 1) {
-            jerr("你访问的节点[" . $this->node['node_title'] . "]被禁用", 503);
+            return jerr("你访问的节点[" . $this->node['node_title'] . "]被禁用", 503);
         }
         if (!input("plat")) {
-            jerr("plat参数为必须", 500);
+            return jerr("plat参数为必须", 500);
         }
         $this->plat = input('plat');
         if (!input("version")) {
-            jerr("version参数为必须", 500);
+            return jerr("version参数为必须", 500);
         }
         $this->version = input('version');
 
@@ -215,7 +215,7 @@ abstract class BaseController
         }
         foreach ($this->insertRequire as $k => $v) {
             if (!input($k)) {
-                jerr($v);
+                return jerr($v);
             }
         }
         $data = [];
@@ -227,7 +227,7 @@ abstract class BaseController
         $data[$this->table . "_updatetime"] = time();
         $data[$this->table . "_createtime"] = time();
         $this->model->insert($data);
-        jok('添加成功');
+        return jok('添加成功');
     }
     public function update()
     {
@@ -236,16 +236,16 @@ abstract class BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            jerr($this->pk . "参数必须填写");
+            return jerr($this->pk . "参数必须填写");
         }
         $map[$this->pk] = $this->pk_value;
         $item = $this->model->where($map)->find();
         if (empty($item)) {
-            jerr("数据查询失败");
+            return jerr("数据查询失败");
         }
         foreach ($this->updateRequire as $k => $v) {
             if (!input($k)) {
-                jerr($v);
+                return jerr($v);
             }
         }
         $data = [];
@@ -256,7 +256,7 @@ abstract class BaseController
         }
         $data[$this->table . "_updatetime"] = time();
         $this->model->where($this->pk, $this->pk_value)->update($data);
-        jok('修改成功');
+        return jok('修改成功');
     }
     /**
      * 禁用用户
@@ -270,13 +270,13 @@ abstract class BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            jerr($this->pk . "参数必须填写");
+            return jerr($this->pk . "参数必须填写");
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
             $item = $this->model->where($map)->find();
             if (empty($item)) {
-                jerr("数据查询失败");
+                return jerr("数据查询失败");
             }
             $this->model->where($map)->update([
                 $this->table . "_status" => 1,
@@ -289,7 +289,7 @@ abstract class BaseController
                 $this->table . "_updatetime" => time(),
             ]);
         }
-        jok("禁用成功");
+        return jok("禁用成功");
     }
 
     /**
@@ -304,13 +304,13 @@ abstract class BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            jerr($this->pk . "参数必须填写");
+            return jerr($this->pk . "参数必须填写");
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
             $item = $this->model->where($map)->find();
             if (empty($item)) {
-                jerr("数据查询失败");
+                return jerr("数据查询失败");
             }
             $this->model->where($map)->update([
                 $this->table . "_status" => 0,
@@ -323,7 +323,7 @@ abstract class BaseController
                 $this->table . "_updatetime" => time(),
             ]);
         }
-        jok("启用成功");
+        return jok("启用成功");
     }
 
     /**
@@ -338,20 +338,20 @@ abstract class BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            jerr($this->pk . "必须填写");
+            return jerr($this->pk . "必须填写");
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
             $item = $this->model->where($map)->find();
             if (empty($item)) {
-                jerr("数据查询失败");
+                return jerr("数据查询失败");
             }
             $this->model->where($map)->delete();
         } else {
             $list = explode(',', $this->pk_value);
             $this->model->where($this->pk, 'in', $list)->delete();
         }
-        jok('删除成功');
+        return jok('删除成功');
     }
     /**
      * 获取列表
@@ -394,7 +394,7 @@ abstract class BaseController
             $this->model->per_page = intval(input('per_page'));
         }
         $dataList = $this->model->getListByPage($map, $order, $this->selectList);
-        jok('数据获取成功', $dataList);
+        return jok('数据获取成功', $dataList);
     }
     public function detail()
     {
@@ -403,16 +403,16 @@ abstract class BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            jerr($this->pk . "必须填写");
+            return jerr($this->pk . "必须填写");
         }
         $map = [
             $this->pk => input($this->pk),
         ];
         $item = $this->model->field($this->selectDetail)->where($map)->find();
         if (empty($item)) {
-            jerr("没有查询到数据");
+            return jerr("没有查询到数据");
         }
-        jok('数据加载成功', $item);
+        return jok('数据加载成功', $item);
     }
     public function excel()
     {
@@ -551,6 +551,6 @@ abstract class BaseController
     }
     public function __call($method, $args)
     {
-        jerr("API接口方法不存在", 404);
+        return jerr("API接口方法不存在", 404);
     }
 }

@@ -59,7 +59,7 @@ class User extends BaseController
         }
         foreach ($this->insertRequire as $k => $v) {
             if (!input($k)) {
-                jerr($v);
+                return jerr($v);
             }
         }
         $data = [];
@@ -71,7 +71,7 @@ class User extends BaseController
         $data['user_ipreg'] = "127.0.0.1";
         $user = $this->model->getUserByAccount($data[$this->table . "_account"]);
         if ($user) {
-            jerr("帐号已存在，请重新输入");
+            return jerr("帐号已存在，请重新输入");
         }
         $salt = getRandString(4);
         $password = $data[$this->table . "_password"];
@@ -81,7 +81,7 @@ class User extends BaseController
         $data[$this->table . "_updatetime"] = time();
         $data[$this->table . "_createtime"] = time();
         $this->model->insert($data);
-        jok('用户添加成功');
+        return jok('用户添加成功');
     }
     public function update()
     {
@@ -90,22 +90,22 @@ class User extends BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            jerr($this->pk . "必须填写");
+            return jerr($this->pk . "必须填写");
         }
         if (!isInteger($this->pk_value)) {
-            jerr("修改失败,参数错误");
+            return jerr("修改失败,参数错误");
         }
         $map[$this->pk] = $this->pk_value;
         $item = $this->model->where($map)->find();
         if (empty($item)) {
-            jerr("数据查询失败");
+            return jerr("数据查询失败");
         }
         if (intval($this->pk_value) == 1) {
-            jerr("无法修改超管用户信息");
+            return jerr("无法修改超管用户信息");
         }
         foreach ($this->updateRequire as $k => $v) {
             if (!input($k)) {
-                jerr($v);
+                return jerr($v);
             }
         }
         $data = [];
@@ -116,7 +116,7 @@ class User extends BaseController
         }
         $user = $this->model->getUserByAccount($data[$this->table . "_account"]);
         if ($user && $user[$this->pk] != $item[$this->pk]) {
-            jerr("帐号已存在，请重新输入");
+            return jerr("帐号已存在，请重新输入");
         }
         if (input('new_password')) {
             //设置密码
@@ -128,7 +128,7 @@ class User extends BaseController
         }
         $data[$this->table . "_updatetime"] = time();
         $this->model->where($this->pk, $this->pk_value)->update($data);
-        jok('用户信息更新成功');
+        return jok('用户信息更新成功');
     }
 
     /**
@@ -143,16 +143,16 @@ class User extends BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            jerr($this->pk . "参数必须填写");
+            return jerr($this->pk . "参数必须填写");
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
             $item = $this->model->where($map)->find();
             if (empty($item)) {
-                jerr("数据查询失败");
+                return jerr("数据查询失败");
             }
             if ($item[$this->pk] == 1) {
-                jerr("超级管理员不允许操作！");
+                return jerr("超级管理员不允许操作！");
             }
             $this->model->where($map)->where($this->pk . " > 1")->update([
                 $this->table . "_status" => 1,
@@ -165,7 +165,7 @@ class User extends BaseController
                 $this->table . "_updatetime" => time(),
             ]);
         }
-        jok("禁用用户成功");
+        return jok("禁用用户成功");
     }
 
     /**
@@ -180,16 +180,16 @@ class User extends BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            jerr($this->pk . "参数必须填写");
+            return jerr($this->pk . "参数必须填写");
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
             $item = $this->model->where($map)->find();
             if (empty($item)) {
-                jerr("数据查询失败");
+                return jerr("数据查询失败");
             }
             if ($item[$this->pk] == 1) {
-                jerr("超级管理员不允许操作！");
+                return jerr("超级管理员不允许操作！");
             }
             $this->model->where($map)->where($this->pk . " > 1")->update([
                 $this->table . "_status" => 0,
@@ -202,7 +202,7 @@ class User extends BaseController
                 $this->table . "_updatetime" => time(),
             ]);
         }
-        jok("启用用户成功");
+        return jok("启用用户成功");
     }
 
     /**
@@ -217,23 +217,23 @@ class User extends BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            jerr($this->pk . "必须填写");
+            return jerr($this->pk . "必须填写");
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
             $item = $this->model->where($map)->find();
             if (empty($item)) {
-                jerr("数据查询失败");
+                return jerr("数据查询失败");
             }
             if ($item[$this->pk] == 1) {
-                jerr("超级管理员不允许操作！");
+                return jerr("超级管理员不允许操作！");
             }
             $this->model->where($map)->where($this->pk . " > 1")->delete();
         } else {
             $list = explode(',', $this->pk_value);
             $this->model->where($this->pk, 'in', $list)->where($this->pk . " > 1")->delete();
         }
-        jok('删除用户成功');
+        return jok('删除用户成功');
     }
     public function detail()
     {
@@ -242,16 +242,16 @@ class User extends BaseController
             return $error;
         }
         if (!input($this->pk)) {
-            jerr($this->pk . "必须填写");
+            return jerr($this->pk . "必须填写");
         }
         $map = [
             $this->pk => input($this->pk),
         ];
         $item = $this->model->field($this->selectDetail)->where($map)->find();
         if (empty($item)) {
-            jerr("没有查询到数据");
+            return jerr("没有查询到数据");
         }
-        jok('数据加载成功', $item);
+        return jok('数据加载成功', $item);
     }
     public function getList()
     {
@@ -289,15 +289,15 @@ class User extends BaseController
             $this->model->per_page = intval(input('per_page'));
         }
         $dataList = $this->model->getListByPage($map, $order, $this->selectList);
-        jok('用户列表获取成功', $dataList);
+        return jok('用户列表获取成功', $dataList);
     }
     public function login()
     {
         if (!input("user_account")) {
-            jerr('请确认帐号是否正确填写');
+            return jerr('请确认帐号是否正确填写');
         }
         if (!input("user_password")) {
-            jerr('请确认密码是否正确填写');
+            return jerr('请确认密码是否正确填写');
         }
         $plat = input("plat");
         $user_account = input("user_account");
@@ -309,12 +309,12 @@ class User extends BaseController
             $access = $this->accessModel->createAccess($user['user_id'], $plat);
             if ($access) {
                 setCookie('access_token', $access['access_token'], time() + 3600, '/');
-                jok('登录成功', ['access_token' => $access['access_token']]);
+                return jok('登录成功', ['access_token' => $access['access_token']]);
             } else {
-                jerr('登录系统异常');
+                return jerr('登录系统异常');
             }
         } else {
-            jerr('帐号或密码错误');
+            return jerr('帐号或密码错误');
         }
     }
     /**
@@ -325,15 +325,15 @@ class User extends BaseController
     public function reg()
     {
         if (!input("phone")) {
-            jerr("手机号不能为空！");
+            return jerr("手机号不能为空！");
         }
         $phone = input("phone");
         if (!input("code")) {
-            jerr("短信验证码不能为空！");
+            return jerr("短信验证码不能为空！");
         }
         $code = input("code");
         if (!input("password")) {
-            jerr("密码不能为空！");
+            return jerr("密码不能为空！");
         }
         $password = input("password");
         $name = $phone;
@@ -346,16 +346,16 @@ class User extends BaseController
                 "user_account" => $phone
             ])->find();
             if ($user) {
-                jerr("该手机号已经注册！");
+                return jerr("该手机号已经注册！");
             }
             $result = $this->model->reg($phone, $password, $name);
             if ($result) {
-                jok("用户注册成功");
+                return jok("用户注册成功");
             } else {
-                jerr("注册失败，请重试！");
+                return jerr("注册失败，请重试！");
             }
         } else {
-            jerr("短信验证码已过期，请重新获取");
+            return jerr("短信验证码已过期，请重新获取");
         }
     }
     public function motifyPassword()
@@ -365,24 +365,24 @@ class User extends BaseController
             return $error;
         }
         if (!input("oldPassword")) {
-            jerr("你必须要输入你的原密码！");
+            return jerr("你必须要输入你的原密码！");
         }
         if (!input("newPassword")) {
-            jerr("你必须输入一个新的密码！");
+            return jerr("你必须输入一个新的密码！");
         }
         $old_password = input("oldPassword");
         $new_password = input("newPassword");
         if (strlen($new_password) < 6 || strlen($new_password) > 16) {
-            jerr("新密码因为6-16位！");
+            return jerr("新密码因为6-16位！");
         }
         if ($this->user['user_password'] != encodePassword($old_password, $this->user['user_salt'])) {
-            jerr("原密码输入不正确，请重试！");
+            return jerr("原密码输入不正确，请重试！");
         }
         $result = $this->model->motifyPassword($this->user['user_id'], $new_password);
         if ($result) {
-            jok("密码已重置，请使用新密码登录");
+            return jok("密码已重置，请使用新密码登录");
         } else {
-            jerr("注册失败，请重试！");
+            return jerr("注册失败，请重试！");
         }
     }
 
@@ -394,13 +394,13 @@ class User extends BaseController
     public function resetPassword()
     {
         if (!input("phone")) {
-            jerr("手机号不能为空！");
+            return jerr("手机号不能为空！");
         }
         if (!input("code")) {
-            jerr("短信验证码不能为空！");
+            return jerr("短信验证码不能为空！");
         }
         if (!input("password")) {
-            jerr("密码不能为空！");
+            return jerr("密码不能为空！");
         }
         $phone = input("phone");
         $code = input("code");
@@ -411,16 +411,16 @@ class User extends BaseController
                 "user_account" => $phone
             ])->find();
             if (!$user) {
-                jerr("该手机号尚未注册！");
+                return jerr("该手机号尚未注册！");
             }
             $result = $this->model->motifyPassword($user['user_id'], $password);
             if ($result) {
-                jok("密码已重置，请使用新密码登录");
+                return jok("密码已重置，请使用新密码登录");
             } else {
-                jerr("注册失败，请重试！");
+                return jerr("注册失败，请重试！");
             }
         } else {
-            jerr("短信验证码已过期，请重新获取");
+            return jerr("短信验证码已过期，请重新获取");
         }
     }
 
@@ -439,7 +439,7 @@ class User extends BaseController
         foreach (['user_password', 'user_salt', 'user_accesstoken', 'user_tokentime', 'user_status'] as $key) {
             unset($myInfo[$key]);
         }
-        jok('数据获取成功', $myInfo);
+        return jok('数据获取成功', $myInfo);
     }
     public function updateMyInfo()
     {
@@ -448,7 +448,7 @@ class User extends BaseController
             return $error;
         }
         if (!input("user_name")) {
-            jerr("你确定飘到连名字都可以不要了吗？");
+            return jerr("你确定飘到连名字都可以不要了吗？");
         }
         $data = [
             "user_name" => input("user_name"),
@@ -457,6 +457,6 @@ class User extends BaseController
             "user_idcard" => input("user_idcard"),
         ];
         $this->model->where("user_id", $this->user['user_id'])->update($data);
-        jok("资料更新成功");
+        return jok("资料更新成功");
     }
 }

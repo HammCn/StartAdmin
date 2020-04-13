@@ -26,7 +26,7 @@ class Sms
             $phone = input('phone');
             $code = cache("SMS_" . $phone);
             if ($code) {
-                jerr('发送短信太频繁，请稍候再试');
+                return jerr('发送短信太频繁，请稍候再试');
             }
 
             $code = rand(100000, 999999);
@@ -35,9 +35,9 @@ class Sms
                 return $error;
             }
             cache('SMS_' . $phone, $code, 300);
-            jok('短信验证码已经发送至你的手机');
+            return jok('短信验证码已经发送至你的手机');
         } else {
-            jerr("手机号为必填信息，请填写后提交");
+            return jerr("手机号为必填信息，请填写后提交");
         }
     }
 }

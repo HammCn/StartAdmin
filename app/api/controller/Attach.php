@@ -47,9 +47,9 @@ class Attach extends BaseController
             if (input("?extend")) {
                 $attach_data['extend'] = input("extend");
             }
-            jok('上传成功！', $attach_data);
+            return jok('上传成功！', $attach_data);
         } catch (ValidateException $e) {
-            jerr($e);
+            return jerr($e);
         }
     }
     public function uploadFile()
@@ -76,9 +76,9 @@ class Attach extends BaseController
             if (input("?extend")) {
                 $attach_data['extend'] = input("extend");
             }
-            jok('上传成功！', $attach_data);
+            return jok('上传成功！', $attach_data);
         } catch (ValidateException $e) {
-            jerr($e);
+            return jerr($e);
         }
     }
 }
