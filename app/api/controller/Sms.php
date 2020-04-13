@@ -3,14 +3,15 @@
 namespace app\api\controller;
 
 use think\App;
+use app\api\BaseController;
 use app\model\Sms as SmsModel;
 use app\model\Validate as ValidateModel;
 
-class Sms
+class Sms extends BaseController
 {
-    protected $model = null;
     public function __construct(App $app)
     {
+        parent::__construct($app);
         $this->model = new SmsModel();
     }
 
