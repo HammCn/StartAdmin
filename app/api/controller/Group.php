@@ -260,7 +260,7 @@ class Group extends BaseController
         if ($error) {
             return $error;
         }
-        $dataList = $this->thisModel->select();
+        $dataList = $this->model->select();
         return jok('用户组列表获取成功', $dataList);
     }
 }

@@ -29,7 +29,7 @@ class Auth extends BaseController
         if ($error) {
             return $error;
         }
-        $this->thisModel->cleanAuth();
+        $this->model->cleanAuth();
         return jok('授权信息清理成功');
     }
 }

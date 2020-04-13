@@ -28,7 +28,7 @@ class Log extends BaseController
         if ($error) {
             return $error;
         }
-        $this->thisModel->cleanLog();
+        $this->model->cleanLog();
         return jok('访问日志清理成功');
     }
     /**
@@ -42,7 +42,7 @@ class Log extends BaseController
         if ($error) {
             return $error;
         }
-        $datalist = $this->thisModel->getLogStatus();
+        $datalist = $this->model->getLogStatus();
         return jok('数据读取成功', $datalist);
     }
 }

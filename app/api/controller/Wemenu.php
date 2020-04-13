@@ -80,7 +80,7 @@ class Wemenu extends BaseController
         if ($error) {
             return $error;
         }
-        $dataList = $this->thisModel->where('wemenu_pid', 0)->select()->toArray();
+        $dataList = $this->model->where('wemenu_pid', 0)->select()->toArray();
         for ($i = 0; $i < count($dataList); $i++) {
             $itemList = $this->model->where("wemenu_pid", $dataList[$i]['wemenu_id'])->select()->toArray();
             $dataList[$i]['sub'] = $itemList;
@@ -117,7 +117,7 @@ class Wemenu extends BaseController
         if ($error) {
             return $error;
         }
-        $dataList = $this->thisModel->where('wemenu_pid', 0)->select()->toArray();
+        $dataList = $this->model->where('wemenu_pid', 0)->select()->toArray();
         $wechatMenu = [];
         foreach ($dataList as $parent) {
             $children = $this->model->where('wemenu_pid', $parent['wemenu_id'])->select()->toArray();

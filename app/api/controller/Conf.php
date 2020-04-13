@@ -78,12 +78,7 @@ class Conf extends BaseController
                 jerr($v);
             }
         }
-        $data = [];
-        foreach (input() as $k => $v) {
-            if (in_array($k, $this->updateFields)) {
-                $data[$k] = $v;
-            }
-        }
+        $data = input($this->updateFields);
         $data[$this->table . "_updatetime"] = time();
         if ($item[$this->table . "_system"] == 1) {
             unset($data[$this->table . "_key"]);
@@ -260,7 +255,7 @@ class Conf extends BaseController
         if ($error) {
             return $error;
         }
-        $datalist = $this->thisModel->where('conf_key', 'in', 'app_name')->order($this->pk . " asc")->select();
+        $datalist = $this->model->where('conf_key', 'in', 'app_name')->order($this->pk . " asc")->select();
         return jok('', $datalist);
     }
     /**
