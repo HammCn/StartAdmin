@@ -78,7 +78,12 @@ class Conf extends BaseController
                 jerr($v);
             }
         }
-        $data = input($this->updateFields);
+        $data = [];
+        foreach (input() as $k => $v) {
+            if (in_array($k, $this->updateFields)) {
+                $data[$k] = $v;
+            }
+        }
         $data[$this->table . "_updatetime"] = time();
         if ($item[$this->table . "_system"] == 1) {
             unset($data[$this->table . "_key"]);
