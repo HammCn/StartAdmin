@@ -42,7 +42,7 @@ class Weapp extends BaseController
             // "字段名称"=>"该字段不能为空"
 
         ];
-        $this->thisModel = new WeappModel();
+        $this->model = new WeappModel();
     }
     /**
      * 初始化微信小程序配置

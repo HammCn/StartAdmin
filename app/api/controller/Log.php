@@ -15,7 +15,7 @@ class Log extends BaseController
         $this->searchFilter = [
             "log_id" => "=", //相同筛选
         ];
-        $this->thisModel = new LogModel();
+        $this->model = new LogModel();
     }
     /**
      * 清除访问日志
@@ -24,11 +24,11 @@ class Log extends BaseController
      */
     public function clean()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
-        $this->thisModel->cleanLog();
+        $this->model->cleanLog();
         return jok('访问日志清理成功');
     }
     /**
@@ -38,11 +38,11 @@ class Log extends BaseController
      */
     public function state()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
-        $datalist = $this->thisModel->getLogStatus();
+        $datalist = $this->model->getLogStatus();
         return jok('数据读取成功', $datalist);
     }
 }

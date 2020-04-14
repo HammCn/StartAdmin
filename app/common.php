@@ -9,11 +9,13 @@
  */
 function jok($msg = 'success', $data = null)
 {
+    header("content:application/json;chartset=uft-8");
     if ($data) {
-        return json(["code" => 200, "msg" => $msg, 'data' => $data]);
+        echo json_encode(["code" => 200, "msg" => $msg, 'data' => $data]);
     } else {
-        return json(["code" => 200, "msg" => $msg]);
+        echo json_encode(["code" => 200, "msg" => $msg]);
     }
+    die;
 }
 /**
  * 输出错误JSON
@@ -24,7 +26,9 @@ function jok($msg = 'success', $data = null)
  */
 function jerr($msg = 'error', $code = 500)
 {
-    return json(["code" => $code, "msg" => $msg]);
+    header("content:application/json;chartset=uft-8");
+    echo json_encode(["code" => $code, "msg" => $msg]);
+    die;
 }
 /**
  * 密码+盐 加密

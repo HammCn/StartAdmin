@@ -18,9 +18,7 @@ class Access extends BaseModel
         $this->where([
             "access_user" => $access_user,
             "access_plat" => $access_plat
-        ])->update([
-            'access_status' => 1
-        ]);
+        ])->delete();
         $access_token = sha1(time()) . rand(100000, 99999) . sha1(time());
         $access_id = $this->insertGetId([
             "access_user" => $access_user,

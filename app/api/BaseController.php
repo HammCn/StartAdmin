@@ -20,7 +20,7 @@ use app\model\Log as LogModel;
  */
 abstract class BaseController
 {
-    protected $thisModel = null;
+    protected $model = null;
     //搜索字段
     protected $selectList = '*';
     protected $selectDetail = '*';
@@ -123,65 +123,13 @@ abstract class BaseController
         config($c, 'startadmin');
     }
     /**
-     * 检测版本号
-     *
-     * @return void
-     */
-    protected function checkVersion()
-    {
-        if (!input("plat")) {
-            return jerr("plat missing", 500);
-        }
-        $this->plat = input('plat');
-        if (!input("version")) {
-            return jerr("version missing", 500);
-        }
-        $this->version = input('version');
-    }
-    /**
-     * 检测登录态
-     *
-     * @return void
-     */
-    protected function checkLogin()
-    {
-        //获取access_token
-        if (input("?access_token")) {
-            $access_token = input("access_token");
-            $this->user = $this->userModel->getUserByAccessToken($access_token);
-            if (!$this->user) {
-                return jerr("登录过期，请重新登录", 400);
-            } else {
-                if ($this->user['user_status'] == 1) {
-                    return jerr("你的账户被禁用，登录失败", 401);
-                } else {
-                    return null;
-                }
-            }
-        } else {
-            return jerr("AccessToken为必要参数", 400);
-        }
-    }
-    /**
      * 检测授权
      *
      * @return void
      */
-    protected function checkAccess()
+    protected function access()
     {
-        if (!$this->user['user_group']) {
-            return jerr("用户没有所属的用户组", 403);
-        }
-        $where = [
-            "group_id" => $this->user['user_group'],
-        ];
-        $this->group = $this->groupModel->where($where)->find();
-        if (!$this->group) {
-            return jerr("用户组信息查询失败", 403);
-        }
-        if ($this->group['group_status'] == 1) {
-            return jerr("你所在的用户组[" . $this->group['group_name'] . "]被禁用", 403);
-        }
+        //查询当前访问的节点
         $this->node = $this->nodeModel->where(['node_module' => $this->module, 'node_controller' => strtolower($this->controller), 'node_action' => $this->action])->find();
         if (!$this->node) {
             return jerr("请勿访问没有声明的API节点！", 503);
@@ -189,36 +137,79 @@ abstract class BaseController
         if ($this->node['node_status'] == 1) {
             return jerr("你访问的节点[" . $this->node['node_title'] . "]被禁用", 503);
         }
+        if (!input("plat")) {
+            return jerr("plat参数为必须", 500);
+        }
+        $this->plat = input('plat');
+        if (!input("version")) {
+            return jerr("version参数为必须", 500);
+        }
+        $this->version = input('version');
 
-        $log = [
-            "log_user" => $this->user['user_id'],
-            "log_node" => $this->node['node_id'],
-            "log_createtime" => time(),
-            "log_ip" => get_client_ip(),
-            "log_browser" => getBrowser(),
-            "log_os" => getOs(),
-            "log_updatetime" => time(),
-            "log_gets" => urlencode(json_encode(input("get."))),
-            "log_posts" => urlencode(json_encode(input("post."))),
-            "log_cookies" => urlencode(json_encode($_COOKIE))
-        ];
-        $this->logModel->insert($log);
-        if ($this->group['group_id'] > 1) {
-            //其他用户
-            $where = [
-                "auth_group" => $this->user["user_group"],
-                "auth_node" => $this->node['node_id'],
-            ];
-            $auth = $this->authModel->auth($this->group['group_id'], $this->node['node_id']);
-            if (!$auth) {
-                return jerr("你没有权限访问[" . $this->node['node_title'] . "]这个接口", 403);
+        $this->node = $this->nodeModel->where(['node_module' => $this->module, 'node_controller' => strtolower($this->controller), 'node_action' => $this->action])->find();
+        if (!$this->node) {
+            return jerr("请勿访问没有声明的API节点！", 503);
+        }
+        if ($this->node['node_status'] == 1) {
+            return jerr("你访问的节点[" . $this->node['node_title'] . "]被禁用", 503);
+        }
+        if ($this->node['node_login']) {
+            //节点是否需要登录
+            if (!input("?access_token")) {
+                return jerr("AccessToken为必要参数", 400);
+            }
+            $access_token = input("access_token");
+            $this->user = $this->userModel->getUserByAccessToken($access_token);
+            if (!$this->user) {
+                return jerr("登录过期，请重新登录", 400);
+            }
+            if ($this->user['user_status'] == 1) {
+                return jerr("你的账户被禁用，登录失败", 401);
+            }
+            if ($this->node['node_access']) {
+                //节点是否需要授权
+                if (!$this->user['user_group']) {
+                    return jerr("用户没有所属的用户组", 403);
+                }
+                $where = [
+                    "group_id" => $this->user['user_group'],
+                ];
+                $this->group = $this->groupModel->where($where)->find();
+                if (!$this->group) {
+                    return jerr("用户组信息查询失败", 403);
+                }
+                if ($this->group['group_status'] == 1) {
+                    return jerr("你所在的用户组[" . $this->group['group_name'] . "]被禁用", 403);
+                }
+                $this->logModel->insert([
+                    "log_user" => $this->user['user_id'],
+                    "log_node" => $this->node['node_id'],
+                    "log_createtime" => time(),
+                    "log_ip" => get_client_ip(),
+                    "log_browser" => getBrowser(),
+                    "log_os" => getOs(),
+                    "log_updatetime" => time(),
+                    "log_gets" => urlencode(json_encode(input("get."))),
+                    "log_posts" => urlencode(json_encode(input("post."))),
+                    "log_cookies" => urlencode(json_encode($_COOKIE))
+                ]);
+                if ($this->group['group_id'] > 1) {
+                    //其他用户
+                    $where = [
+                        "auth_group" => $this->user["user_group"],
+                        "auth_node" => $this->node['node_id'],
+                    ];
+                    $auth = $this->authModel->auth($this->group['group_id'], $this->node['node_id']);
+                    if (!$auth) {
+                        return jerr("你没有权限访问[" . $this->node['node_title'] . "]这个接口", 403);
+                    }
+                }
             }
         }
-        return null;
     }
     public function add()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -235,12 +226,12 @@ abstract class BaseController
         }
         $data[$this->table . "_updatetime"] = time();
         $data[$this->table . "_createtime"] = time();
-        $this->thisModel->insert($data);
+        $this->model->insert($data);
         return jok('添加成功');
     }
     public function update()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -248,7 +239,7 @@ abstract class BaseController
             return jerr($this->pk . "参数必须填写");
         }
         $map[$this->pk] = $this->pk_value;
-        $item = $this->thisModel->where($map)->find();
+        $item = $this->model->where($map)->find();
         if (empty($item)) {
             return jerr("数据查询失败");
         }
@@ -264,7 +255,7 @@ abstract class BaseController
             }
         }
         $data[$this->table . "_updatetime"] = time();
-        $this->thisModel->where($this->pk, $this->pk_value)->update($data);
+        $this->model->where($this->pk, $this->pk_value)->update($data);
         return jok('修改成功');
     }
     /**
@@ -274,7 +265,7 @@ abstract class BaseController
      */
     public function disable()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -283,17 +274,17 @@ abstract class BaseController
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
-            $item = $this->thisModel->where($map)->find();
+            $item = $this->model->where($map)->find();
             if (empty($item)) {
                 return jerr("数据查询失败");
             }
-            $this->thisModel->where($map)->update([
+            $this->model->where($map)->update([
                 $this->table . "_status" => 1,
                 $this->table . "_updatetime" => time(),
             ]);
         } else {
             $list = explode(',', $this->pk_value);
-            $this->thisModel->where($this->pk, 'in', $list)->update([
+            $this->model->where($this->pk, 'in', $list)->update([
                 $this->table . "_status" => 1,
                 $this->table . "_updatetime" => time(),
             ]);
@@ -308,7 +299,7 @@ abstract class BaseController
      */
     public function enable()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -317,17 +308,17 @@ abstract class BaseController
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
-            $item = $this->thisModel->where($map)->find();
+            $item = $this->model->where($map)->find();
             if (empty($item)) {
                 return jerr("数据查询失败");
             }
-            $this->thisModel->where($map)->update([
+            $this->model->where($map)->update([
                 $this->table . "_status" => 0,
                 $this->table . "_updatetime" => time(),
             ]);
         } else {
             $list = explode(',', $this->pk_value);
-            $this->thisModel->where($this->pk, 'in', $list)->update([
+            $this->model->where($this->pk, 'in', $list)->update([
                 $this->table . "_status" => 0,
                 $this->table . "_updatetime" => time(),
             ]);
@@ -342,7 +333,7 @@ abstract class BaseController
      */
     public function delete()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -351,14 +342,14 @@ abstract class BaseController
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
-            $item = $this->thisModel->where($map)->find();
+            $item = $this->model->where($map)->find();
             if (empty($item)) {
                 return jerr("数据查询失败");
             }
-            $this->thisModel->where($map)->delete();
+            $this->model->where($map)->delete();
         } else {
             $list = explode(',', $this->pk_value);
-            $this->thisModel->where($this->pk, 'in', $list)->delete();
+            $this->model->where($this->pk, 'in', $list)->delete();
         }
         return jok('删除成功');
     }
@@ -369,7 +360,7 @@ abstract class BaseController
      */
     public function getList()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -400,14 +391,14 @@ abstract class BaseController
             $order = urldecode(input('order'));
         }
         if (input('per_page')) {
-            $this->thisModel->per_page = intval(input('per_page'));
+            $this->model->per_page = intval(input('per_page'));
         }
-        $dataList = $this->thisModel->getListByPage($map, $order, $this->selectList);
+        $dataList = $this->model->getListByPage($map, $order, $this->selectList);
         return jok('数据获取成功', $dataList);
     }
     public function detail()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -417,7 +408,7 @@ abstract class BaseController
         $map = [
             $this->pk => input($this->pk),
         ];
-        $item = $this->thisModel->field($this->selectDetail)->where($map)->find();
+        $item = $this->model->field($this->selectDetail)->where($map)->find();
         if (empty($item)) {
             return jerr("没有查询到数据");
         }
@@ -425,7 +416,7 @@ abstract class BaseController
     }
     public function excel()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -456,9 +447,9 @@ abstract class BaseController
             $order = urldecode(input('order'));
         }
         if (input('per_page')) {
-            $this->thisModel->per_page = intval(input('per_page'));
+            $this->model->per_page = intval(input('per_page'));
         }
-        $datalist = $this->thisModel->getList($map, $order);
+        $datalist = $this->model->getList($map, $order);
         $datalist = $datalist ? $datalist->toArray() : [];
         $field = "";
         $excelField = [];

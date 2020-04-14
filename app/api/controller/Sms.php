@@ -3,15 +3,16 @@
 namespace app\api\controller;
 
 use think\App;
+use app\api\BaseController;
 use app\model\Sms as SmsModel;
 use app\model\Validate as ValidateModel;
 
-class Sms
+class Sms extends BaseController
 {
-    protected $thisModel = null;
     public function __construct(App $app)
     {
-        $this->thisModel = new SmsModel();
+        parent::__construct($app);
+        $this->model = new SmsModel();
     }
 
     public function send()
@@ -30,7 +31,7 @@ class Sms
             }
 
             $code = rand(100000, 999999);
-            $error = $this->thisModel->sendSms($phone, $code);
+            $error = $this->model->sendSms($phone, $code);
             if ($error) {
                 return $error;
             }
@@ -39,9 +40,5 @@ class Sms
         } else {
             return jerr("手机号为必填信息，请填写后提交");
         }
-    }
-    public function __call($method, $args)
-    {
-        return $this->index();
     }
 }

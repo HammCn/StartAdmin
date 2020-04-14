@@ -28,11 +28,11 @@ class Group extends BaseController
         $this->updateRequire = [
             'group_name' => "组名称必須填寫"
         ];
-        $this->thisModel = new GroupModel();
+        $this->model = new GroupModel();
     }
     public function update()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -43,7 +43,7 @@ class Group extends BaseController
             return jerr("修改失败,参数错误");
         }
         $map[$this->pk] = $this->pk_value;
-        $item = $this->thisModel->where($map)->find();
+        $item = $this->model->where($map)->find();
         if (empty($item)) {
             return jerr("数据查询失败");
         }
@@ -65,7 +65,7 @@ class Group extends BaseController
             return jerr("组名称必须填写");
         }
         $data[$this->table . "_updatetime"] = time();
-        $this->thisModel->where($this->pk, $this->pk_value)->update($data);
+        $this->model->where($this->pk, $this->pk_value)->update($data);
         return jok('用户组信息更新成功');
     }
 
@@ -76,7 +76,7 @@ class Group extends BaseController
      */
     public function disable()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -85,20 +85,20 @@ class Group extends BaseController
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
-            $item = $this->thisModel->where($map)->find();
+            $item = $this->model->where($map)->find();
             if (empty($item)) {
                 return jerr("数据查询失败");
             }
             if ($item[$this->table . "_system"] == 1) {
                 return jerr("系统用户组不允许操作！");
             }
-            $this->thisModel->where($map)->where($this->pk . " > 1")->update([
+            $this->model->where($map)->where($this->pk . " > 1")->update([
                 $this->table . "_status" => 1,
                 $this->table . "_updatetime" => time(),
             ]);
         } else {
             $list = explode(',', $this->pk_value);
-            $this->thisModel->where($this->pk, 'in', $list)->where($this->table . "_system", 0)->update([
+            $this->model->where($this->pk, 'in', $list)->where($this->table . "_system", 0)->update([
                 $this->table . "_status" => 1,
                 $this->table . "_updatetime" => time(),
             ]);
@@ -113,7 +113,7 @@ class Group extends BaseController
      */
     public function enable()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -122,20 +122,20 @@ class Group extends BaseController
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
-            $item = $this->thisModel->where($map)->find();
+            $item = $this->model->where($map)->find();
             if (empty($item)) {
                 return jerr("数据查询失败");
             }
             if ($item[$this->table . "_system"] == 1) {
                 return jerr("系统用户组不允许操作！");
             }
-            $this->thisModel->where($map)->where($this->pk . " > 1")->update([
+            $this->model->where($map)->where($this->pk . " > 1")->update([
                 $this->table . "_status" => 0,
                 $this->table . "_updatetime" => time(),
             ]);
         } else {
             $list = explode(',', $this->pk_value);
-            $this->thisModel->where($this->pk, 'in', $list)->where($this->table . "_system", 0)->update([
+            $this->model->where($this->pk, 'in', $list)->where($this->table . "_system", 0)->update([
                 $this->table . "_updatetime" => time(),
             ]);
         }
@@ -149,7 +149,7 @@ class Group extends BaseController
      */
     public function delete()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -158,24 +158,24 @@ class Group extends BaseController
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
-            $item = $this->thisModel->where($map)->find();
+            $item = $this->model->where($map)->find();
             if (empty($item)) {
                 return jerr("数据查询失败");
             }
             if ($item[$this->table . "_system"] == 1) {
                 return jerr("系统用户组不允许操作！");
             }
-            $this->thisModel->where($map)->where($this->table . "_system", 0)->delete();
+            $this->model->where($map)->where($this->table . "_system", 0)->delete();
             //删除对应ID的授权记录
             $this->authModel->where([
                 "auth_group" => $this->pk_value
             ])->delete();
         } else {
             $list = explode(',', $this->pk_value);
-            $this->thisModel->where($this->pk, 'in', $list)->where($this->table . "_system", 0)->delete();
+            $this->model->where($this->pk, 'in', $list)->where($this->table . "_system", 0)->delete();
             //删除对应ID的授权记录
             foreach ($list as $item) {
-                $group = $this->thisModel->where("group_id", $item)->find();
+                $group = $this->model->where("group_id", $item)->find();
                 if ($group[$this->table . "_system"] == 1) {
                     continue;
                 }
@@ -194,7 +194,7 @@ class Group extends BaseController
      */
     public function authorize()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -205,7 +205,7 @@ class Group extends BaseController
             return jerr("修改失败,参数错误");
         }
         $map[$this->pk] = $this->pk_value;
-        $item = $this->thisModel->where($map)->find();
+        $item = $this->model->where($map)->find();
         if (empty($item)) {
             return jerr("用户组信息查询失败，授权失败");
         }
@@ -227,7 +227,7 @@ class Group extends BaseController
                 "auth_updatetime" => time()
             ]);
         }
-        return jok('用户组授权成功');
+        return ('用户组授权成功');
     }
     /**
      * 获取用户组拥有的权限
@@ -236,7 +236,7 @@ class Group extends BaseController
      */
     public function getAuthorize()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -247,7 +247,7 @@ class Group extends BaseController
             return jerr("修改失败,参数错误");
         }
         $map[$this->pk] = $this->pk_value;
-        $item = $this->thisModel->where($map)->find();
+        $item = $this->model->where($map)->find();
         if (empty($item)) {
             return jerr("用户组信息查询失败，授权失败");
         }
@@ -256,15 +256,11 @@ class Group extends BaseController
     }
     public function getList()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
-        $dataList = $this->thisModel->select();
+        $dataList = $this->model->select();
         return jok('用户组列表获取成功', $dataList);
-    }
-    public function __call($method, $args)
-    {
-        return $this->index();
     }
 }

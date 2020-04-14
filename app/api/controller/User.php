@@ -4,7 +4,7 @@ namespace app\api\controller;
 
 use think\App;
 use app\api\BaseController;
-use app\model\User as thisModel;
+use app\model\User as model;
 use app\model\Sms as SmsModel;
 
 class User extends BaseController
@@ -49,11 +49,11 @@ class User extends BaseController
             "createtime" => "创建时间",
             "updatetime" => "修改时间"
         ];
-        $this->thisModel = new thisModel();
+        $this->model = new model();
     }
     public function add()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -69,7 +69,7 @@ class User extends BaseController
             }
         }
         $data['user_ipreg'] = "127.0.0.1";
-        $user = $this->thisModel->getUserByAccount($data[$this->table . "_account"]);
+        $user = $this->model->getUserByAccount($data[$this->table . "_account"]);
         if ($user) {
             return jerr("帐号已存在，请重新输入");
         }
@@ -80,12 +80,12 @@ class User extends BaseController
         $data[$this->table . "_password"] = $password;
         $data[$this->table . "_updatetime"] = time();
         $data[$this->table . "_createtime"] = time();
-        $this->thisModel->insert($data);
+        $this->model->insert($data);
         return jok('用户添加成功');
     }
     public function update()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -96,7 +96,7 @@ class User extends BaseController
             return jerr("修改失败,参数错误");
         }
         $map[$this->pk] = $this->pk_value;
-        $item = $this->thisModel->where($map)->find();
+        $item = $this->model->where($map)->find();
         if (empty($item)) {
             return jerr("数据查询失败");
         }
@@ -114,7 +114,7 @@ class User extends BaseController
                 $data[$k] = $v;
             }
         }
-        $user = $this->thisModel->getUserByAccount($data[$this->table . "_account"]);
+        $user = $this->model->getUserByAccount($data[$this->table . "_account"]);
         if ($user && $user[$this->pk] != $item[$this->pk]) {
             return jerr("帐号已存在，请重新输入");
         }
@@ -127,7 +127,7 @@ class User extends BaseController
             $data[$this->table . "_password"] = $password;
         }
         $data[$this->table . "_updatetime"] = time();
-        $this->thisModel->where($this->pk, $this->pk_value)->update($data);
+        $this->model->where($this->pk, $this->pk_value)->update($data);
         return jok('用户信息更新成功');
     }
 
@@ -138,7 +138,7 @@ class User extends BaseController
      */
     public function disable()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -147,20 +147,20 @@ class User extends BaseController
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
-            $item = $this->thisModel->where($map)->find();
+            $item = $this->model->where($map)->find();
             if (empty($item)) {
                 return jerr("数据查询失败");
             }
             if ($item[$this->pk] == 1) {
                 return jerr("超级管理员不允许操作！");
             }
-            $this->thisModel->where($map)->where($this->pk . " > 1")->update([
+            $this->model->where($map)->where($this->pk . " > 1")->update([
                 $this->table . "_status" => 1,
                 $this->table . "_updatetime" => time(),
             ]);
         } else {
             $list = explode(',', $this->pk_value);
-            $this->thisModel->where($this->pk, 'in', $list)->where($this->pk . " > 1")->update([
+            $this->model->where($this->pk, 'in', $list)->where($this->pk . " > 1")->update([
                 $this->table . "_status" => 1,
                 $this->table . "_updatetime" => time(),
             ]);
@@ -175,7 +175,7 @@ class User extends BaseController
      */
     public function enable()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -184,20 +184,20 @@ class User extends BaseController
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
-            $item = $this->thisModel->where($map)->find();
+            $item = $this->model->where($map)->find();
             if (empty($item)) {
                 return jerr("数据查询失败");
             }
             if ($item[$this->pk] == 1) {
                 return jerr("超级管理员不允许操作！");
             }
-            $this->thisModel->where($map)->where($this->pk . " > 1")->update([
+            $this->model->where($map)->where($this->pk . " > 1")->update([
                 $this->table . "_status" => 0,
                 $this->table . "_updatetime" => time(),
             ]);
         } else {
             $list = explode(',', $this->pk_value);
-            $this->thisModel->where($this->pk, 'in', $list)->where($this->pk . " > 1")->update([
+            $this->model->where($this->pk, 'in', $list)->where($this->pk . " > 1")->update([
                 $this->table . "_status" => 0,
                 $this->table . "_updatetime" => time(),
             ]);
@@ -212,7 +212,7 @@ class User extends BaseController
      */
     public function delete()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -221,23 +221,23 @@ class User extends BaseController
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
-            $item = $this->thisModel->where($map)->find();
+            $item = $this->model->where($map)->find();
             if (empty($item)) {
                 return jerr("数据查询失败");
             }
             if ($item[$this->pk] == 1) {
                 return jerr("超级管理员不允许操作！");
             }
-            $this->thisModel->where($map)->where($this->pk . " > 1")->delete();
+            $this->model->where($map)->where($this->pk . " > 1")->delete();
         } else {
             $list = explode(',', $this->pk_value);
-            $this->thisModel->where($this->pk, 'in', $list)->where($this->pk . " > 1")->delete();
+            $this->model->where($this->pk, 'in', $list)->where($this->pk . " > 1")->delete();
         }
         return jok('删除用户成功');
     }
     public function detail()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -247,7 +247,7 @@ class User extends BaseController
         $map = [
             $this->pk => input($this->pk),
         ];
-        $item = $this->thisModel->field($this->selectDetail)->where($map)->find();
+        $item = $this->model->field($this->selectDetail)->where($map)->find();
         if (empty($item)) {
             return jerr("没有查询到数据");
         }
@@ -255,7 +255,7 @@ class User extends BaseController
     }
     public function getList()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -286,17 +286,13 @@ class User extends BaseController
             $order = urldecode(input('order'));
         }
         if (input('per_page')) {
-            $this->thisModel->per_page = intval(input('per_page'));
+            $this->model->per_page = intval(input('per_page'));
         }
-        $dataList = $this->thisModel->getListByPage($map, $order, $this->selectList);
+        $dataList = $this->model->getListByPage($map, $order, $this->selectList);
         return jok('用户列表获取成功', $dataList);
     }
     public function login()
     {
-        $error = $this->checkAccess();
-        if ($error) {
-            return $error;
-        }
         if (!input("user_account")) {
             return jerr('请确认帐号是否正确填写');
         }
@@ -307,12 +303,12 @@ class User extends BaseController
         $user_account = input("user_account");
         $user_password = input("user_password");
         //登录获取用户信息
-        $user = $this->thisModel->login($user_account, $user_password);
+        $user = $this->model->login($user_account, $user_password);
         if ($user) {
             //创建一个新的授权
             $access = $this->accessModel->createAccess($user['user_id'], $plat);
             if ($access) {
-                cookie('access_token', $access['access_token']);
+                setCookie('access_token', $access['access_token'], time() + 3600, '/');
                 return jok('登录成功', ['access_token' => $access['access_token']]);
             } else {
                 return jerr('登录系统异常');
@@ -350,13 +346,13 @@ class User extends BaseController
         }
         $smsModel = new SmsModel();
         if ($smsModel->validSmsCode($phone, $code)) {
-            $user = $this->thisModel->where([
+            $user = $this->model->where([
                 "user_account" => $phone
             ])->find();
             if ($user) {
                 return jerr("该手机号已经注册！");
             }
-            $result = $this->thisModel->reg($phone, $password, $name);
+            $result = $this->model->reg($phone, $password, $name);
             if ($result) {
                 return jok("用户注册成功");
             } else {
@@ -368,7 +364,7 @@ class User extends BaseController
     }
     public function motifyPassword()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -386,7 +382,7 @@ class User extends BaseController
         if ($this->user['user_password'] != encodePassword($old_password, $this->user['user_salt'])) {
             return jerr("原密码输入不正确，请重试！");
         }
-        $result = $this->thisModel->motifyPassword($this->user['user_id'], $new_password);
+        $result = $this->model->motifyPassword($this->user['user_id'], $new_password);
         if ($result) {
             return jok("密码已重置，请使用新密码登录");
         } else {
@@ -419,13 +415,13 @@ class User extends BaseController
         $password = input("password");
         $smsModel = new SmsModel();
         if ($smsModel->validSmsCode($phone, $code)) {
-            $user = $this->thisModel->where([
+            $user = $this->model->where([
                 "user_account" => $phone
             ])->find();
             if (!$user) {
                 return jerr("该手机号尚未注册！");
             }
-            $result = $this->thisModel->motifyPassword($user['user_id'], $password);
+            $result = $this->model->motifyPassword($user['user_id'], $password);
             if ($result) {
                 return jok("密码已重置，请使用新密码登录");
             } else {
@@ -443,7 +439,7 @@ class User extends BaseController
      */
     public function getMyInfo()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -455,7 +451,7 @@ class User extends BaseController
     }
     public function updateMyInfo()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -468,7 +464,7 @@ class User extends BaseController
             "user_email" => input("user_email"),
             "user_idcard" => input("user_idcard"),
         ];
-        $this->thisModel->where("user_id", $this->user['user_id'])->update($data);
+        $this->model->where("user_id", $this->user['user_id'])->update($data);
         return jok("资料更新成功");
     }
 }

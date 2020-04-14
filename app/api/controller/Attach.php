@@ -21,11 +21,11 @@ class Attach extends BaseController
             "attach_desc" => "like", //相似筛选
             "attach_readonly" => "=", //相似筛选
         ];
-        $this->thisModel = new AttachModel();
+        $this->model = new AttachModel();
     }
     public function uploadImage()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -42,8 +42,8 @@ class Attach extends BaseController
                 'attach_updatetime' => time(),
                 'attach_user' => $this->user['user_id']
             );
-            $attach_id = $this->thisModel->insertGetId($attach_data);
-            $attach_data = $this->thisModel->where(["attach_id" => $attach_id])->find();
+            $attach_id = $this->model->insertGetId($attach_data);
+            $attach_data = $this->model->where(["attach_id" => $attach_id])->find();
             if (input("?extend")) {
                 $attach_data['extend'] = input("extend");
             }
@@ -54,7 +54,7 @@ class Attach extends BaseController
     }
     public function uploadFile()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -71,8 +71,8 @@ class Attach extends BaseController
                 'attach_updatetime' => time(),
                 'attach_user' => $this->user['user_id']
             );
-            $attach_id = $this->thisModel->insertGetId($attach_data);
-            $attach_data = $this->thisModel->where(["attach_id" => $attach_id])->find();
+            $attach_id = $this->model->insertGetId($attach_data);
+            $attach_data = $this->model->where(["attach_id" => $attach_id])->find();
             if (input("?extend")) {
                 $attach_data['extend'] = input("extend");
             }

@@ -39,11 +39,11 @@ class Wemenu extends BaseController
             // "字段名称"=>"该字段不能为空"
             "wemenu_name" => "菜单名称必须填写",
         ];
-        $this->thisModel = new WemenuModel();
+        $this->model = new WemenuModel();
     }
     public function add()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -59,14 +59,14 @@ class Wemenu extends BaseController
             }
         }
         if ($data['wemenu_pid'] == 0) {
-            $parentCount = $this->thisModel->where('wemenu_pid', 0)->count();
+            $parentCount = $this->model->where('wemenu_pid', 0)->count();
             if ($parentCount >= 3) {
                 return jerr("父菜单最多允许三个，添加失败！");
             }
         }
         $data[$this->table . "_updatetime"] = time();
         $data[$this->table . "_createtime"] = time();
-        $this->thisModel->insert($data);
+        $this->model->insert($data);
         return jok('添加成功');
     }
     /**
@@ -76,20 +76,20 @@ class Wemenu extends BaseController
      */
     public function getList()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
-        $dataList = $this->thisModel->where('wemenu_pid', 0)->select()->toArray();
+        $dataList = $this->model->where('wemenu_pid', 0)->select()->toArray();
         for ($i = 0; $i < count($dataList); $i++) {
-            $itemList = $this->thisModel->where("wemenu_pid", $dataList[$i]['wemenu_id'])->select()->toArray();
+            $itemList = $this->model->where("wemenu_pid", $dataList[$i]['wemenu_id'])->select()->toArray();
             $dataList[$i]['sub'] = $itemList;
         }
         return jok('数据获取成功', $dataList);
     }
     public function delete()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -98,29 +98,29 @@ class Wemenu extends BaseController
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
-            $item = $this->thisModel->where($map)->find();
+            $item = $this->model->where($map)->find();
             if (empty($item)) {
                 return jerr("数据查询失败");
             }
-            $this->thisModel->where($map)->delete();
-            $this->thisModel->where('wemenu_pid', $this->pk_value)->delete();
+            $this->model->where($map)->delete();
+            $this->model->where('wemenu_pid', $this->pk_value)->delete();
         } else {
             $list = explode(',', $this->pk_value);
-            $this->thisModel->where($this->pk, 'in', $list)->delete();
-            $this->thisModel->where('wemenu_pid', 'in', $list)->delete();
+            $this->model->where($this->pk, 'in', $list)->delete();
+            $this->model->where('wemenu_pid', 'in', $list)->delete();
         }
         return jok('删除成功');
     }
     public function publish()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
-        $dataList = $this->thisModel->where('wemenu_pid', 0)->select()->toArray();
+        $dataList = $this->model->where('wemenu_pid', 0)->select()->toArray();
         $wechatMenu = [];
         foreach ($dataList as $parent) {
-            $children = $this->thisModel->where('wemenu_pid', $parent['wemenu_id'])->select()->toArray();
+            $children = $this->model->where('wemenu_pid', $parent['wemenu_id'])->select()->toArray();
 
             $menu = [
                 'name' => urlencode($parent['wemenu_name']),

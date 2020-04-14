@@ -80,6 +80,18 @@
                 </el-switch>
             </template>
         </el-table-column>
+        <el-table-column label="登录" width="50">
+            <template slot-scope="scope">
+                <font v-if="scope.row.node_login==1">需要</font>
+                <font v-if="scope.row.node_login!=1" style="color:#aaa;">无需</font>
+            </template>
+        </el-table-column>
+        <el-table-column label="授权" width="50">
+            <template slot-scope="scope">
+                <font v-if="scope.row.node_access==1">需要</font>
+                <font v-if="scope.row.node_access!=1" style="color:#aaa;">无需</font>
+            </template>
+        </el-table-column>
         <el-table-column label="操作" width="180">
             <template slot-scope="scope">
                 <el-link type="info" @click="clickEdit(scope.row)" :underline="false"><i class="el-icon-edit"></i>编辑
@@ -130,6 +142,18 @@
             <el-form-item label="显示顺序" :label-width="formLabelWidth" prop="node_order">
                 <el-input size="medium" autocomplete="off" v-model="formAdd.node_order"></el-input>
             </el-form-item>
+            <el-form-item label="需要登录" :label-width="formLabelWidth">
+                <el-select placeholder="请选择是否登录后访问" size="small" v-model="formAdd.node_login">
+                    <el-option v-for="login in LoginList" :value="login.value" :label="login.title">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="需要授权" :label-width="formLabelWidth">
+                <el-select placeholder="请选择是否授权后访问" size="small" v-model="formAdd.node_access">
+                    <el-option v-for="access in AccessList" :value="access.value" :label="access.title">
+                    </el-option>
+                </el-select>
+            </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
             <el-button type="primary" @click="postAdd">确认添加</el-button>
@@ -171,6 +195,18 @@
             <el-form-item label="显示顺序" :label-width="formLabelWidth" prop="node_order">
                 <el-input size="medium" autocomplete="off" v-model="formEdit.node_order"></el-input>
             </el-form-item>
+            <el-form-item label="需要登录" :label-width="formLabelWidth">
+                <el-select placeholder="请选择是否登录后访问" size="small" v-model="formEdit.node_login">
+                    <el-option v-for="login in LoginList" :value="login.value" :label="login.title">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="需要授权" :label-width="formLabelWidth">
+                <el-select placeholder="请选择是否授权后访问" size="small" v-model="formEdit.node_access">
+                    <el-option v-for="access in AccessList" :value="access.value" :label="access.title">
+                    </el-option>
+                </el-select>
+            </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
             <el-button type="primary" @click="postEdit">确认修改</el-button>
@@ -196,6 +232,26 @@
                     loading: true,
                     dataList: [],
                     parentList: [],
+                    LoginList: [
+                        {
+                            title: "需要登录后访问",
+                            value: 1
+                        },
+                        {
+                            title: "不需要登录访问",
+                            value: 0
+                        }
+                    ],
+                    AccessList: [
+                        {
+                            title: "需要授权后访问",
+                            value: 1
+                        },
+                        {
+                            title: "不需要授权访问",
+                            value: 0
+                        }
+                    ],
                     systemList: [
                         {
                             system_id: 0,

@@ -31,12 +31,12 @@ class Conf extends BaseController
         $this->updateRequire = [
             'conf_key' => "配置名称必须填写"
         ];
-        $this->thisModel = new ConfModel();
+        $this->model = new ConfModel();
     }
 
     public function add()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -53,12 +53,12 @@ class Conf extends BaseController
         }
         $data[$this->table . "_updatetime"] = time();
         $data[$this->table . "_createtime"] = time();
-        $this->thisModel->insert($data);
+        $this->model->insert($data);
         return jok('用户添加成功');
     }
     public function update()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -69,7 +69,7 @@ class Conf extends BaseController
             return jerr("修改失败,参数错误");
         }
         $map[$this->pk] = $this->pk_value;
-        $item = $this->thisModel->where($map)->find();
+        $item = $this->model->where($map)->find();
         if (empty($item)) {
             return jerr("数据查询失败");
         }
@@ -92,7 +92,7 @@ class Conf extends BaseController
             unset($data[$this->table . "_key"]);
             unset($data[$this->table . "_value"]);
         }
-        $this->thisModel->where($this->pk, $this->pk_value)->update($data);
+        $this->model->where($this->pk, $this->pk_value)->update($data);
         return jok('配置信息更新成功');
     }
 
@@ -103,7 +103,7 @@ class Conf extends BaseController
      */
     public function disable()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -112,20 +112,20 @@ class Conf extends BaseController
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
-            $item = $this->thisModel->where($map)->find();
+            $item = $this->model->where($map)->find();
             if (empty($item)) {
                 return jerr("数据查询失败");
             }
             if ($item[$this->table . "_system"] == 1) {
                 return jerr("系统配置不允许操作！");
             }
-            $this->thisModel->where($map)->where($this->pk . " > 1")->update([
+            $this->model->where($map)->where($this->pk . " > 1")->update([
                 $this->table . "_status" => 1,
                 $this->table . "_updatetime" => time(),
             ]);
         } else {
             $list = explode(',', $this->pk_value);
-            $this->thisModel->where($this->pk, 'in', $list)->where($this->table . "_system", 0)->update([
+            $this->model->where($this->pk, 'in', $list)->where($this->table . "_system", 0)->update([
                 $this->table . "_status" => 1,
                 $this->table . "_updatetime" => time(),
             ]);
@@ -140,7 +140,7 @@ class Conf extends BaseController
      */
     public function enable()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -149,20 +149,20 @@ class Conf extends BaseController
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
-            $item = $this->thisModel->where($map)->find();
+            $item = $this->model->where($map)->find();
             if (empty($item)) {
                 return jerr("数据查询失败");
             }
             if ($item[$this->table . "_system"] == 1) {
                 return jerr("系统配置不允许操作！");
             }
-            $this->thisModel->where($map)->where($this->pk . " > 1")->update([
+            $this->model->where($map)->where($this->pk . " > 1")->update([
                 $this->table . "_status" => 0,
                 $this->table . "_updatetime" => time(),
             ]);
         } else {
             $list = explode(',', $this->pk_value);
-            $this->thisModel->where($this->pk, 'in', $list)->where($this->table . "_system", 0)->update([
+            $this->model->where($this->pk, 'in', $list)->where($this->table . "_system", 0)->update([
                 $this->table . "_updatetime" => time(),
             ]);
         }
@@ -176,7 +176,7 @@ class Conf extends BaseController
      */
     public function delete()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -185,20 +185,20 @@ class Conf extends BaseController
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
-            $item = $this->thisModel->where($map)->find();
+            $item = $this->model->where($map)->find();
             if (empty($item)) {
                 return jerr("数据查询失败");
             }
             if ($item[$this->table . "_system"] == 1) {
                 return jerr("系统配置不允许操作！");
             }
-            $this->thisModel->where($map)->where($this->table . "_system", 0)->delete();
+            $this->model->where($map)->where($this->table . "_system", 0)->delete();
         } else {
             $list = explode(',', $this->pk_value);
-            $this->thisModel->where($this->pk, 'in', $list)->where($this->table . "_system", 0)->delete();
+            $this->model->where($this->pk, 'in', $list)->where($this->table . "_system", 0)->delete();
             //删除对应ID的授权记录
             foreach ($list as $item) {
-                $conf = $this->thisModel->where("conf_id", $item)->find();
+                $conf = $this->model->where("conf_id", $item)->find();
                 if ($conf[$this->table . "_system"] == 1) {
                     continue;
                 }
@@ -214,7 +214,7 @@ class Conf extends BaseController
      */
     public function authorize()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
@@ -225,7 +225,7 @@ class Conf extends BaseController
             return jerr("修改失败,参数错误");
         }
         $map[$this->pk] = $this->pk_value;
-        $item = $this->thisModel->where($map)->find();
+        $item = $this->model->where($map)->find();
         if (empty($item)) {
             return jerr("数据查询失败");
         }
@@ -256,11 +256,11 @@ class Conf extends BaseController
      */
     public function getBaseConfig()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
-        $datalist = $this->thisModel->where('conf_key', 'in', 'app_name')->order($this->pk . " asc")->select();
+        $datalist = $this->model->where('conf_key', 'in', 'app_name')->order($this->pk . " asc")->select();
         return jok('', $datalist);
     }
     /**
@@ -270,20 +270,20 @@ class Conf extends BaseController
      */
     public function updateBaseConfig()
     {
-        $error = $this->checkAccess();
+        $error = $this->access();
         if ($error) {
             return $error;
         }
         foreach (input("post.") as $k => $v) {
             $map["conf_key"] = $k;
-            $item = $this->thisModel->where($map)->find();
+            $item = $this->model->where($map)->find();
             if (empty($item)) {
                 continue;
             }
             if ($item[$this->table . "_readonly"] == 1) {
                 continue;
             }
-            $this->thisModel->where("conf_key", $k)->update(["conf_value" => $v]);
+            $this->model->where("conf_key", $k)->update(["conf_value" => $v]);
         }
         return jok("配置修改成功");
     }
