@@ -53,7 +53,7 @@ class Wemenu extends BaseController
             }
         }
         $data = [];
-        foreach (input() as $k => $v) {
+        foreach (input('post.') as $k => $v) {
             if (in_array($k, $this->insertFields)) {
                 $data[$k] = $v;
             }
@@ -93,7 +93,7 @@ class Wemenu extends BaseController
         if ($error) {
             return $error;
         }
-        if (!input($this->pk)) {
+        if (!$this->pk_value) {
             return jerr($this->pk . "必须填写");
         }
         if (isInteger($this->pk_value)) {

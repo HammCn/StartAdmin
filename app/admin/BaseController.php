@@ -75,7 +75,7 @@ abstract class BaseController
 
         $this->table = strtolower($this->controller);
         $this->pk = $this->table . "_id";
-        $this->pk_value = input($this->pk);
+        $this->pk_value = input('get.' . $this->pk);
 
         $this->userModel = new UserModel();
         $this->accessModel = new AccessModel();

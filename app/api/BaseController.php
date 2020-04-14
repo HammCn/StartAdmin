@@ -105,7 +105,7 @@ abstract class BaseController
 
         $this->table = strtolower($this->controller);
         $this->pk = $this->table . "_id";
-        $this->pk_value = input($this->pk);
+        $this->pk_value = input('get.' . $this->pk);
 
         $this->userModel = new UserModel();
         $this->accessModel = new AccessModel();
@@ -219,7 +219,7 @@ abstract class BaseController
             }
         }
         $data = [];
-        foreach (input() as $k => $v) {
+        foreach (input('post.') as $k => $v) {
             if (in_array($k, $this->insertFields)) {
                 $data[$k] = $v;
             }
@@ -235,11 +235,10 @@ abstract class BaseController
         if ($error) {
             return $error;
         }
-        if (!input($this->pk)) {
+        if (!$this->pk_value) {
             return jerr($this->pk . "参数必须填写");
         }
-        $map[$this->pk] = $this->pk_value;
-        $item = $this->model->where($map)->find();
+        $item = $this->model->where($this->pk, $this->pk_value)->find();
         if (empty($item)) {
             return jerr("数据查询失败");
         }
@@ -249,7 +248,7 @@ abstract class BaseController
             }
         }
         $data = [];
-        foreach (input() as $k => $v) {
+        foreach (input('post.') as $k => $v) {
             if (in_array($k, $this->updateFields)) {
                 $data[$k] = $v;
             }
@@ -269,7 +268,7 @@ abstract class BaseController
         if ($error) {
             return $error;
         }
-        if (!input($this->pk)) {
+        if (!$this->pk_value) {
             return jerr($this->pk . "参数必须填写");
         }
         if (isInteger($this->pk_value)) {
@@ -303,7 +302,7 @@ abstract class BaseController
         if ($error) {
             return $error;
         }
-        if (!input($this->pk)) {
+        if (!$this->pk_value) {
             return jerr($this->pk . "参数必须填写");
         }
         if (isInteger($this->pk_value)) {
@@ -337,7 +336,7 @@ abstract class BaseController
         if ($error) {
             return $error;
         }
-        if (!input($this->pk)) {
+        if (!$this->pk_value) {
             return jerr($this->pk . "必须填写");
         }
         if (isInteger($this->pk_value)) {
@@ -365,7 +364,7 @@ abstract class BaseController
             return $error;
         }
         $map = [];
-        $filter = input();
+        $filter = input('post.');
         foreach ($filter as $k => $v) {
             if ($k == 'filter') {
                 $k = input('filter');
@@ -402,13 +401,10 @@ abstract class BaseController
         if ($error) {
             return $error;
         }
-        if (!input($this->pk)) {
+        if (!$this->pk_value) {
             return jerr($this->pk . "必须填写");
         }
-        $map = [
-            $this->pk => input($this->pk),
-        ];
-        $item = $this->model->field($this->selectDetail)->where($map)->find();
+        $item = $this->model->field($this->selectDetail)->where($this->pk, $this->pk_value)->find();
         if (empty($item)) {
             return jerr("没有查询到数据");
         }
@@ -421,7 +417,7 @@ abstract class BaseController
             return $error;
         }
         $map = [];
-        $filter = input();
+        $filter = input('post.');
         foreach ($filter as $k => $v) {
             if ($k == 'filter') {
                 $k = input('filter');

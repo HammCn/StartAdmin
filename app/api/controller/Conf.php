@@ -46,7 +46,7 @@ class Conf extends BaseController
             }
         }
         $data = [];
-        foreach (input() as $k => $v) {
+        foreach (input('post.') as $k => $v) {
             if (in_array($k, $this->insertFields)) {
                 $data[$k] = $v;
             }
@@ -62,14 +62,13 @@ class Conf extends BaseController
         if ($error) {
             return $error;
         }
-        if (!input($this->pk)) {
+        if (!$this->pk_value) {
             return jerr($this->pk . "必须填写");
         }
         if (!isInteger($this->pk_value)) {
             return jerr("修改失败,参数错误");
         }
-        $map[$this->pk] = $this->pk_value;
-        $item = $this->model->where($map)->find();
+        $item = $this->model->where($this->pk, $this->pk_value)->find();
         if (empty($item)) {
             return jerr("数据查询失败");
         }
@@ -79,7 +78,7 @@ class Conf extends BaseController
             }
         }
         $data = [];
-        foreach (input() as $k => $v) {
+        foreach (input('post.') as $k => $v) {
             if (in_array($k, $this->updateFields)) {
                 $data[$k] = $v;
             }
@@ -107,7 +106,7 @@ class Conf extends BaseController
         if ($error) {
             return $error;
         }
-        if (!input($this->pk)) {
+        if (!$this->pk_value) {
             return jerr($this->pk . "参数必须填写");
         }
         if (isInteger($this->pk_value)) {
@@ -144,7 +143,7 @@ class Conf extends BaseController
         if ($error) {
             return $error;
         }
-        if (!input($this->pk)) {
+        if (!$this->pk_value) {
             return jerr($this->pk . "参数必须填写");
         }
         if (isInteger($this->pk_value)) {
@@ -180,7 +179,7 @@ class Conf extends BaseController
         if ($error) {
             return $error;
         }
-        if (!input($this->pk)) {
+        if (!$this->pk_value) {
             return jerr($this->pk . "必须填写");
         }
         if (isInteger($this->pk_value)) {
@@ -218,14 +217,13 @@ class Conf extends BaseController
         if ($error) {
             return $error;
         }
-        if (!input($this->pk)) {
+        if (!$this->pk_value) {
             return jerr($this->pk . "必须填写");
         }
         if (!isInteger($this->pk_value)) {
             return jerr("修改失败,参数错误");
         }
-        $map[$this->pk] = $this->pk_value;
-        $item = $this->model->where($map)->find();
+        $item = $this->model->where($this->pk, $this->pk_value)->find();
         if (empty($item)) {
             return jerr("数据查询失败");
         }
