@@ -92,10 +92,6 @@ abstract class BaseController
             $c[$config['conf_key']] = $config['conf_value'];
         }
         config($c, 'startadmin');
-
-        if (!($this->controller == "User" && in_array($this->action, ['login', 'resetPassword', 'reg']))) {
-            $this->access();
-        }
     }
     /**
      * 后台简单的身份判断
@@ -113,35 +109,29 @@ abstract class BaseController
         }
         $access_token = cookie('access_token');
         if (!$access_token) {
-            header('Location: /admin/user/login/?callback=' . urlencode($callback));
-            die;
+            return redirect('/admin/user/login/?callback=' . urlencode($callback));
         }
         View::assign("access_token", $access_token);
-        // setCookie("access_token", $access_token, time() + 3600, "/");
         $this->user = $this->userModel->getUserByAccessToken($access_token);
         if (!$this->user) {
-            header('Location: /admin/user/login/?callback=' . urlencode($callback));
-            die;
+            return redirect('/admin/user/login/?callback=' . urlencode($callback));
         }
         if ($this->user['user_status']  > 0) {
-            $this->error("抱歉，你的帐号已被禁用，暂时无法登录系统！");
-            die;
+            return $this->error("抱歉，你的帐号已被禁用，暂时无法登录系统！");
         }
         cookie("access_token", $access_token);
         View::assign('userInfo', $this->user);
         $this->group = $this->groupModel->where('group_id', $this->user['user_group'])->find();
         if ($this->group) {
             if ($this->group['group_id'] != 1 && $this->group['group_status'] == 1) {
-                $this->error("抱歉，你所在的用户组已被禁用，暂时无法登录系统");
-                die;
+                return $this->error("抱歉，你所在的用户组已被禁用，暂时无法登录系统");
             } else {
                 View::assign('menuList', $this->authModel->getAdminMenuListByUserId($this->group['group_id']));
                 $node = $this->nodeModel->where(['node_module' => $this->module, 'node_controller' => strtolower($this->controller), 'node_action' => $this->action])->find();
                 View::assign('node', $node);
             }
         } else {
-            $this->error("抱歉，没有查到你的用户组信息，暂时无法登录系统");
-            die;
+            return $this->error("抱歉，没有查到你的用户组信息，暂时无法登录系统");
         }
     }
     protected function error($msg)

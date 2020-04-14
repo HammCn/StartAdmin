@@ -12,8 +12,14 @@ class Error extends BaseController
      */
     public function __call($method, $args)
     {
-        if (strtolower($this->request->controller()) == 'user' && strtolower($method) == 'login') {
+        // 判断是否是登录/注册/找回密码
+        // 否则进行accesss授权验证 如错误 直接返回
+        if (!(strtolower($this->controller) == "User" && in_array(strtolower($this->action), ['login', 'resetPassword', 'reg']))) {
             cookie('access_token', null);
+            $error = $this->access();
+            if ($error) {
+                return $error;
+            }
         }
         if (key_exists('callback', $args)) {
             View::assign('callback', $args['callback']);
