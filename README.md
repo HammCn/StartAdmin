@@ -14,6 +14,9 @@
 
 StartAdmin，基于ThinkPHP6/ElementUI/VUE的后台管理二次开发脚手架 集成了微信接入、微信(登录)支付、第三方登录、权限管理，用户(组)管理，WEUI，菜单管理，节点管理，访问日志，访问统计，API生成，后台代码生成，Excel数据导出等常用功能，是轻量级后端脚手架。QQ群: 973087692
 
+万水千山总是情，写个手册行不行？
+<a href="https://startadmin.hamm.cn/" target="_blank">StartAdmin 快速接入使用手册 来了 </a>
+
 ### 使用说明
 ```
 创建数据库(utf8-mb4)，导入数据库StartAdmin.sql
