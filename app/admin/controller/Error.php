@@ -17,6 +17,7 @@ class Error extends BaseController
         if (!(strtolower($this->controller) == "User" && in_array(strtolower($this->action), ['login', 'resetPassword', 'reg']))) {
             cookie('access_token', null);
             $error = $this->access();
+            print_r($error);die;
             if ($error) {
                 return $error;
             }
