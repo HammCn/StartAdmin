@@ -43,14 +43,6 @@ class Wemenu extends BaseController
     }
     public function add()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
         $error = $this->checkAccess();
         if ($error) {
             return $error;
@@ -84,14 +76,6 @@ class Wemenu extends BaseController
      */
     public function getList()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
         $error = $this->checkAccess();
         if ($error) {
             return $error;
@@ -105,14 +89,6 @@ class Wemenu extends BaseController
     }
     public function delete()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
         $error = $this->checkAccess();
         if ($error) {
             return $error;
@@ -137,14 +113,6 @@ class Wemenu extends BaseController
     }
     public function publish()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
         $error = $this->checkAccess();
         if ($error) {
             return $error;

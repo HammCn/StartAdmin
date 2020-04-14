@@ -218,14 +218,6 @@ abstract class BaseController
     }
     public function add()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
         $error = $this->checkAccess();
         if ($error) {
             return $error;
@@ -248,14 +240,6 @@ abstract class BaseController
     }
     public function update()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
         $error = $this->checkAccess();
         if ($error) {
             return $error;
@@ -290,14 +274,6 @@ abstract class BaseController
      */
     public function disable()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
         $error = $this->checkAccess();
         if ($error) {
             return $error;
@@ -332,14 +308,6 @@ abstract class BaseController
      */
     public function enable()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
         $error = $this->checkAccess();
         if ($error) {
             return $error;
@@ -374,14 +342,6 @@ abstract class BaseController
      */
     public function delete()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
         $error = $this->checkAccess();
         if ($error) {
             return $error;
@@ -409,14 +369,6 @@ abstract class BaseController
      */
     public function getList()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
         $error = $this->checkAccess();
         if ($error) {
             return $error;
@@ -455,14 +407,6 @@ abstract class BaseController
     }
     public function detail()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
         $error = $this->checkAccess();
         if ($error) {
             return $error;
@@ -481,14 +425,6 @@ abstract class BaseController
     }
     public function excel()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
         $error = $this->checkAccess();
         if ($error) {
             return $error;

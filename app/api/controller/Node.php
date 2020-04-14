@@ -41,14 +41,6 @@ class Node extends BaseController
 
     public function add()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
         $error = $this->checkAccess();
         if ($error) {
             return $error;
@@ -74,14 +66,6 @@ class Node extends BaseController
     }
     public function update()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
         $error = $this->checkAccess();
         if ($error) {
             return $error;
@@ -123,14 +107,6 @@ class Node extends BaseController
      */
     public function disable()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
         $error = $this->checkAccess();
         if ($error) {
             return $error;
@@ -168,14 +144,6 @@ class Node extends BaseController
      */
     public function enable()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
         $error = $this->checkAccess();
         if ($error) {
             return $error;
@@ -212,14 +180,6 @@ class Node extends BaseController
      */
     public function delete()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
         $error = $this->checkAccess();
         if ($error) {
             return $error;
@@ -250,14 +210,6 @@ class Node extends BaseController
 
     public function getList()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
         $error = $this->checkAccess();
         if ($error) {
             return $error;
@@ -305,14 +257,6 @@ class Node extends BaseController
      */
     public function show_menu()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
         $error = $this->checkAccess();
         if ($error) {
             return $error;
@@ -340,14 +284,6 @@ class Node extends BaseController
      */
     public function hide_menu()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
         $error = $this->checkAccess();
         if ($error) {
             return $error;

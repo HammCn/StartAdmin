@@ -7,7 +7,7 @@
  * @param array  输出数据
  * @return json
  */
-function jok($msg = null, $data = null)
+function jok($msg = 'success', $data = null)
 {
     if ($data) {
         return json(["code" => 200, "msg" => $msg, 'data' => $data]);
@@ -22,7 +22,7 @@ function jok($msg = null, $data = null)
  * @param int 错误代码
  * @return json
  */
-function jerr($msg = null, $code = 500)
+function jerr($msg = 'error', $code = 500)
 {
     return json(["code" => $code, "msg" => $msg]);
 }

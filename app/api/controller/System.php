@@ -20,14 +20,6 @@ class System extends BaseController
      */
     public function build()
     {
-        $error = $this->checkVersion();
-        if ($error) {
-            return $error;
-        }
-        $error = $this->checkLogin();
-        if ($error) {
-            return $error;
-        }
         $error = $this->checkAccess();
         if ($error) {
             return $error;
