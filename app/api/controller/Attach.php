@@ -29,27 +29,31 @@ class Attach extends BaseController
         if ($error) {
             return $error;
         }
-        $file = request()->file('file');
         try {
-            validate(['file' => 'filesize:' . config("startadmin.upload_max_image") . '|fileExt:' . config("startadmin.upload_image_type")])
-                ->check(['file' => $file]);
-            $saveName = Filesystem::putFile('image', $file);
-            $attach_data = array(
-                'attach_path' => $saveName,
-                'attach_type' => $file->extension(),
-                'attach_size' => $file->getSize(),
-                'attach_createtime' => time(),
-                'attach_updatetime' => time(),
-                'attach_user' => $this->user['user_id']
-            );
-            $attach_id = $this->model->insertGetId($attach_data);
-            $attach_data = $this->model->where(["attach_id" => $attach_id])->find();
-            if (input("?extend")) {
-                $attach_data['extend'] = input("extend");
+            $file = request()->file('file');
+            try {
+                validate(['file' => 'filesize:' . config("startadmin.upload_max_image") . '|fileExt:' . config("startadmin.upload_image_type")])
+                    ->check(['file' => $file]);
+                $saveName = Filesystem::putFile('image', $file);
+                $attach_data = array(
+                    'attach_path' => $saveName,
+                    'attach_type' => $file->extension(),
+                    'attach_size' => $file->getSize(),
+                    'attach_createtime' => time(),
+                    'attach_updatetime' => time(),
+                    'attach_user' => $this->user['user_id']
+                );
+                $attach_id = $this->model->insertGetId($attach_data);
+                $attach_data = $this->model->where(["attach_id" => $attach_id])->find();
+                if (input("?extend")) {
+                    $attach_data['extend'] = input("extend");
+                }
+                return jok('上传成功！', $attach_data);
+            } catch (ValidateException $e) {
+                return jerr($e->getMessage());
             }
-            return jok('上传成功！', $attach_data);
-        } catch (ValidateException $e) {
-            return jerr($e);
+        } catch (\Exception $error) {
+            return jerr('上传文件失败，请检查你的文件！');
         }
     }
     public function uploadFile()
@@ -58,27 +62,31 @@ class Attach extends BaseController
         if ($error) {
             return $error;
         }
-        $file = request()->file('file');
         try {
-            validate(['file' => 'filesize:' . config("startadmin.upload_max_file") . '|fileExt:' . config("startadmin.upload_file_type")])
-                ->check(['file' => $file]);
-            $saveName = Filesystem::putFile('normal', $file);
-            $attach_data = array(
-                'attach_path' => $saveName,
-                'attach_type' => $file->extension(),
-                'attach_size' => $file->getSize(),
-                'attach_createtime' => time(),
-                'attach_updatetime' => time(),
-                'attach_user' => $this->user['user_id']
-            );
-            $attach_id = $this->model->insertGetId($attach_data);
-            $attach_data = $this->model->where(["attach_id" => $attach_id])->find();
-            if (input("?extend")) {
-                $attach_data['extend'] = input("extend");
+            $file = request()->file('file');
+            try {
+                validate(['file' => 'filesize:' . config("startadmin.upload_max_file") . '|fileExt:' . config("startadmin.upload_file_type")])
+                    ->check(['file' => $file]);
+                $saveName = Filesystem::putFile('normal', $file);
+                $attach_data = array(
+                    'attach_path' => $saveName,
+                    'attach_type' => $file->extension(),
+                    'attach_size' => $file->getSize(),
+                    'attach_createtime' => time(),
+                    'attach_updatetime' => time(),
+                    'attach_user' => $this->user['user_id']
+                );
+                $attach_id = $this->model->insertGetId($attach_data);
+                $attach_data = $this->model->where(["attach_id" => $attach_id])->find();
+                if (input("?extend")) {
+                    $attach_data['extend'] = input("extend");
+                }
+                return jok('上传成功！', $attach_data);
+            } catch (ValidateException $e) {
+                return jerr($e);
             }
-            return jok('上传成功！', $attach_data);
-        } catch (ValidateException $e) {
-            return jerr($e);
+        } catch (\Exception $error) {
+            return jerr('上传文件失败，请检查你的文件！');
         }
     }
 }
