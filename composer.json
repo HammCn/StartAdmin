@@ -3,7 +3,7 @@
     "description": "Fast build your php project",
     "type": "project",
     "keywords": [
-        "StartAdmin",
+        "StartAdmin"
     ],
     "homepage": "https://startadmin.hamm.cn/",
     "license": "Apache-2.0",
