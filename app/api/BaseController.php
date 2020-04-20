@@ -145,14 +145,6 @@ abstract class BaseController
             return jerr("version参数为必须", 500);
         }
         $this->version = input('version');
-
-        $this->node = $this->nodeModel->where(['node_module' => $this->module, 'node_controller' => strtolower($this->controller), 'node_action' => $this->action])->find();
-        if (!$this->node) {
-            return jerr("请勿访问没有声明的API节点！", 503);
-        }
-        if ($this->node['node_status'] == 1) {
-            return jerr("你访问的节点[" . $this->node['node_title'] . "]被禁用", 503);
-        }
         if ($this->node['node_login']) {
             //节点是否需要登录
             if (!input("?access_token")) {
