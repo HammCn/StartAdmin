@@ -53,9 +53,7 @@
             methods: {
                 getData() {
                     var that = this;
-                    axios.post('/api/user/getmyinfo', {
-                        ...PostBase,
-                    })
+                    axios.post('/api/user/getmyinfo', Object.assign({}, PostBase))
                         .then(function (response) {
                             if (response.data.code == CODE_SUCCESS) {
                                 that.form = response.data.data;
@@ -78,9 +76,7 @@
                             that.$message.error('两次密码输入不一致，请确认');
                             return;
                         }
-                        axios.post('/api/user/updateMyInfo', {
-                            ...PostBase, ...that.form
-                        })
+                        axios.post('/api/user/updateMyInfo', Object.assign({}, PostBase, that.form))
                             .then(function (response) {
                                 if (response.data.code == CODE_SUCCESS) {
                                     that.$message({

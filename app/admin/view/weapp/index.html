@@ -17,9 +17,9 @@
                 <el-select placeholder="筛选类别" size="small" v-model="search.filter">
                     <el-option value="weapp_id" label="小程序用户ID">
                     </el-option>
-                    
-            <el-option value="weapp_openid" label="OPENID">
-            </el-option>
+
+                    <el-option value="weapp_openid" label="OPENID">
+                    </el-option>
                 </el-select>
             </el-form-item>
             <el-form-item>
@@ -35,9 +35,9 @@
         </el-table-column>
         <el-table-column prop="weapp_id" label="ID" width="60">
         </el-table-column>
-        
-            <el-table-column prop="weapp_openid" label="OPENID">
-            </el-table-column>
+
+        <el-table-column prop="weapp_openid" label="OPENID">
+        </el-table-column>
         <el-table-column label="禁用" width="80">
             <template slot-scope="scope">
                 <el-switch v-model="scope.row.weapp_status==1?true:false" active-color="#ff4949"
@@ -68,7 +68,7 @@
     <!-- 添加框 -->
     <el-dialog title="添加小程序用户信息" :visible.sync="dialogFormAdd" :modal-append-to-body='false'>
         <el-form :model="formAdd" :rules="rules" ref="formAdd">
-            
+
             <el-form-item prop="weapp_openid" label="OPENID" :label-width="formLabelWidth">
                 <el-input size="medium" autocomplete="off" v-model="formAdd.weapp_openid"></el-input>
             </el-form-item>
@@ -80,7 +80,7 @@
     <!-- 修改框 -->
     <el-dialog title="修改小程序用户信息" :visible.sync="dialogFormEdit" :modal-append-to-body='false'>
         <el-form :model="formEdit" :rules="rules" ref="formEdit">
-            
+
             <el-form-item prop="weapp_openid" label="OPENID" :label-width="formLabelWidth">
                 <el-input size="medium" autocomplete="off" v-model="formEdit.weapp_openid"></el-input>
             </el-form-item>
@@ -116,7 +116,7 @@
                     formEdit: {
                     },
                     rules: {
-                        
+
                     }
                 }
             },
@@ -136,11 +136,9 @@
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        axios.post('/api/weapp/delete', {
-                            ...PostBase, ...{
-                                weapp_id: that.selectList.join(",")
-                            }
-                        })
+                        axios.post('/api/weapp/delete', Object.assign({}, PostBase, {
+                            weapp_id: that.selectList.join(",")
+                        }))
                             .then(function (response) {
                                 that.getList();
                                 if (response.data.code == CODE_SUCCESS) {
@@ -169,9 +167,7 @@
                     var that = this;
                     that.$refs["formEdit"].validate((valid) => {
                         if (valid) {
-                            axios.post('/api/weapp/update', {
-                                ...PostBase, ...that.formEdit
-                            })
+                            axios.post('/api/weapp/update', Object.assign({}, PostBase, that.formEdit))
                                 .then(function (response) {
                                     that.getList();
                                     if (response.data.code == CODE_SUCCESS) {
@@ -194,9 +190,7 @@
                     var that = this;
                     that.$refs['formAdd'].validate((valid) => {
                         if (valid) {
-                            axios.post('/api/weapp/add', {
-                                ...PostBase, ...that.formAdd
-                            })
+                            axios.post('/api/weapp/add', Object.assign({}, PostBase, that.formAdd))
                                 .then(function (response) {
                                     that.getList();
                                     if (response.data.code == CODE_SUCCESS) {
@@ -226,11 +220,9 @@
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        axios.post('/api/weapp/delete', {
-                            ...PostBase, ...{
-                                weapp_id: row.weapp_id
-                            }
-                        })
+                        axios.post('/api/weapp/delete', Object.assign({}, PostBase, {
+                            weapp_id: row.weapp_id
+                        }))
                             .then(function (response) {
                                 that.getList();
                                 if (response.data.code == CODE_SUCCESS) {
@@ -250,11 +242,9 @@
                 },
                 clickStatus(row) {
                     var that = this;
-                    axios.post(row.weapp_status ? '/api/weapp/enable' : '/api/weapp/disable', {
-                        ...PostBase, ...{
-                            weapp_id: row.weapp_id
-                        }
-                    })
+                    axios.post(row.weapp_status ? '/api/weapp/enable' : '/api/weapp/disable', Object.assign({}, PostBase, {
+                        weapp_id: row.weapp_id
+                    }))
                         .then(function (response) {
                             that.getList();
                             if (response.data.code == CODE_SUCCESS) {
@@ -273,11 +263,9 @@
                 clickEdit(row) {
                     var that = this;
                     that.formEdit = row;
-                    axios.post('/api/weapp/detail', {
-                        ...PostBase, ...{
-                            weapp_id: row.weapp_id
-                        }
-                    })
+                    axios.post('/api/weapp/detail', Object.assign({}, PostBase, {
+                        weapp_id: row.weapp_id
+                    }))
                         .then(function (response) {
                             if (response.data.code == CODE_SUCCESS) {
                                 that.formEdit = response.data.data;
@@ -298,7 +286,7 @@
                 getList() {
                     var that = this;
                     that.loading = true;
-                    axios.post('/api/weapp/getList', { ...PostBase, ...that.form, ...that.search })
+                    axios.post('/api/weapp/getList', Object.assign({}, PostBase, that.form, that.search))
                         .then(function (response) {
                             that.loading = false;
                             if (response.data.code == CODE_SUCCESS) {

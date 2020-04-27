@@ -32,7 +32,7 @@
                 getData() {
                     var that = this;
                     that.loading = true;
-                    axios.post('/api/log/state', { ...PostBase, })
+                    axios.post('/api/log/state', Object.assign({}, PostBase))
                         .then(function (response) {
                             that.loading = false;
                             if (response.data.code == CODE_SUCCESS) {

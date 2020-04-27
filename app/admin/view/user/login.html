@@ -71,7 +71,7 @@
         methods: {
             onSubmit() {
                 var that = this;
-                axios.post('/api/user/login', { ...PostBase, ...this.form })
+                axios.post('/api/user/login', Object.assign({}, PostBase, this.form))
                     .then(function (response) {
                         if (response.data.code == CODE_SUCCESS) {
                             that.$message({
