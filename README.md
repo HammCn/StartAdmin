@@ -18,9 +18,18 @@ StartAdmin，基于ThinkPHP6/ElementUI/VUE的后台管理二次开发脚手架 �
 <a href="https://startadmin.hamm.cn/" target="_blank">使用手册</a> <a href="https://sa.hamm.cn/" target="_blank">体验DEMO</a>
 
 ### 使用说明
+推荐使用Composer方式安装
 ```
 创建数据库(utf8-mb4)，导入数据库StartAdmin.sql
-Clone代码到运行目录，配置站点和ThinkPHP伪静态
+执行  composer create-project hamm/start-admin StartAdmin
+配置站点和ThinkPHP伪静态
+复制.example.env到.env 修改自己的数据库配置
+Good Start!
+```
+传统方式安装
+```
+创建数据库(utf8-mb4)，导入数据库StartAdmin.sql
+Clone或下载本仓库zip包，配置站点和ThinkPHP伪静态
 复制.example.env到.env 修改自己的数据库配置
 Composer install 
 Good Start!
