@@ -126,11 +126,9 @@
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        axios.post('/api/tmp_controller/delete', {
-                            ...PostBase, ...{
-                                tmp_controller_id: that.selectList.join(",")
-                            }
-                        })
+                        axios.post('/api/tmp_controller/delete', Object.assign({}, PostBase, {
+                            tmp_controller_id: that.selectList.join(",")
+                        }))
                             .then(function (response) {
                                 that.getList();
                                 if (response.data.code == CODE_SUCCESS) {
@@ -159,9 +157,7 @@
                     var that = this;
                     that.$refs["formEdit"].validate((valid) => {
                         if (valid) {
-                            axios.post('/api/tmp_controller/update', {
-                                ...PostBase, ...that.formEdit
-                            })
+                            axios.post('/api/tmp_controller/update', Object.assign({}, PostBase, that.formEdit))
                                 .then(function (response) {
                                     that.getList();
                                     if (response.data.code == CODE_SUCCESS) {
@@ -184,9 +180,7 @@
                     var that = this;
                     that.$refs['formAdd'].validate((valid) => {
                         if (valid) {
-                            axios.post('/api/tmp_controller/add', {
-                                ...PostBase, ...that.formAdd
-                            })
+                            axios.post('/api/tmp_controller/add', Object.assign({}, PostBase, that.formAdd))
                                 .then(function (response) {
                                     that.getList();
                                     if (response.data.code == CODE_SUCCESS) {
@@ -216,11 +210,9 @@
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        axios.post('/api/tmp_controller/delete', {
-                            ...PostBase, ...{
-                                tmp_controller_id: row.tmp_controller_id
-                            }
-                        })
+                        axios.post('/api/tmp_controller/delete', Object.assign({}, PostBase, {
+                            tmp_controller_id: row.tmp_controller_id
+                        }))
                             .then(function (response) {
                                 that.getList();
                                 if (response.data.code == CODE_SUCCESS) {
@@ -240,11 +232,9 @@
                 },
                 clickStatus(row) {
                     var that = this;
-                    axios.post(row.tmp_controller_status ? '/api/tmp_controller/enable' : '/api/tmp_controller/disable', {
-                        ...PostBase, ...{
-                            tmp_controller_id: row.tmp_controller_id
-                        }
-                    })
+                    axios.post(row.tmp_controller_status ? '/api/tmp_controller/enable' : '/api/tmp_controller/disable', Object.assign({}, PostBase, {
+                        tmp_controller_id: row.tmp_controller_id
+                    }))
                         .then(function (response) {
                             that.getList();
                             if (response.data.code == CODE_SUCCESS) {
@@ -263,11 +253,9 @@
                 clickEdit(row) {
                     var that = this;
                     that.formEdit = row;
-                    axios.post('/api/tmp_controller/detail', {
-                        ...PostBase, ...{
-                            tmp_controller_id: row.tmp_controller_id
-                        }
-                    })
+                    axios.post('/api/tmp_controller/detail', Object.assign({}, PostBase, {
+                        tmp_controller_id: row.tmp_controller_id
+                    }))
                         .then(function (response) {
                             if (response.data.code == CODE_SUCCESS) {
                                 that.formEdit = response.data.data;
@@ -288,7 +276,7 @@
                 getList() {
                     var that = this;
                     that.loading = true;
-                    axios.post('/api/tmp_controller/getList', { ...PostBase, ...that.form, ...that.search })
+                    axios.post('/api/tmp_controller/getList', Object.assign({}, PostBase, that.form, that.search))
                         .then(function (response) {
                             that.loading = false;
                             if (response.data.code == CODE_SUCCESS) {

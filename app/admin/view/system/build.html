@@ -186,9 +186,7 @@
                             cancelButtonText: '取消',
                             type: 'warning'
                         }).then(() => {
-                            axios.post('/api/system/build', {
-                                ...PostBase, ...JSON.parse(JSON.stringify(postData))
-                            })
+                            axios.post('/api/system/build', PostBase, JSON.parse(JSON.stringify(postData)))
                                 .then(function (response) {
                                     if (response.data.code == CODE_SUCCESS) {
                                         that.$message({

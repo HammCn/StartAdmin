@@ -125,11 +125,9 @@
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        axios.post('/api/log/delete', {
-                            ...PostBase, ...{
-                                log_id: that.selectList.join(",")
-                            }
-                        })
+                        axios.post('/api/log/delete', Object.assign({}, PostBase, {
+                            log_id: that.selectList.join(",")
+                        }))
                             .then(function (response) {
                                 that.getList();
                                 if (response.data.code == CODE_SUCCESS) {
@@ -161,11 +159,9 @@
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        axios.post('/api/log/delete', {
-                            ...PostBase, ...{
-                                log_id: row.log_id
-                            }
-                        })
+                        axios.post('/api/log/delete', Object.assign({}, PostBase, {
+                            log_id: row.log_id
+                        }))
                             .then(function (response) {
                                 that.getList();
                                 if (response.data.code == CODE_SUCCESS) {
@@ -190,7 +186,7 @@
                 getList() {
                     var that = this;
                     that.loading = true;
-                    axios.post('/api/log/getList', { ...PostBase, ...that.form, ...that.search })
+                    axios.post('/api/log/getList', Object.assign({}, PostBase, that.form, that.search))
                         .then(function (response) {
                             that.loading = false;
                             if (response.data.code == CODE_SUCCESS) {

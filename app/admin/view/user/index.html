@@ -219,11 +219,9 @@
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        axios.post('/api/user/delete', {
-                            ...PostBase, ...{
-                                user_id: that.selectList.join(",")
-                            }
-                        })
+                        axios.post('/api/user/delete', Object.assign({}, PostBase, {
+                            user_id: that.selectList.join(",")
+                        }))
                             .then(function (response) {
                                 that.getList();
                                 if (response.data.code == CODE_SUCCESS) {
@@ -255,9 +253,7 @@
                             that.$message.error('仔细检查检查，是不是有个地方写得不对？');
                             return;
                         }
-                        axios.post('/api/user/update', {
-                            ...PostBase, ...that.formEdit
-                        })
+                        axios.post('/api/user/update', Object.assign({}, PostBase, that.formEdit))
                             .then(function (response) {
                                 that.getList();
                                 if (response.data.code == CODE_SUCCESS) {
@@ -282,9 +278,7 @@
                             that.$message.error('仔细检查检查，是不是有个地方写得不对？');
                             return;
                         }
-                        axios.post('/api/user/add', {
-                            ...PostBase, ...that.formAdd
-                        })
+                        axios.post('/api/user/add', Object.assign({}, PostBase, that.formAdd))
                             .then(function (response) {
                                 that.getList();
                                 if (response.data.code == CODE_SUCCESS) {
@@ -307,9 +301,7 @@
                     that.formAdd = {
                         user_group: 3
                     };
-                    axios.post('/api/group/getList', {
-                        ...PostBase
-                    })
+                    axios.post('/api/group/getList', Object.assign({}, PostBase))
                         .then(function (response) {
                             that.groupList = response.data.data;
                             if (response.data.code == CODE_SUCCESS) {
@@ -329,11 +321,9 @@
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        axios.post('/api/user/delete', {
-                            ...PostBase, ...{
-                                user_id: row.user_id
-                            }
-                        })
+                        axios.post('/api/user/delete', Object.assign({}, PostBase, {
+                            user_id: row.user_id
+                        }))
                             .then(function (response) {
                                 that.getList();
                                 if (response.data.code == CODE_SUCCESS) {
@@ -353,11 +343,9 @@
                 },
                 clickStatus(row) {
                     var that = this;
-                    axios.post(row.user_status ? '/api/user/enable' : '/api/user/disable', {
-                        ...PostBase, ...{
-                            user_id: row.user_id
-                        }
-                    })
+                    axios.post(row.user_status ? '/api/user/enable' : '/api/user/disable', Object.assign({}, PostBase, {
+                        user_id: row.user_id
+                    }))
                         .then(function (response) {
                             that.getList();
                             if (response.data.code == CODE_SUCCESS) {
@@ -376,17 +364,13 @@
                 clickEdit(row) {
                     var that = this;
                     that.formEdit = row;
-                    axios.post('/api/group/getList', {
-                        ...PostBase
-                    })
+                    axios.post('/api/group/getList', Object.assign({}, PostBase))
                         .then(function (response) {
                             if (response.data.code == CODE_SUCCESS) {
                                 that.groupList = response.data.data;
-                                axios.post('/api/user/detail', {
-                                    ...PostBase, ...{
-                                        user_id: row.user_id
-                                    }
-                                })
+                                axios.post('/api/user/detail', Object.assign({}, PostBase, {
+                                    user_id: row.user_id
+                                }))
                                     .then(function (response) {
                                         if (response.data.code == CODE_SUCCESS) {
                                             that.formEdit = response.data.data;
@@ -414,7 +398,7 @@
                 getList() {
                     var that = this;
                     that.loading = true;
-                    axios.post('/api/user/getList', { ...PostBase, ...that.form, ...that.search })
+                    axios.post('/api/user/getList', Object.assign({}, PostBase, that.form, that.search))
                         .then(function (response) {
                             that.loading = false;
                             if (response.data.code == CODE_SUCCESS) {
@@ -430,7 +414,7 @@
                 },
                 exports() {
                     var that = this;
-                    var filters = { ...PostBase, ...that.form, ...that.search };
+                    var filters = Object.assign({}, PostBase, that.form, that.search);
                     var url = '/api/user/excel?';
                     for (let key in filters) {
                         url += key + "=" + filters[key] + "&";

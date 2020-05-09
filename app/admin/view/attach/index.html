@@ -82,11 +82,9 @@
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        axios.post('/api/attach/delete', {
-                            ...PostBase, ...{
-                                attach_id: that.selectList.join(",")
-                            }
-                        })
+                        axios.post('/api/attach/delete', Object.assign({}, PostBase, {
+                            attach_id: that.selectList.join(",")
+                        }))
                             .then(function (response) {
                                 that.getList();
                                 if (response.data.code == CODE_SUCCESS) {
@@ -118,11 +116,9 @@
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        axios.post('/api/attach/delete', {
-                            ...PostBase, ...{
-                                attach_id: row.attach_id
-                            }
-                        })
+                        axios.post('/api/attach/delete', Object.assign({}, PostBase, {
+                            attach_id: row.attach_id
+                        }))
                             .then(function (response) {
                                 that.getList();
                                 if (response.data.code == CODE_SUCCESS) {
@@ -147,7 +143,7 @@
                 getList() {
                     var that = this;
                     that.loading = true;
-                    axios.post('/api/attach/getList', { ...PostBase, ...that.form, ...that.search })
+                    axios.post('/api/attach/getList', Object.assign({}, PostBase, that.form, that.search))
                         .then(function (response) {
                             that.loading = false;
                             if (response.data.code == CODE_SUCCESS) {

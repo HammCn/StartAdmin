@@ -116,11 +116,9 @@
                 },
                 clickStatus(row) {
                     var that = this;
-                    axios.post(row.wechat_status ? '/api/wechat/enable' : '/api/wechat/disable', {
-                        ...PostBase, ...{
-                            wechat_id: row.wechat_id
-                        }
-                    })
+                    axios.post(row.wechat_status ? '/api/wechat/enable' : '/api/wechat/disable', Object.assign({}, PostBase, {
+                        wechat_id: row.wechat_id
+                    }))
                         .then(function (response) {
                             that.getList();
                             if (response.data.code == CODE_SUCCESS) {
@@ -139,7 +137,7 @@
                 getList() {
                     var that = this;
                     that.loading = true;
-                    axios.post('/api/wechat/getList', { ...PostBase, ...that.form, ...that.search })
+                    axios.post('/api/wechat/getList', Object.assign({}, PostBase, that.form, that.search))
                         .then(function (response) {
                             that.loading = false;
                             if (response.data.code == CODE_SUCCESS) {

@@ -206,11 +206,9 @@
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        axios.post('/api/wemenu/delete', {
-                            ...PostBase, ...{
-                                wemenu_id: that.selectList.join(",")
-                            }
-                        })
+                        axios.post('/api/wemenu/delete', Object.assign({}, PostBase, {
+                            wemenu_id: that.selectList.join(",")
+                        }))
                             .then(function (response) {
                                 that.getList();
                                 if (response.data.code == CODE_SUCCESS) {
@@ -272,9 +270,7 @@
                                         return;
                                     }
                             }
-                            axios.post('/api/wemenu/update', {
-                                ...PostBase, ...that.formEdit
-                            })
+                            axios.post('/api/wemenu/update', Object.assign({}, PostBase, that.formEdit))
                                 .then(function (response) {
                                     that.getList();
                                     if (response.data.code == CODE_SUCCESS) {
@@ -330,9 +326,7 @@
                                         return;
                                     }
                             }
-                            axios.post('/api/wemenu/add', {
-                                ...PostBase, ...that.formAdd
-                            })
+                            axios.post('/api/wemenu/add', Object.assign({}, PostBase, that.formAdd))
                                 .then(function (response) {
                                     that.getList();
                                     if (response.data.code == CODE_SUCCESS) {
@@ -357,9 +351,7 @@
                         wemenu_type: "click",
                         wemenu_pid: 0,
                     };
-                    axios.post('/api/wemenu/getList', {
-                        ...PostBase
-                    })
+                    axios.post('/api/wemenu/getList', Object.assign({}, PostBase))
                         .then(function (response) {
                             if (response.data.code == CODE_SUCCESS) {
                                 that.dialogFormAdd = true;
@@ -383,9 +375,7 @@
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        axios.post('/api/wemenu/publish', {
-                            ...PostBase,
-                        })
+                        axios.post('/api/wemenu/publish', Object.assign({}, PostBase))
                             .then(function (response) {
                                 if (response.data.code == CODE_SUCCESS) {
                                     that.$message({
@@ -413,11 +403,9 @@
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        axios.post('/api/wemenu/delete', {
-                            ...PostBase, ...{
-                                wemenu_id: row.wemenu_id
-                            }
-                        })
+                        axios.post('/api/wemenu/delete', Object.assign({}, PostBase, {
+                            wemenu_id: row.wemenu_id
+                        }))
                             .then(function (response) {
                                 that.getList();
                                 if (response.data.code == CODE_SUCCESS) {
@@ -437,11 +425,9 @@
                 },
                 clickStatus(row) {
                     var that = this;
-                    axios.post(row.wemenu_status ? '/api/wemenu/enable' : '/api/wemenu/disable', {
-                        ...PostBase, ...{
-                            wemenu_id: row.wemenu_id
-                        }
-                    })
+                    axios.post(row.wemenu_status ? '/api/wemenu/enable' : '/api/wemenu/disable', Object.assign({}, PostBase, {
+                        wemenu_id: row.wemenu_id
+                    }))
                         .then(function (response) {
                             that.getList();
                             if (response.data.code == CODE_SUCCESS) {
@@ -461,9 +447,7 @@
                     var that = this;
                     that.formEdit = row;
 
-                    axios.post('/api/wemenu/getList', {
-                        ...PostBase
-                    })
+                    axios.post('/api/wemenu/getList', Object.assign({}, PostBase))
                         .then(function (response) {
                             if (response.data.code == CODE_SUCCESS) {
                                 that.parentList = response.data.data;
@@ -471,11 +455,9 @@
                                     'wemenu_id': 0,
                                     'wemenu_name': '父菜单'
                                 });
-                                axios.post('/api/wemenu/detail', {
-                                    ...PostBase, ...{
-                                        wemenu_id: row.wemenu_id
-                                    }
-                                })
+                                axios.post('/api/wemenu/detail', Object.assign({}, PostBase, {
+                                    wemenu_id: row.wemenu_id
+                                }))
                                     .then(function (response) {
                                         if (response.data.code == CODE_SUCCESS) {
                                             that.formEdit = response.data.data;
@@ -505,7 +487,7 @@
                 getList() {
                     var that = this;
                     that.loading = true;
-                    axios.post('/api/wemenu/getList', { ...PostBase, ...that.form, ...that.search })
+                    axios.post('/api/wemenu/getList', Object.assign({}, PostBase, that.form, that.search))
                         .then(function (response) {
                             that.loading = false;
                             if (response.data.code == CODE_SUCCESS) {

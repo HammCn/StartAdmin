@@ -49,9 +49,7 @@
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        axios.post('/api/log/clean', {
-                            ...PostBase,
-                        })
+                        axios.post('/api/log/clean', Object.assign({}, PostBase))
                             .then(function (response) {
                                 if (response.data.code == CODE_SUCCESS) {
                                     that.$message({
@@ -75,9 +73,7 @@
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        axios.post('/api/auth/clean', {
-                            ...PostBase,
-                        })
+                        axios.post('/api/auth/clean', Object.assign({}, PostBase))
                             .then(function (response) {
                                 if (response.data.code == CODE_SUCCESS) {
                                     that.$message({

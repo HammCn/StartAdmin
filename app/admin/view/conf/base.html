@@ -33,9 +33,7 @@
             methods: {
                 getData() {
                     var that = this;
-                    axios.post('/api/conf/getBaseConfig', {
-                        ...PostBase,
-                    })
+                    axios.post('/api/conf/getBaseConfig', Object.assign({}, PostBase))
                         .then(function (response) {
                             if (response.data.code == CODE_SUCCESS) {
                                 that.form = response.data.data;
@@ -53,9 +51,7 @@
                     for (var i = 0; i < that.form.length; i++) {
                         postData[that.form[i].conf_key] = that.form[i].conf_value;
                     }
-                    axios.post('/api/conf/updateBaseConfig', {
-                        ...PostBase, ...postData
-                    })
+                    axios.post('/api/conf/updateBaseConfig', Object.assign({}, PostBase, postData))
                         .then(function (response) {
                             if (response.data.code == CODE_SUCCESS) {
                                 that.$message({
