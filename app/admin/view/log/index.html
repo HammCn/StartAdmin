@@ -88,6 +88,9 @@
                     },
                 }
             },
+            updated() {
+                enableElementDialogDrag();
+            },
             methods: {
                 time2string(timestamps, formatStr = 'MM-dd hh:mm') {
                     var now = new Date(timestamps * 1000),
