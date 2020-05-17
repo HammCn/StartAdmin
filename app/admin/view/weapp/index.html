@@ -120,6 +120,9 @@
                     }
                 }
             },
+            updated() {
+                enableElementDialogDrag();
+            },
             methods: {
                 handleSizeChange(per_page) {
                     this.form.per_page = per_page;
