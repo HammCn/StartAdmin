@@ -417,7 +417,7 @@
                 },
                 exports() {
                     var that = this;
-                    var filters = Object.assign({}, PostBase, that.form, that.search);
+                    var filters = Object.assign({}, PostBase, that.search);
                     var url = '/api/user/excel?';
                     for (let key in filters) {
                         url += key + "=" + filters[key] + "&";
