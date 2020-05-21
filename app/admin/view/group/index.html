@@ -23,12 +23,6 @@
         <el-table-column prop="group_desc" label="组描述">
         </el-table-column>
         </el-table-column>
-        <el-table-column label="权限" width="80">
-            <template slot-scope="scope">
-                <font v-if="scope.row.group_system==0">用户组</font>
-                <font v-if="scope.row.group_system!=0" style="color:#aaa;">系统组</font>
-            </template>
-        </el-table-column>
         <el-table-column label="禁用" width="80">
             <template slot-scope="scope">
                 <el-switch v-model="scope.row.group_status==1?true:false" active-color="#ff4949"
@@ -125,21 +119,14 @@
                     form: {
                         page: 1
                     },
-                    formAdd: {
-                        group_group: 3
-                    },
-                    formEdit: {
-                        group_group: 3
-                    },
+                    formAdd: {},
+                    formEdit: {},
                     rules: {
                         group_name: [
                             { required: true, message: '组名称必须填写', trigger: 'blur' },
                         ],
                     }
                 }
-            },
-            updated() {
-                enableElementDialogDrag();
             },
             methods: {
                 postMultDelete() {
@@ -236,7 +223,7 @@
                 },
                 postAdd() {
                     var that = this;
-                    that.$refs['formEdit'].validate((valid) => {
+                    that.$refs['formAdd'].validate((valid) => {
                         if (!valid) {
                             that.$message.error('仔细检查检查，是不是有个地方写得不对？');
                             return;

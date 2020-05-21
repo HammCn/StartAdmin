@@ -46,8 +46,8 @@ class Group extends BaseController
         if (empty($item)) {
             return jerr("数据查询失败");
         }
-        if (intval($this->pk_value) == 1) {
-            return jerr("无法修改超管用户信息");
+        if ($item[$this->pk] == 1) {
+            return jerr("无法操作超级管理员组信息");
         }
         foreach ($this->updateRequire as $k => $v) {
             if (!input($k)) {
@@ -88,16 +88,16 @@ class Group extends BaseController
             if (empty($item)) {
                 return jerr("数据查询失败");
             }
-            if ($item[$this->table . "_system"] == 1) {
-                return jerr("系统用户组不允许操作！");
+            if ($item[$this->pk] == 1) {
+                return jerr("无法操作超级管理员组信息");
             }
-            $this->model->where($map)->where($this->pk . " > 1")->update([
+            $this->model->where($map)->update([
                 $this->table . "_status" => 1,
                 $this->table . "_updatetime" => time(),
             ]);
         } else {
             $list = explode(',', $this->pk_value);
-            $this->model->where($this->pk, 'in', $list)->where($this->table . "_system", 0)->update([
+            $this->model->where($this->pk, 'in', $list)->where("group_id > 1")->update([
                 $this->table . "_status" => 1,
                 $this->table . "_updatetime" => time(),
             ]);
@@ -125,16 +125,16 @@ class Group extends BaseController
             if (empty($item)) {
                 return jerr("数据查询失败");
             }
-            if ($item[$this->table . "_system"] == 1) {
-                return jerr("系统用户组不允许操作！");
+            if ($item[$this->pk] == 1) {
+                return jerr("无法操作超级管理员组信息");
             }
-            $this->model->where($map)->where($this->pk . " > 1")->update([
+            $this->model->where($map)->update([
                 $this->table . "_status" => 0,
                 $this->table . "_updatetime" => time(),
             ]);
         } else {
             $list = explode(',', $this->pk_value);
-            $this->model->where($this->pk, 'in', $list)->where($this->table . "_system", 0)->update([
+            $this->model->where($this->pk, 'in', $list)->where("group_id > 1")->update([
                 $this->table . "_updatetime" => time(),
             ]);
         }
@@ -161,27 +161,19 @@ class Group extends BaseController
             if (empty($item)) {
                 return jerr("数据查询失败");
             }
-            if ($item[$this->table . "_system"] == 1) {
-                return jerr("系统用户组不允许操作！");
+            if ($item[$this->pk] == 1) {
+                return jerr("无法删除超级管理员组");
             }
-            $this->model->where($map)->where($this->table . "_system", 0)->delete();
+            $this->model->where($map)->delete();
             //删除对应ID的授权记录
             $this->authModel->where([
                 "auth_group" => $this->pk_value
             ])->delete();
         } else {
             $list = explode(',', $this->pk_value);
-            $this->model->where($this->pk, 'in', $list)->where($this->table . "_system", 0)->delete();
+            $this->model->where($this->pk, 'in', $list)->where("group_id > 1")->delete();
             //删除对应ID的授权记录
-            foreach ($list as $item) {
-                $group = $this->model->where("group_id", $item)->find();
-                if ($group[$this->table . "_system"] == 1) {
-                    continue;
-                }
-                $this->authModel->where([
-                    "auth_group" => $item
-                ])->delete();
-            }
+            $this->authModel->where("auth_group", "in", $list)->delete();
         }
         return jok('删除用户组成功');
     }
@@ -225,7 +217,7 @@ class Group extends BaseController
                 "auth_updatetime" => time()
             ]);
         }
-        return ('用户组授权成功');
+        return jok('用户组授权成功');
     }
     /**
      * 获取用户组拥有的权限

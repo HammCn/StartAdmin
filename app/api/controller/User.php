@@ -69,17 +69,17 @@ class User extends BaseController
             }
         }
         $data['user_ipreg'] = "127.0.0.1";
-        $user = $this->model->getUserByAccount($data[$this->table . "_account"]);
+        $user = $this->model->getUserByAccount($data["user_account"]);
         if ($user) {
             return jerr("帐号已存在，请重新输入");
         }
         $salt = getRandString(4);
-        $password = $data[$this->table . "_password"];
+        $password = $data["user_password"];
         $password = encodePassword($password, $salt);
-        $data[$this->table . "_salt"] = $salt;
-        $data[$this->table . "_password"] = $password;
-        $data[$this->table . "_updatetime"] = time();
-        $data[$this->table . "_createtime"] = time();
+        $data["user_salt"] = $salt;
+        $data["user_password"] = $password;
+        $data["user_updatetime"] = time();
+        $data["user_createtime"] = time();
         $this->model->insert($data);
         return jok('用户添加成功');
     }
@@ -113,7 +113,7 @@ class User extends BaseController
                 $data[$k] = $v;
             }
         }
-        $user = $this->model->getUserByAccount($data[$this->table . "_account"]);
+        $user = $this->model->getUserByAccount($data["user_account"]);
         if ($user && $user[$this->pk] != $item[$this->pk]) {
             return jerr("帐号已存在，请重新输入");
         }
@@ -122,8 +122,12 @@ class User extends BaseController
             $salt = getRandString(4);
             $password = input('new_password');
             $password = encodePassword($password, $salt);
-            $data[$this->table . "_salt"] = $salt;
-            $data[$this->table . "_password"] = $password;
+            $data["user_salt"] = $salt;
+            $data["user_password"] = $password;
+        }
+        if ($this->user['user_group'] != 1) {
+            //除超级管理员组外 其他任何组不允许修改用户组
+            unset($data['user_group']);
         }
         $data[$this->table . "_updatetime"] = time();
         $this->model->where($this->pk, $this->pk_value)->update($data);
@@ -150,16 +154,16 @@ class User extends BaseController
             if (empty($item)) {
                 return jerr("数据查询失败");
             }
-            if ($item[$this->pk] == 1) {
+            if ($item["user_group"] == 1) {
                 return jerr("超级管理员不允许操作！");
             }
-            $this->model->where($map)->where($this->pk . " > 1")->update([
+            $this->model->where($map)->update([
                 $this->table . "_status" => 1,
                 $this->table . "_updatetime" => time(),
             ]);
         } else {
             $list = explode(',', $this->pk_value);
-            $this->model->where($this->pk, 'in', $list)->where($this->pk . " > 1")->update([
+            $this->model->where($this->pk, 'in', $list)->where("user_group > 1")->update([
                 $this->table . "_status" => 1,
                 $this->table . "_updatetime" => time(),
             ]);
@@ -187,16 +191,16 @@ class User extends BaseController
             if (empty($item)) {
                 return jerr("数据查询失败");
             }
-            if ($item[$this->pk] == 1) {
+            if ($item["user_group"] == 1) {
                 return jerr("超级管理员不允许操作！");
             }
-            $this->model->where($map)->where($this->pk . " > 1")->update([
+            $this->model->where($map)->update([
                 $this->table . "_status" => 0,
                 $this->table . "_updatetime" => time(),
             ]);
         } else {
             $list = explode(',', $this->pk_value);
-            $this->model->where($this->pk, 'in', $list)->where($this->pk . " > 1")->update([
+            $this->model->where($this->pk, 'in', $list)->where("user_group > 1")->update([
                 $this->table . "_status" => 0,
                 $this->table . "_updatetime" => time(),
             ]);
@@ -224,13 +228,15 @@ class User extends BaseController
             if (empty($item)) {
                 return jerr("数据查询失败");
             }
-            if ($item[$this->pk] == 1) {
+            //
+            if ($item["user_group"] == 1) {
                 return jerr("超级管理员不允许操作！");
             }
-            $this->model->where($map)->where($this->pk . " > 1")->delete();
+            $this->model->where($map)->delete();
         } else {
             $list = explode(',', $this->pk_value);
-            $this->model->where($this->pk, 'in', $list)->where($this->pk . " > 1")->delete();
+            //批量删除只允许删除用户组不为1的用户
+            $this->model->where($this->pk, 'in', $list)->where("user_group > 1")->delete();
         }
         return jok('删除用户成功');
     }

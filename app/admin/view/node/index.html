@@ -14,14 +14,6 @@
         </el-form-item>
         <div style="float:right">
             <el-form-item style="width:120px;">
-                <el-select placeholder="请选择类型" size="small" v-model="search.node_system">
-                    <el-option value="" label="全部类型">
-                    </el-option>
-                    <el-option v-for="system in systemList" :value="system.system_id" :label="system.system_title">
-                    </el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item style="width:120px;">
                 <el-select placeholder="显示状态" size="small" v-model="search.node_show">
                     <el-option value="" label="全部状态">
                     </el-option>
@@ -66,12 +58,6 @@
             </template>
         </el-table-column>
         <el-table-column prop="node_order" label="排序" width="">
-        </el-table-column>
-        <el-table-column label="类型">
-            <template slot-scope="scope">
-                <font v-if="scope.row.node_system==0">自定义</font>
-                <font v-if="scope.row.node_system!=0" style="color:#aaa;">系统节点</font>
-            </template>
         </el-table-column>
         <el-table-column label="隐藏" width="80">
             <template slot-scope="scope">
@@ -221,7 +207,6 @@
                 this.getList();
                 return {
                     search: {
-                        node_system: "",
                         node_show: "",
                         keyword: "",
                         filter: "node_id"
@@ -301,9 +286,6 @@
                         ],
                     }
                 }
-            },
-            updated() {
-                enableElementDialogDrag();
             },
             methods: {
                 postMultDelete() {

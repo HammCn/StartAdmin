@@ -176,10 +176,10 @@
                         per_page: 10
                     },
                     formAdd: {
-                        user_group: 3
+                        user_group: 1
                     },
                     formEdit: {
-                        user_group: 3
+                        user_group: 1
                     },
                     rules: {
                         user_account: [
@@ -202,9 +202,6 @@
                         ],
                     }
                 }
-            },
-            updated() {
-                enableElementDialogDrag();
             },
             methods: {
                 handleSizeChange(per_page) {
@@ -302,7 +299,7 @@
                 clickAdd() {
                     var that = this;
                     that.formAdd = {
-                        user_group: 3
+                        user_group: 1
                     };
                     axios.post('/api/group/getList', Object.assign({}, PostBase))
                         .then(function (response) {

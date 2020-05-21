@@ -344,16 +344,8 @@ function enableElementDialogDrag() {
     var el = document;
     let minWidth = 400;
     let minHeight = 300;
-    //初始非全屏
-    let isFullScreen = false;
-    //当前宽高
-    let nowWidth = 0;
-    let nowHight = 0;
-    //当前顶部高度
-    let nowMarginTop = 0;
     //获取弹框头部（这部分可双击全屏）
     const dialogHeaderEl = el.querySelector('.el-dialog__header');
-    const dialogBodyEl = el.querySelector('.el-dialog__body');
     //弹窗
     const dragDom = el.querySelector('.el-dialog');
     //给弹窗加上overflow auto；不然缩小时框内的标签可能超出dialog

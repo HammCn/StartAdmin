@@ -14,7 +14,6 @@ class Node extends BaseController
         //筛选字段
         $this->searchFilter = [
             "node_id" => "=", //相同筛选
-            "node_system" => "=", //相同筛选
             "node_show" => "=", //相同筛选
             "node_title" => "like", //相似筛选
             "node_desc" => "like", //相似筛选
@@ -99,78 +98,6 @@ class Node extends BaseController
         return jok('节点信息更新成功');
     }
 
-    /**
-     * 禁用用户
-     *
-     * @return void
-     */
-    public function disable()
-    {
-        $error = $this->access();
-        if ($error) {
-            return $error;
-        }
-        if (!$this->pk_value) {
-            return jerr($this->pk . "参数必须填写");
-        }
-        if (isInteger($this->pk_value)) {
-            $map = [$this->pk => $this->pk_value];
-            $item = $this->model->where($map)->find();
-            if (empty($item)) {
-                return jerr("数据查询失败");
-            }
-            if ($item[$this->table . "_system"] == 1) {
-                return jerr("系统节点不允许操作！");
-            }
-            $this->model->where($map)->where($this->pk . " > 1")->update([
-                $this->table . "_status" => 1,
-                $this->table . "_updatetime" => time(),
-            ]);
-        } else {
-            $list = explode(',', $this->pk_value);
-            $this->model->where($this->pk, 'in', $list)->where($this->table . "_system", 0)->update([
-                $this->table . "_status" => 1,
-                $this->table . "_updatetime" => time(),
-            ]);
-        }
-        return jok("禁用节点成功");
-    }
-
-    /**
-     * 启用用户
-     *
-     * @return void
-     */
-    public function enable()
-    {
-        $error = $this->access();
-        if ($error) {
-            return $error;
-        }
-        if (!$this->pk_value) {
-            return jerr($this->pk . "参数必须填写");
-        }
-        if (isInteger($this->pk_value)) {
-            $map = [$this->pk => $this->pk_value];
-            $item = $this->model->where($map)->find();
-            if (empty($item)) {
-                return jerr("数据查询失败");
-            }
-            if ($item[$this->table . "_system"] == 1) {
-                return jerr("系统节点不允许操作！");
-            }
-            $this->model->where($map)->where($this->pk . " > 1")->update([
-                $this->table . "_status" => 0,
-                $this->table . "_updatetime" => time(),
-            ]);
-        } else {
-            $list = explode(',', $this->pk_value);
-            $this->model->where($this->pk, 'in', $list)->where($this->table . "_system", 0)->update([
-                $this->table . "_updatetime" => time(),
-            ]);
-        }
-        return jok("启用节点成功");
-    }
 
     /**
      * 删除用户
@@ -192,15 +119,12 @@ class Node extends BaseController
             if (empty($item)) {
                 return jerr("数据查询失败");
             }
-            if ($item[$this->table . "_system"] == 1) {
-                return jerr("系统节点不允许操作！");
-            }
-            $this->model->where($map)->where($this->table . "_system", 0)->delete();
+            $this->model->where($map)->delete();
             //删除对应ID的授权记录
             $this->authModel->where("auth_node", $this->pk_value)->delete();
         } else {
             $list = explode(',', $this->pk_value);
-            $this->model->where($this->pk, 'in', $list)->where($this->table . "_system", 0)->delete();
+            $this->model->where($this->pk, 'in', $list)->delete();
             //删除对应ID的授权记录
             $this->authModel->where("auth_node", 'in', $list)->delete();
         }
