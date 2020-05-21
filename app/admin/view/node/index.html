@@ -384,6 +384,12 @@
                 },
                 clickAdd() {
                     var that = this;
+                    that.formAdd = {
+                        node_readonly: 0,
+                        node_pid: 0,
+                        node_order: 1,
+                        node_show: 1,
+                    };
                     axios.post('/api/node/getList', Object.assign({}, PostBase))
                         .then(function (response) {
                             that.groupList = response.data.data;
