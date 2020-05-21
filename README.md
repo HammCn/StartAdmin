@@ -17,6 +17,8 @@ StartAdmin，基于ThinkPHP6/ElementUI/VUE的后台管理二次开发脚手架 �
 
 <a href="https://startadmin.hamm.cn/" target="_blank">使用手册</a> <a href="https://sa.hamm.cn/" target="_blank">体验DEMO</a>
 
+> 温馨提示：由于demo站点我们给了最高权限的体验帐号，可能存在被恶意用户删除数据导致无法正常体验，你可以加QQ群```973087692```联系群主恢复数据后体验，当然，我们更建议你直接自己部署一套后体验。
+
 ### 使用说明
 推荐使用Composer方式安装
 ```
