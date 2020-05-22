@@ -6,6 +6,11 @@
     {include file="common/header"/}
     <el-form :inline="true">
         <el-form-item>
+            <el-upload class="upload-demo" action="/api/attach/uploadImage" :on-success="handleUploadSuccess" :file-list="fileList" :show-file-list="false" :before-upload="beforeUpload" :data="postData" v-loading.fullscreen.lock="fullscreenLoading">
+                <el-button size="small" type="primary">上传图片</el-button>
+            </el-upload>
+        </el-form-item>
+        <el-form-item>
             <el-button type="danger" icon="el-icon-delete" size="small" @click="postMultDelete">批量删除</el-button>
         </el-form-item>
     </el-form>
@@ -14,7 +19,10 @@
         </el-table-column>
         <el-table-column prop="attach_id" label="ID" width="60">
         </el-table-column>
-        <el-table-column prop="attach_path" label="附件地址">
+        <el-table-column label="附件地址">
+            <template slot-scope="scope">
+                <el-link target="_blank" :href="['/uploads/'+scope.row.attach_path]">{{scope.row.attach_path}}</el-link>
+            </template>
         </el-table-column>
         <el-table-column prop="attach_size" label="附件大小" width="100">
         </el-table-column>
@@ -32,10 +40,9 @@
 
     </el-table>
 
-    <el-pagination @size-change="handleSizeChange" :page-sizes="[10, 20, 50, 100,200,500]" :page-size="10"
-        layout="total, sizes, prev, pager, next, jumper" background @current-change="changeCurrentPage"
-        layout="prev, pager, next" :current-page="dataList.current_page" :page-count="dataList.last_page"
-        :total="dataList.total" :hide-on-single-page="true" style="margin-top: 10px;text-align: right;">
+
+    <el-pagination @size-change="handleSizeChange" :page-sizes="[10, 20, 50, 100,200,500]" :page-size="10" layout="total, sizes, prev, pager, next, jumper" background @current-change="changeCurrentPage" layout="prev, pager, next" :current-page="dataList.current_page"
+        :page-count="dataList.last_page" :total="dataList.total" :hide-on-single-page="true" style="margin-top: 10px;text-align: right;">
     </el-pagination>
 
 
@@ -46,6 +53,7 @@
             data() {
                 this.getList();
                 return {
+                    fullscreenLoading: false,
                     search: {
                         keyword: "",
                         filter: "attach_phone"
@@ -53,13 +61,39 @@
                     loading: true,
                     dataList: [],
                     selectList: [],
+                    fileList: [],
                     form: {
                         page: 1,
                         per_page: 10,
                     },
+                    postData: PostBase
                 }
             },
             methods: {
+                handleUploadSuccess(res, file) {
+                    this.fullscreenLoading = false;
+                    if (res.code == CODE_SUCCESS) {
+                        this.$message({
+                            message: res.msg,
+                            type: 'success'
+                        });
+                        this.getList();
+                    } else {
+                        this.$message.error(res.msg);
+                    }
+                },
+                beforeUpload(file) {
+                    const isImage = file.type === 'image/jpeg' || file.type === 'image/png';
+                    const isLt2M = file.size / 1024 / 1024 < 2;
+                    if (!isImage) {
+                        this.$message.error('上传图片只能是 JPG/PNG 格式!');
+                    }
+                    if (!isLt2M) {
+                        this.$message.error('上传头像图片大小不能超过 2MB!');
+                    }
+                    this.fullscreenLoading = true;
+                    return isImage && isLt2M;
+                },
                 handleSizeChange(per_page) {
                     this.form.per_page = per_page;
                     this.getList();
@@ -83,9 +117,9 @@
                         type: 'warning'
                     }).then(() => {
                         axios.post('/api/attach/delete', Object.assign({}, PostBase, {
-                            attach_id: that.selectList.join(",")
-                        }))
-                            .then(function (response) {
+                                attach_id: that.selectList.join(",")
+                            }))
+                            .then(function(response) {
                                 that.getList();
                                 if (response.data.code == CODE_SUCCESS) {
                                     that.$message({
@@ -96,11 +130,10 @@
                                     that.$message.error(response.data.msg);
                                 }
                             })
-                            .catch(function (error) {
+                            .catch(function(error) {
                                 that.$message.error('服务器内部错误');
                             });
-                    }).catch(() => {
-                    });
+                    }).catch(() => {});
                 },
                 changeSelection(list) {
                     var that = this;
@@ -108,6 +141,11 @@
                     for (var index in list) {
                         that.selectList.push(list[index].attach_id);
                     }
+                },
+                clickAdd() {
+                    var that = this;
+                    that.formAdd = {};
+                    that.dialogFormAdd = true;
                 },
                 clickDelete(row) {
                     var that = this;
@@ -117,9 +155,9 @@
                         type: 'warning'
                     }).then(() => {
                         axios.post('/api/attach/delete', Object.assign({}, PostBase, {
-                            attach_id: row.attach_id
-                        }))
-                            .then(function (response) {
+                                attach_id: row.attach_id
+                            }))
+                            .then(function(response) {
                                 that.getList();
                                 if (response.data.code == CODE_SUCCESS) {
                                     that.$message({
@@ -130,11 +168,10 @@
                                     that.$message.error(response.data.msg);
                                 }
                             })
-                            .catch(function (error) {
+                            .catch(function(error) {
                                 that.$message.error('服务器内部错误');
                             });
-                    }).catch(() => {
-                    });
+                    }).catch(() => {});
                 },
                 changeCurrentPage(page) {
                     this.form.page = page;
@@ -144,7 +181,7 @@
                     var that = this;
                     that.loading = true;
                     axios.post('/api/attach/getList', Object.assign({}, PostBase, that.form, that.search))
-                        .then(function (response) {
+                        .then(function(response) {
                             that.loading = false;
                             if (response.data.code == CODE_SUCCESS) {
                                 that.dataList = response.data.data;
@@ -152,7 +189,7 @@
                                 that.$message.error(response.data.msg);
                             }
                         })
-                        .catch(function (error) {
+                        .catch(function(error) {
                             that.loading = false;
                             that.$message.error('服务器内部错误');
                         });
