@@ -30,6 +30,11 @@ class Group extends BaseController
         ];
         $this->model = new GroupModel();
     }
+    /**
+     * 修改用户组
+     *
+     * @return void
+     */
     public function update()
     {
         $error = $this->access();
@@ -69,7 +74,7 @@ class Group extends BaseController
     }
 
     /**
-     * 禁用用户
+     * 禁用用户组
      *
      * @return void
      */
@@ -106,7 +111,7 @@ class Group extends BaseController
     }
 
     /**
-     * 启用用户
+     * 启用用户组
      *
      * @return void
      */
@@ -142,7 +147,7 @@ class Group extends BaseController
     }
 
     /**
-     * 删除用户
+     * 删除用户组
      *
      * @return void
      */
@@ -243,6 +248,11 @@ class Group extends BaseController
         $myAuthorizeList = $this->authModel->where("auth_group", $this->pk_value)->select();
         return jok('ok', $myAuthorizeList);
     }
+    /**
+     * 获取所有用户组
+     *
+     * @return void
+     */
     public function getList()
     {
         $error = $this->access();

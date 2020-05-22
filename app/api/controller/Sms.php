@@ -14,7 +14,12 @@ class Sms extends BaseController
         parent::__construct($app);
         $this->model = new SmsModel();
     }
-
+    
+    /**
+     * 发送短信验证码
+     *
+     * @return void
+     */
     public function send()
     {
         //验证图形验证码

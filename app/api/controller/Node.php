@@ -37,7 +37,12 @@ class Node extends BaseController
         ];
         $this->model = new NodeModel();
     }
-
+    
+    /**
+     * 添加节点
+     *
+     * @return void
+     */
     public function add()
     {
         $error = $this->access();
@@ -62,7 +67,12 @@ class Node extends BaseController
         $data[$this->table . "_createtime"] = time();
         $this->model->insert($data);
         return jok('用户添加成功');
-    }
+    }    
+    /**
+     * 更新节点
+     *
+     * @return void
+     */
     public function update()
     {
         $error = $this->access();
@@ -100,7 +110,7 @@ class Node extends BaseController
 
 
     /**
-     * 删除用户
+     * 删除节点
      *
      * @return void
      */
@@ -130,7 +140,12 @@ class Node extends BaseController
         }
         return jok('删除节点成功');
     }
-
+    
+    /**
+     * 获取所有节点
+     *
+     * @return void
+     */
     public function getList()
     {
         $error = $this->access();

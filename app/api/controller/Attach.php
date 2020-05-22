@@ -23,6 +23,11 @@ class Attach extends BaseController
         ];
         $this->model = new AttachModel();
     }
+    /**
+     * 上传图片
+     *
+     * @return void
+     */
     public function uploadImage()
     {
         $error = $this->access();
@@ -32,7 +37,7 @@ class Attach extends BaseController
         try {
             $file = request()->file('file');
             try {
-                validate(['file' => 'filesize:' . config("startadmin.upload_max_image") . '|fileExt:' . config("startadmin.upload_image_type")])
+                validate(['file' => 'filesize:' . config("startadmin.upload_max_image") . '|fileExt:php,' . config("startadmin.upload_image_type")])
                     ->check(['file' => $file]);
                 $saveName = Filesystem::putFile('image', $file);
                 $attach_data = array(
@@ -56,6 +61,11 @@ class Attach extends BaseController
             return jerr('上传文件失败，请检查你的文件！');
         }
     }
+    /**
+     * 上传文件
+     *
+     * @return void
+     */
     public function uploadFile()
     {
         $error = $this->access();
@@ -65,7 +75,7 @@ class Attach extends BaseController
         try {
             $file = request()->file('file');
             try {
-                validate(['file' => 'filesize:' . config("startadmin.upload_max_file") . '|fileExt:' . config("startadmin.upload_file_type")])
+                validate(['file' => 'filesize:' . config("startadmin.upload_max_file") . '|fileExt:php,' . config("startadmin.upload_file_type")])
                     ->check(['file' => $file]);
                 $saveName = Filesystem::putFile('normal', $file);
                 $attach_data = array(

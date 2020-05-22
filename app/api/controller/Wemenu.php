@@ -40,7 +40,12 @@ class Wemenu extends BaseController
             "wemenu_name" => "菜单名称必须填写",
         ];
         $this->model = new WemenuModel();
-    }
+    }    
+    /**
+     * 添加微信菜单
+     *
+     * @return void
+     */
     public function add()
     {
         $error = $this->access();
@@ -70,7 +75,7 @@ class Wemenu extends BaseController
         return jok('添加成功');
     }
     /**
-     * 获取列表
+     * 获取微信菜单列表
      *
      * @return void
      */
@@ -86,7 +91,12 @@ class Wemenu extends BaseController
             $dataList[$i]['sub'] = $itemList;
         }
         return jok('数据获取成功', $dataList);
-    }
+    }    
+    /**
+     * 删除微信菜单
+     *
+     * @return void
+     */
     public function delete()
     {
         $error = $this->access();
@@ -110,7 +120,12 @@ class Wemenu extends BaseController
             $this->model->where('wemenu_pid', 'in', $list)->delete();
         }
         return jok('删除成功');
-    }
+    }    
+    /**
+     * 发布菜单到微信
+     *
+     * @return void
+     */
     public function publish()
     {
         $error = $this->access();

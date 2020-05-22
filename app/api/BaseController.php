@@ -198,7 +198,12 @@ abstract class BaseController
                 }
             }
         }
-    }
+    }    
+    /**
+     * 添加接口基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
+     *
+     * @return void
+     */
     public function add()
     {
         $error = $this->access();
@@ -220,7 +225,12 @@ abstract class BaseController
         $data[$this->table . "_createtime"] = time();
         $this->model->insert($data);
         return jok('添加成功');
-    }
+    }    
+    /**
+     * 修改接口基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
+     *
+     * @return void
+     */
     public function update()
     {
         $error = $this->access();
@@ -250,7 +260,7 @@ abstract class BaseController
         return jok('修改成功');
     }
     /**
-     * 禁用用户
+     * 禁用接口基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
      *
      * @return void
      */
@@ -284,7 +294,7 @@ abstract class BaseController
     }
 
     /**
-     * 启用
+     * 启用接口基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
      *
      * @return void
      */
@@ -318,7 +328,7 @@ abstract class BaseController
     }
 
     /**
-     * 通用删除接口
+     * 删除接口基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
      *
      * @return void
      */
@@ -345,7 +355,7 @@ abstract class BaseController
         return jok('删除成功');
     }
     /**
-     * 获取列表
+     * 获取列表接口基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
      *
      * @return void
      */
@@ -387,6 +397,11 @@ abstract class BaseController
         $dataList = $this->model->getListByPage($map, $order, $this->selectList);
         return jok('数据获取成功', $dataList);
     }
+    /**
+     * 获取详情基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
+     *
+     * @return void
+     */
     public function detail()
     {
         $error = $this->access();
@@ -401,7 +416,12 @@ abstract class BaseController
             return jerr("没有查询到数据");
         }
         return jok('数据加载成功', $item);
-    }
+    }    
+    /**
+     * 导出Excel基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
+     *
+     * @return void
+     */
     public function excel()
     {
         $error = $this->access();
