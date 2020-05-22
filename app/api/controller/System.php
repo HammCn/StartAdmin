@@ -41,7 +41,7 @@ class System extends BaseController
         if (count($tableExist) > 0) {
             return jerr("生成失败，该表已存在");
         }
-        $fieldBlackList = [$table . '_id', $table . '_status', $table . '_createtime', $table . '_updatetime'];
+        $fieldBlackList = ['id', 'status', 'createtime', 'updatetime'];
         $fieldList = input('fieldList');
         foreach ($fieldBlackList as $item) {
             unset($fieldList[$item]);
