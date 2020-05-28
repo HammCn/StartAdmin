@@ -479,9 +479,9 @@ abstract class BaseController
 
         $PHPExcel
             ->getProperties()  //获得文件属性对象，给下文提供设置资源  
-            ->setCreator("FuckAdmin")                 //设置文件的创建者  
-            ->setLastModifiedBy("FuckAdmin")          //设置最后修改者  
-            ->setDescription("Export by FuckAdmin"); //设置备注  
+            ->setCreator("StartAdmin")                 //设置文件的创建者  
+            ->setLastModifiedBy("StartAdmin")          //设置最后修改者  
+            ->setDescription("Export by StartAdmin"); //设置备注  
 
         $PHPSheet = $PHPExcel->getActiveSheet();
         $PHPSheet->setTitle($this->excelTitle); //给当前活动sheet设置名称
