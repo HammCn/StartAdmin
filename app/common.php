@@ -346,43 +346,15 @@ function  curlHelper($url, $method = 'GET', $data = null, $header = [], $cookies
  * 模拟表单上传文件请求
  * @param $$url 提交地址
  * @param $data 提交数据
+ * @param $cookies
  * ex.
  * $data = ['file'=>new \CURLFile(realpath($file_dir)),appid"=>"1234"];
- * $result = $this->curl_form($url,$data);
+ * $result = curl_form($url,$data);
  * @return mixed
  */
-function curlForm($url, $data = null)
+function curlForm($url, $data = null, $cookies = "")
 {
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_FAILONERROR, false);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: multipart/form-data'));
-    curl_setopt($ch, CURLOPT_POST, true);
-    //https 请求
-    if(strlen($url) > 5 && strtolower(substr($url,0,5)) == "https" ) {
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    }
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    $reponse = curl_exec($ch);
-
-    if (curl_errno($ch))
-    {
-        $reponse = 'ERROR.404';
-    }
-    else
-    {
-        $httpStatusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        if (200 !== $httpStatusCode)
-        {
-            $reponse = 'ERROR.'.$httpStatusCode;
-        }
-    }
-    curl_close($ch);
-    return $reponse;
+    return curlHelper($url,"POST",$data,['Content-Type: multipart/form-data'], $cookies);
 }
 /**
  * 多维数组合并（支持多数组）
