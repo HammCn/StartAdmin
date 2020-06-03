@@ -46,7 +46,7 @@ function encodePassword($password, $salt)
  * @param string 明文密码
  * @return boolean 是否校验通过
  */
-function isPassword($password)
+function isValidPassword($password)
 {
     return preg_match('/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?!.*\s).{6,}/', $password);
 }
@@ -112,7 +112,7 @@ function getFullDomain()
  *
  * @return string
  */
-function get_client_ip()
+function getClientIp()
 {
     foreach (array(
         'HTTP_CLIENT_IP',
@@ -219,7 +219,7 @@ function  getBrowser()
  *
  * @return boolean
  */
-function is_mobile_request()
+function isMobileRequest()
 {
     $_SERVER['ALL_HTTP'] = isset($_SERVER['ALL_HTTP']) ? $_SERVER['ALL_HTTP'] : '';
     $mobile_browser = '0';
@@ -279,118 +279,67 @@ function getTicket($key)
     return sha1($key . (env('SYSTEM_SALT') ?? 'StartAdmin') . $key);
 }
 /**
- * CURL POST
+ * CURL请求
  *
- * @param string 请求地址
- * @param array POST数据
- * @param array 请求头
- * @param string COOKIES
- * @param boolean 是否返回header
- * @param boolean 是否后台请求
- * @param integer 超时时间
- * @param array 使用代理
- * @return mixed 
+ * @param  string URL地址
+ * @param  mixed 请求方法,支持GET/POST/PUT/DELETE/PATCH/TRACE/OPTION/HEAD 默认GET
+ * @param  mixed 请求数据包体
+ * @param  mixed 请求头 数组
+ * @param  mixed 请求COOKIES字符串
+ * @return void
  */
-function httpPostFull($url, $data = null, $header = [], $cookies = "", $returnHeader = false, $isBackGround = false, $timeout = 0, $proxy = null)
+function  curlHelper($url, $method = 'GET', $data = null, $header = [], $cookies = "")
 {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_REFERER, $url);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
     curl_setopt($ch, CURLOPT_COOKIE, $cookies);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    if ($timeout) {
-        //curl_setopt($ch, CURLOPT_CONNECTTIMEOUT,$timeout);
-        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+    switch ($method) {
+        case  "GET":
+            curl_setopt($ch, CURLOPT_HTTPGET, true);
+            break;
+        case  "POST":
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            break;
+        case  "PUT":
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            break;
+        case  "DELETE":
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            break;
+        case  "PATCH":
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PATCH");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            break;
+        case  "TRACE":
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "TRACE");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            break;
+        case  "OPTIONS":
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "OPTIONS");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            break;
+        case  "HEAD":
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "HEAD");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            break;
+        default:
     }
-    if (!empty($proxy)) {
-        curl_setopt($ch, CURLOPT_PROXY, $proxy['ip']);
-        curl_setopt($ch, CURLOPT_PROXYPORT, $proxy['port']);
-        curl_setopt($ch, CURLOPT_PROXYUSERPWD, "taras:taras-ss5");
-    }
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, $isBackGround ? 0 : 1);
-    curl_setopt($ch, CURLOPT_HEADER, $returnHeader ? 1 : 0);
-    $output = curl_exec($ch);
-    if ($timeout) {
-        if ($output === FALSE) {
-            if (curl_errno($ch) == CURLE_OPERATION_TIMEOUTED) {
-                $output = 'TIMEOUT';
-            } else {
-                $output = 'ERROR';
-            }
-        }
-    }
-    curl_close($ch);
-    return $output;
-}
-
-/**
- * CURL GET
- *
- * @param string 请求地址
- * @param array 请求头
- * @param string COOKIES
- * @param boolean 是否返回header
- * @param boolean 是否后台请求
- * @param integer 超时时间
- * @param array 使用代理
- * @return mixed 
- */
-function httpGetFull($url, $header = [], $cookies = "", $returnHeader = false, $isBackGround = false, $timeout = 0, $proxy = null)
-{
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_REFERER, $url);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-    curl_setopt($ch, CURLOPT_COOKIE, $cookies);
-    if ($timeout) {
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
-    }
-    if (!empty($proxy)) {
-        curl_setopt($ch, CURLOPT_PROXY, $proxy['ip']);
-        curl_setopt($ch, CURLOPT_PROXYPORT, $proxy['port']);
-        curl_setopt($ch, CURLOPT_PROXYUSERPWD, "taras:taras-ss5");
-    }
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, $isBackGround ? 0 : 1);
-    curl_setopt($ch, CURLOPT_HEADER, $returnHeader ? 1 : 0);
-    $output = curl_exec($ch);
-    if ($timeout) {
-        if ($output === FALSE) {
-            if (in_array(curl_errno($ch), [28])) {
-                $output = 'TIMEOUT';
-            } else {
-                $output = 'ERROR';
-            }
-        }
-    }
-    curl_close($ch);
-    return $output;
-}
-/**
- * 请求并返回HEADER
- *
- * @param string 请求地址
- * @return mixed
- */
-function httpGetWithHeader($url)
-{
-    $ch = curl_init();
-    //设置选项，包括URL
-    curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HEADER, 1);
-    //执行并获取HTML文档内容
-    $output = curl_exec($ch);
-    //释放curl句柄
+    $response = curl_exec($ch);
+    $output = [];
+    $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+    // 根据头大小去获取头信息内容
+    $output['header'] = substr($response, 0, $headerSize);
+    $output['body'] = substr($response, $headerSize, strlen($response) - $headerSize);
+    $output['detail'] = curl_getinfo($ch);
     curl_close($ch);
-    //打印获得的数据
     return $output;
 }
 
@@ -407,7 +356,7 @@ function httpBackground($url)
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_HEADER, 0);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 0);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 1);   //只需要设置一个秒的数量就可以  
+    curl_setopt($ch, CURLOPT_TIMEOUT, 1);   //只需要设置一个秒的数量就可以
     //执行并获取HTML文档内容
     curl_exec($ch);
     //释放curl句柄

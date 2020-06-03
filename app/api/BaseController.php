@@ -177,7 +177,7 @@ abstract class BaseController
                     "log_user" => $this->user['user_id'],
                     "log_node" => $this->node['node_id'],
                     "log_createtime" => time(),
-                    "log_ip" => get_client_ip(),
+                    "log_ip" => getClientIp(),
                     "log_browser" => getBrowser(),
                     "log_os" => getOs(),
                     "log_updatetime" => time(),
