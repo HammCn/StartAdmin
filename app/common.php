@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 输出正常JSON
  *
@@ -342,4 +341,133 @@ function  curlHelper($url, $method = 'GET', $data = null, $header = [], $cookies
     $output['detail'] = curl_getinfo($ch);
     curl_close($ch);
     return $output;
+}
+/**
+ * 模拟表单上传文件请求
+ * @param $$url 提交地址
+ * @param $data 提交数据
+ * @param $cookies
+ * ex.
+ * $data = ['file'=>new \CURLFile(realpath($file_dir)),appid"=>"1234"];
+ * $result = curl_form($url,$data);
+ * @return mixed
+ */
+function curlForm($url, $data = null, $cookies = "")
+{
+    return curlHelper($url,"POST",$data,['Content-Type: multipart/form-data'], $cookies);
+}
+/**
+ * 多维数组合并（支持多数组）
+ * @param arraylist arrayMergeMulti(['1'=>'1','2'=>'2','3'=>'3'],['4'=>'4','5'=>'5','6'=>'6'])
+ * @return array
+ */
+function arrayMergeMulti()
+{
+    $args = func_get_args();
+    $array = [];
+    foreach ($args as $arg) {
+        if (is_array($arg)) {
+            foreach ($arg as $k => $v) {
+                if (is_array($v)) {
+                    $array[$k] = isset($array[$k]) ? $array[$k] : [];
+                    $array[$k] = arrayMergeMulti($array[$k], $v);
+                } else {
+                    $array[$k] = $v;
+                }
+            }
+        }
+    }
+
+    return $array;
+}
+/**
+ * 对查询结果集进行排序
+ * @access public
+ * @param array $list   查询结果
+ * @param string $field 排序的字段名
+ * @param array $sortBy 排序类型
+ *                      asc正向排序 desc逆向排序 nat自然排序
+ * @return array|bool
+ */
+function listSortBy($list, $field, $sortBy = 'asc')
+{
+    if (is_array($list)) {
+        $refer = $resultSet = [];
+        foreach ($list as $i => $data)
+            $refer[$i] = &$data[$field];
+        switch ($sortBy) {
+            case 'asc': // 正向排序
+                asort($refer);
+                break;
+            case 'desc': // 逆向排序
+                arsort($refer);
+                break;
+            case 'nat': // 自然排序
+                natcasesort($refer);
+                break;
+        }
+        foreach ($refer as $key => $val)
+            $resultSet[] = &$list[$key];
+
+        return $resultSet;
+    }
+
+    return false;
+}
+
+/**
+ * 格式化字节大小
+ * @param  number $size      字节数
+ * @param  string $delimiter 数字和单位分隔符
+ * @return string            格式化后的带单位的大小
+ */
+function formatBytes($size, $delimiter = '')
+{
+    $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+    for ($i = 0; $size >= 1024 && $i < 5; $i++) $size /= 1024;
+
+    return round($size, 2) . $delimiter . $units[$i];
+}
+/**
+ * 生成一定长度的UUID
+ *
+ * @param int $length
+ *
+ * @return string
+ */
+function getUuid($length = 16)
+{
+    mt_srand((double)microtime()*10000);
+    $uuid = sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
+    $str = base64_encode($uuid);
+    return substr($str,  mt_rand(0, strlen($str) - $length), $length);
+}
+/**
+ * flash message
+ *
+ * flash("?KEY") 判断是否存在flash message KEY 返回bool值
+ * flash("KEY") 获取flash message，存在返回具体值，不存在返回null
+ * flash("KEY","VALUE") 设置flash message
+ * @param string $key
+ * @param bool|string $value
+ * @return bool|mixed|null
+ */
+function flashMessage($key, $value = false)
+{
+    $prefix = 'flash_';
+    // 判断是否存在flash message
+    if ('?' == substr($key, 0, 1)) {
+        return Session::has($prefix . substr($key, 1));
+    } else {
+        $flash_key = $prefix . $key;
+        if (false === $value) {
+            // 获取flash
+            $ret = Session::pull($flash_key);
+
+            return null === $ret ? null : unserialize($ret);
+        } else {
+            // 设置flash
+            return Session::set($flash_key, serialize($value));
+        }
+    }
 }
