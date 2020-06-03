@@ -480,38 +480,6 @@ function array_merge_multi()
     return $array;
 }
 /**
- * 将list_to_tree的树还原成列表
- * @param array $tree
- * @param string $child
- * @param string $order
- * @param int $level
- * @param null $filter
- * @param array $list
- * @return array
- */
-function tree_to_list($tree, $filter = null, $child = '_child', $order = 'id', $level = 0, &$list = [])
-{
-    if (is_array($tree)) {
-        if (!is_callable($filter)) {
-            $filter = function (&$refer, $level) {
-                $refer['level'] = $level;
-            };
-        }
-        foreach ($tree as $key => $value) {
-            $refer = $value;
-            unset($refer[$child]);
-            $filter($refer, $level);
-            $list[] = $refer;
-            if (isset($value[$child])) {
-                tree_to_list($value[$child], $filter, $child, $order, $level + 1, $list);
-            }
-        }
-    }
-
-    return $list;
-}
-
-/**
  * 对查询结果集进行排序
  * @access public
  * @param array $list   查询结果
