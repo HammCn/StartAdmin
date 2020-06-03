@@ -1,6 +1,19 @@
 <?php
 
 /**
+ * CURLFILE 兼容性处理 php < 5.5
+ * 一定不要修改、删除，否则 curl 可能无法上传文件
+ */
+
+if (!function_exists('curl_file_create')) {
+    function curl_file_create($filename, $mimetype = '', $postname = '')
+    {
+        return "@$filename;filename="
+            . ($postname ?: basename($filename))
+            . ($mimetype ? ";type=$mimetype" : '');
+    }
+}
+/**
  * 输出正常JSON
  *
  * @param string 提示信息
@@ -413,4 +426,193 @@ function httpBackground($url)
     curl_exec($ch);
     //释放curl句柄
     curl_close($ch);
+}
+/**
+ * 模拟表单上传文件请求
+ * @param $$url 提交地址
+ * @param $data 提交数据
+ * ex.
+ * $data = ['file'=>new \CURLFile(realpath($file_dir)),appid"=>"1234"];
+ * $result = $this->curl_form($url,$data);
+ * @return mixed
+ */
+function curl_form($url, $data = null)
+{
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_FAILONERROR, false);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: multipart/form-data'));
+    curl_setopt($ch, CURLOPT_POST, true);
+    //https 请求
+    if(strlen($url) > 5 && strtolower(substr($url,0,5)) == "https" ) {
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    }
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    $reponse = curl_exec($ch);
+
+    if (curl_errno($ch))
+    {
+        $reponse = 'ERROR.404';
+    }
+    else
+    {
+        $httpStatusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        if (200 !== $httpStatusCode)
+        {
+            $reponse = 'ERROR.'.$httpStatusCode;
+        }
+    }
+    curl_close($ch);
+    return $reponse;
+}
+/**
+ * 多维数组合并（支持多数组）
+ * @param arraylist array_merge_multi(arr1,arr2...arrN)
+ * @return array
+ */
+function array_merge_multi()
+{
+    $args = func_get_args();
+    $array = [];
+    foreach ($args as $arg) {
+        if (is_array($arg)) {
+            foreach ($arg as $k => $v) {
+                if (is_array($v)) {
+                    $array[$k] = isset($array[$k]) ? $array[$k] : [];
+                    $array[$k] = array_merge_multi($array[$k], $v);
+                } else {
+                    $array[$k] = $v;
+                }
+            }
+        }
+    }
+
+    return $array;
+}
+/**
+ * 将list_to_tree的树还原成列表
+ * @param array $tree
+ * @param string $child
+ * @param string $order
+ * @param int $level
+ * @param null $filter
+ * @param array $list
+ * @return array
+ */
+function tree_to_list($tree, $filter = null, $child = '_child', $order = 'id', $level = 0, &$list = [])
+{
+    if (is_array($tree)) {
+        if (!is_callable($filter)) {
+            $filter = function (&$refer, $level) {
+                $refer['level'] = $level;
+            };
+        }
+        foreach ($tree as $key => $value) {
+            $refer = $value;
+            unset($refer[$child]);
+            $filter($refer, $level);
+            $list[] = $refer;
+            if (isset($value[$child])) {
+                tree_to_list($value[$child], $filter, $child, $order, $level + 1, $list);
+            }
+        }
+    }
+
+    return $list;
+}
+
+/**
+ * 对查询结果集进行排序
+ * @access public
+ * @param array $list   查询结果
+ * @param string $field 排序的字段名
+ * @param array $sortBy 排序类型
+ *                      asc正向排序 desc逆向排序 nat自然排序
+ * @return array|bool
+ */
+function list_sort_by($list, $field, $sortBy = 'asc')
+{
+    if (is_array($list)) {
+        $refer = $resultSet = [];
+        foreach ($list as $i => $data)
+            $refer[$i] = &$data[$field];
+        switch ($sortBy) {
+            case 'asc': // 正向排序
+                asort($refer);
+                break;
+            case 'desc': // 逆向排序
+                arsort($refer);
+                break;
+            case 'nat': // 自然排序
+                natcasesort($refer);
+                break;
+        }
+        foreach ($refer as $key => $val)
+            $resultSet[] = &$list[$key];
+
+        return $resultSet;
+    }
+
+    return false;
+}
+
+/**
+ * 格式化字节大小
+ * @param  number $size      字节数
+ * @param  string $delimiter 数字和单位分隔符
+ * @return string            格式化后的带单位的大小
+ */
+function format_bytes($size, $delimiter = '')
+{
+    $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+    for ($i = 0; $size >= 1024 && $i < 5; $i++) $size /= 1024;
+
+    return round($size, 2) . $delimiter . $units[$i];
+}
+/**
+ * 生成一定长度的UUID
+ *
+ * @param int $length
+ *
+ * @return string
+ */
+function get_uuid($length = 16)
+{
+    mt_srand((double)microtime()*10000);
+    $uuid = sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
+    $str = base64_encode($uuid);
+    return substr($str,  mt_rand(0, strlen($str) - $length), $length);
+}
+/**
+ * flash message
+ *
+ * flash("?KEY") 判断是否存在flash message KEY 返回bool值
+ * flash("KEY") 获取flash message，存在返回具体值，不存在返回null
+ * flash("KEY","VALUE") 设置flash message
+ * @param string $key
+ * @param bool|string $value
+ * @return bool|mixed|null
+ */
+function flash($key, $value = false)
+{
+    $prefix = 'flash_';
+    // 判断是否存在flash message
+    if ('?' == substr($key, 0, 1)) {
+        return Session::has($prefix . substr($key, 1));
+    } else {
+        $flash_key = $prefix . $key;
+        if (false === $value) {
+            // 获取flash
+            $ret = Session::pull($flash_key);
+
+            return null === $ret ? null : unserialize($ret);
+        } else {
+            // 设置flash
+            return Session::set($flash_key, serialize($value));
+        }
+    }
 }
