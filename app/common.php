@@ -358,7 +358,7 @@ function curlForm($url, $data = null, $cookies = "")
 }
 /**
  * 多维数组合并（支持多数组）
- * @param arraylist array_merge_multi(arr1,arr2...arrN)
+ * @param arraylist arrayMergeMulti(['1'=>'1','2'=>'2','3'=>'3'],['4'=>'4','5'=>'5','6'=>'6'])
  * @return array
  */
 function arrayMergeMulti()
@@ -370,7 +370,7 @@ function arrayMergeMulti()
             foreach ($arg as $k => $v) {
                 if (is_array($v)) {
                     $array[$k] = isset($array[$k]) ? $array[$k] : [];
-                    $array[$k] = array_merge_multi($array[$k], $v);
+                    $array[$k] = arrayMergeMulti($array[$k], $v);
                 } else {
                     $array[$k] = $v;
                 }
