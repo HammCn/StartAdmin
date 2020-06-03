@@ -442,32 +442,3 @@ function getUuid($length = 16)
     $str = base64_encode($uuid);
     return substr($str,  mt_rand(0, strlen($str) - $length), $length);
 }
-/**
- * flash message
- *
- * flash("?KEY") 判断是否存在flash message KEY 返回bool值
- * flash("KEY") 获取flash message，存在返回具体值，不存在返回null
- * flash("KEY","VALUE") 设置flash message
- * @param string $key
- * @param bool|string $value
- * @return bool|mixed|null
- */
-function flashMessage($key, $value = false)
-{
-    $prefix = 'flash_';
-    // 判断是否存在flash message
-    if ('?' == substr($key, 0, 1)) {
-        return Session::has($prefix . substr($key, 1));
-    } else {
-        $flash_key = $prefix . $key;
-        if (false === $value) {
-            // 获取flash
-            $ret = Session::pull($flash_key);
-
-            return null === $ret ? null : unserialize($ret);
-        } else {
-            // 设置flash
-            return Session::set($flash_key, serialize($value));
-        }
-    }
-}
