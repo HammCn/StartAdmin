@@ -38,7 +38,8 @@ class Conf extends BaseModel
         $conf = $this->where('conf_key', 'WECHAT_ACCESS_TOKEN')->find();
         $access_token = "";
         if (time() > $conf['conf_int']) {
-            $retObj = httpGetFull("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" . config("startadmin.wechat_appid") . "&secret=" . config("startadmin.wechat_appkey"));
+            $retObj = curlHelper("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" . config("startadmin.wechat_appid") . "&secret=" . config("startadmin.wechat_appkey"));
+            $retObj = $retObj['body'];
             $retObj = json_decode($retObj);
             if (property_exists($retObj, "errcode")) {
                 return false;
