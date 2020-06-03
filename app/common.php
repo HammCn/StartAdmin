@@ -342,26 +342,6 @@ function  curlHelper($url, $method = 'GET', $data = null, $header = [], $cookies
     curl_close($ch);
     return $output;
 }
-
-/**
- * 后台请求URL
- *
- * @param string 请求地址
- * @return mixed
- */
-function httpBackground($url)
-{
-    $ch = curl_init();
-    //设置选项，包括URL
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 0);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 1);   //只需要设置一个秒的数量就可以
-    //执行并获取HTML文档内容
-    curl_exec($ch);
-    //释放curl句柄
-    curl_close($ch);
-}
 /**
  * 模拟表单上传文件请求
  * @param $$url 提交地址
@@ -371,7 +351,7 @@ function httpBackground($url)
  * $result = $this->curl_form($url,$data);
  * @return mixed
  */
-function curl_form($url, $data = null)
+function curlForm($url, $data = null)
 {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -409,7 +389,7 @@ function curl_form($url, $data = null)
  * @param arraylist array_merge_multi(arr1,arr2...arrN)
  * @return array
  */
-function array_merge_multi()
+function arrayMergeMulti()
 {
     $args = func_get_args();
     $array = [];
@@ -437,7 +417,7 @@ function array_merge_multi()
  *                      asc正向排序 desc逆向排序 nat自然排序
  * @return array|bool
  */
-function list_sort_by($list, $field, $sortBy = 'asc')
+function listSortBy($list, $field, $sortBy = 'asc')
 {
     if (is_array($list)) {
         $refer = $resultSet = [];
@@ -469,7 +449,7 @@ function list_sort_by($list, $field, $sortBy = 'asc')
  * @param  string $delimiter 数字和单位分隔符
  * @return string            格式化后的带单位的大小
  */
-function format_bytes($size, $delimiter = '')
+function formatBytes($size, $delimiter = '')
 {
     $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
     for ($i = 0; $size >= 1024 && $i < 5; $i++) $size /= 1024;
@@ -483,7 +463,7 @@ function format_bytes($size, $delimiter = '')
  *
  * @return string
  */
-function get_uuid($length = 16)
+function getUuid($length = 16)
 {
     mt_srand((double)microtime()*10000);
     $uuid = sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
@@ -500,7 +480,7 @@ function get_uuid($length = 16)
  * @param bool|string $value
  * @return bool|mixed|null
  */
-function flash($key, $value = false)
+function flashMessage($key, $value = false)
 {
     $prefix = 'flash_';
     // 判断是否存在flash message
