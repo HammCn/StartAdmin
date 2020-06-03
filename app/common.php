@@ -1,18 +1,4 @@
 <?php
-
-/**
- * CURLFILE 兼容性处理 php < 5.5
- * 一定不要修改、删除，否则 curl 可能无法上传文件
- */
-
-if (!function_exists('curl_file_create')) {
-    function curl_file_create($filename, $mimetype = '', $postname = '')
-    {
-        return "@$filename;filename="
-            . ($postname ?: basename($filename))
-            . ($mimetype ? ";type=$mimetype" : '');
-    }
-}
 /**
  * 输出正常JSON
  *
