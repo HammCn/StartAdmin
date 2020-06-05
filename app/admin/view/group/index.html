@@ -76,17 +76,20 @@
     <!-- 授权框 -->
     <el-dialog class="pub_dialog" title="用户组授权" :visible.sync="dialogFormAuth" :modal-append-to-body='false'
         width="60%">
-        <el-table ref="multipleTable" :data="nodeList" border @selection-change="changeAuthSelect" v-loading="loading">
-            <el-table-column type="selection" width="50">
-            </el-table-column>
-            <el-table-column property="node_id" label="节点ID" width="80"></el-table-column>
-            <el-table-column property="node_title" label="节点名称"></el-table-column>
-            <el-table-column label="节点地址">
-                <template slot-scope="scope">
-                    {{scope.row.node_module+"/"+scope.row.node_controller+"/"+scope.row.node_action}}
-                </template>
-            </el-table-column>
-        </el-table>
+        <el-card class="box-card" v-for="(item,index) in nodeList" style="margin:10px 20px;">
+            <div slot="header" class="clearfix">
+                <span>{{item.node_title}}</span>
+                <el-button style="float: right; padding: 3px 0" type="text">
+                    <el-checkbox v-model="item.node_status" @change="handleCheckAllChange($event,item,index)">全选
+                    </el-checkbox>
+                </el-button>
+            </div>
+            <div>
+                <el-checkbox v-for="(sub_item,sub_index) in item.sub" @change="handleCheckedChange($event,sub_item)"
+                    v-model="sub_item.node_status">
+                    {{sub_item.node_title}}</el-checkbox>
+            </div>
+        </el-card>
         <div slot="footer" class="dialog-footer">
             <el-button type="primary" @click="postAuth">确认授权</el-button>
         </div>
@@ -94,11 +97,12 @@
 
     {include file="common/footer"/}
     <script>
-        new Vue({
+        var vues = new Vue({
             el: '#app',
             data() {
                 this.getList();
                 return {
+                    checkAll: false,
                     search: {
                         group_status: "",
                         keyword: "",
@@ -111,7 +115,6 @@
                     loading: true,
                     dataList: [],
                     groupList: [],
-                    authList: [],
                     selectList: [],
                     selectNodeList: [],
                     selectedGroupId: 0,
@@ -129,6 +132,46 @@
                 }
             },
             methods: {
+                handleCheckAllChange(selectAll, item, index) {
+                    var that = this;
+                    if (selectAll) {
+                        for (var _index in item.sub) {
+                            that.nodeList[index].sub[_index].node_status = true;
+                            if (that.selectNodeList.indexOf(item.sub[_index].node_id) < 0) {
+                                that.selectNodeList.push(item.sub[_index].node_id);
+                            }
+                        }
+                        that.selectNodeList.push(item.node_id);
+                    } else {
+                        for (var _index in item.sub) {
+                            that.nodeList[index].sub[_index].node_status = false;
+                            var _existIndex = that.selectNodeList.indexOf(item.sub[_index].node_id);
+                            if (_existIndex >= 0) {
+                                that.selectNodeList.splice(_existIndex, 1);
+                            }
+                            _existIndex = that.selectNodeList.indexOf(item.node_id);
+                            if (_existIndex >= 0) {
+                                that.selectNodeList.splice(_existIndex, 1);
+                            }
+                        }
+                    }
+                },
+                handleCheckedChange(checked, item) {
+                    var that = this;
+                    if (checked) {
+                        if (that.selectNodeList.indexOf(item.node_id) < 0) {
+                            that.selectNodeList.push(item.node_id);
+                        }
+                    } else {
+                        var _existIndex = that.selectNodeList.indexOf(item.node_id);
+                        if (_existIndex >= 0) {
+                            that.selectNodeList.splice(_existIndex, 1);
+                        }
+                    }
+                },
+                refreshCheckbox() {
+
+                },
                 postMultDelete() {
                     var that = this;
                     if (that.selectList.length == 0) {
@@ -160,13 +203,6 @@
                     }).catch(() => {
                     });
                 },
-                changeAuthSelect(list) {
-                    var that = this;
-                    that.selectNodeList = [];
-                    for (var index in list) {
-                        that.selectNodeList.push(list[index].node_id);
-                    }
-                },
                 changeSelection(list) {
                     var that = this;
                     that.selectList = [];
@@ -176,7 +212,8 @@
                 },
                 postAuth() {
                     var that = this;
-                    var that = this;
+                    console.log((that.selectNodeList))
+                    // return;
                     axios.post('/api/group/authorize', Object.assign({}, PostBase, {
                         node_ids: that.selectNodeList.join(','),
                         group_id: that.selectedGroupId
@@ -311,18 +348,12 @@
                 },
                 clickAuth(row) {
                     var that = this;
+                    that.selectNodeList = [];
                     that.selectedGroupId = row.group_id;
-                    axios.post('/api/node/getList', Object.assign({}, PostBase, that.formEdit))
+                    axios.post('/api/node/getList', Object.assign({}, PostBase))
                         .then(function (response) {
                             if (response.data.code == CODE_SUCCESS) {
-                                that.nodeList = [];
-                                for (var i in response.data.data.data) {
-                                    that.nodeList.push(response.data.data.data[i]);
-                                    for (var j in response.data.data.data[i].sub) {
-                                        response.data.data.data[i].sub[j].node_title = '........' + response.data.data.data[i].sub[j].node_title;
-                                        that.nodeList.push(response.data.data.data[i].sub[j]);
-                                    }
-                                }
+                                that.nodeList = response.data.data.data;
                                 that.dialogFormAuth = true;
                                 that.getAuthList(row);
                             } else {
@@ -340,12 +371,19 @@
                     }))
                         .then(function (response) {
                             if (response.data.code == CODE_SUCCESS) {
-                                that.authList = [];
+                                that.selectNodeList = [];
+                                for (var i in response.data.data) {
+                                    that.selectNodeList.push(response.data.data[i].auth_node);
+                                }
                                 for (var i in that.nodeList) {
-                                    for (var j in response.data.data) {
-                                        if (that.nodeList[i].node_id == response.data.data[j].auth_node) {
-                                            that.authList.push(that.nodeList[i].node_id);
-                                            that.$refs.multipleTable.toggleRowSelection(that.nodeList[i]);
+                                    that.nodeList[i].node_status = false;
+                                    if (that.selectNodeList.indexOf(that.nodeList[i].node_id) >= 0) {
+                                        that.nodeList[i].node_status = true;
+                                    }
+                                    for (var j in that.nodeList[i].sub) {
+                                        that.nodeList[i].sub[j].node_status = false;
+                                        if (that.selectNodeList.indexOf(that.nodeList[i].sub[j].node_id) >= 0) {
+                                            that.nodeList[i].sub[j].node_status = true;
                                         }
                                     }
                                 }
@@ -355,7 +393,9 @@
                             }
                         })
                         .catch(function (error) {
-                            that.$message.error('服务器内部错误');
+                            console.log(error);
+
+                            that.$message.error('设置选中状态失败');
                         });
                 },
                 clickEdit(row) {

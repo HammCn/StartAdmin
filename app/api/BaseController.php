@@ -198,7 +198,7 @@ abstract class BaseController
                 }
             }
         }
-    }    
+    }
     /**
      * 添加接口基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
      *
@@ -225,7 +225,7 @@ abstract class BaseController
         $data[$this->table . "_createtime"] = time();
         $this->model->insert($data);
         return jok('添加成功');
-    }    
+    }
     /**
      * 修改接口基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
      *
@@ -416,7 +416,7 @@ abstract class BaseController
             return jerr("没有查询到数据");
         }
         return jok('数据加载成功', $item);
-    }    
+    }
     /**
      * 导出Excel基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
      *
