@@ -97,7 +97,7 @@
 
     {include file="common/footer"/}
     <script>
-        var vues = new Vue({
+        new Vue({
             el: '#app',
             data() {
                 this.getList();
@@ -212,8 +212,6 @@
                 },
                 postAuth() {
                     var that = this;
-                    console.log((that.selectNodeList))
-                    // return;
                     axios.post('/api/group/authorize', Object.assign({}, PostBase, {
                         node_ids: that.selectNodeList.join(','),
                         group_id: that.selectedGroupId
@@ -393,8 +391,6 @@
                             }
                         })
                         .catch(function (error) {
-                            console.log(error);
-
                             that.$message.error('设置选中状态失败');
                         });
                 },
