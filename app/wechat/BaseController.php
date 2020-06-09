@@ -21,6 +21,8 @@ abstract class BaseController
     protected $wechat_appkey;
 
     protected $easyWeChat;
+    //微信用户数据数组
+    protected $wechat;
     /**
      * Request实例
      * @var \think\Request
@@ -66,6 +68,7 @@ abstract class BaseController
             $c[$config['conf_key']] = $config['conf_value'];
         }
         config($c, 'startadmin');
+        $this->initWechatConfig();
     }
     /**
      * 微信服务登录 $this->wechat将为用户数据
@@ -124,7 +127,6 @@ abstract class BaseController
             $this->wechat = $this->wechatModel->where('wechat_id', $wechat_id)->find();
             if ($this->wechat) {
                 $this->wechat = $this->wechat->toArray();
-                return null;
             }
         }
     }
@@ -135,9 +137,8 @@ abstract class BaseController
      */
     protected function authorize()
     {
-        $error = $this->initWechatConfig();
-        if ($error) {
-            return $error;
+        if ($this->wechat) {
+            return null;
         }
         //生成授权所需要的回调地址 并重定向到Authorize控制器进行微信授权
         $callback = '/';
