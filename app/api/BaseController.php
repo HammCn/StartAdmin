@@ -148,12 +148,12 @@ abstract class BaseController
         if ($this->node['node_login']) {
             //节点是否需要登录
             if (!input("?access_token")) {
-                return jerr("AccessToken为必要参数", 400);
+                return jerr("AccessToken为必要参数", 401);
             }
             $access_token = input("access_token");
             $this->user = $this->userModel->getUserByAccessToken($access_token);
             if (!$this->user) {
-                return jerr("登录过期，请重新登录", 400);
+                return jerr("登录过期，请重新登录", 401);
             }
             if ($this->user['user_status'] == 1) {
                 return jerr("你的账户被禁用，登录失败", 401);
