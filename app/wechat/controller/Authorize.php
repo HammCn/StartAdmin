@@ -25,7 +25,7 @@ class Authorize extends BaseController
             return redirect($callback);
         }
         $code = input('code');
-        $retStr = httpGetFull("https://api.weixin.qq.com/sns/oauth2/access_token?appid=" .  $this->wechat_appid . "&secret=" . $this->wechat_appkey . "&code={$code}&grant_type=authorization_code");
+        $retStr = curlHelper("https://api.weixin.qq.com/sns/oauth2/access_token?appid=" .  $this->wechat_appid . "&secret=" . $this->wechat_appkey . "&code={$code}&grant_type=authorization_code")['body'];
         $retObj = json_decode($retStr);
         if (isset($retObj->errcode)) {
             return redirect($callback);

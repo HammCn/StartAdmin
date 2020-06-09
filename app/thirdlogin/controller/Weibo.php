@@ -40,7 +40,7 @@ class Weibo extends BaseController
 			$url = "https://api.weibo.com/2/statuses/share.json";
 			$data = "access_token=" . $access_token . "&status=" . urlencode($keyword);
 			//echo $url;die;
-			$retObj = json_decode(httpPostFull($url, $data));
+			$retObj = json_decode(curlHelper($url, 'POST', $data));
 			print_r($retObj);
 			echo "<br>";
 			echo "<a href='/thirdlogin/weibo/publish/?text=Hello World!'>publish weibo</a> <a href='/thirdlogin/weibo/login/'>relogin</a>";
@@ -71,7 +71,7 @@ class Weibo extends BaseController
 				$uid = $retObj->uid;
 				$url = "https://api.weibo.com/2/users/show.json?access_token=" . $access_token . "&uid=" . $uid;
 				//echo $url;die;
-				$retObj = json_decode(httpGetFull($url));
+				$retObj = json_decode(curlHelper($url)['body']);
 				// print_r($retObj);
 				if (!property_exists($retObj, "id")) {
 					$this->login();

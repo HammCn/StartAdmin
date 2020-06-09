@@ -47,7 +47,7 @@ function encodePassword($password, $salt)
  * @param string 明文密码
  * @return boolean 是否校验通过
  */
-function isPassword($password)
+function isValidPassword($password)
 {
     return preg_match('/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?!.*\s).{6,}/', $password);
 }
@@ -113,7 +113,7 @@ function getFullDomain()
  *
  * @return string
  */
-function get_client_ip()
+function getClientIp()
 {
     foreach (array(
         'HTTP_CLIENT_IP',
@@ -130,7 +130,7 @@ function get_client_ip()
                 if ((bool) filter_var(
                     $ip,
                     FILTER_VALIDATE_IP,
-                    FILTER_FLAG_IPV4
+                    FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6
                     // FILTER_FLAG_NO_PRIV_RANGE |
                     // FILTER_FLAG_NO_RES_RANGE
                 )) {
@@ -220,7 +220,7 @@ function  getBrowser()
  *
  * @return boolean
  */
-function is_mobile_request()
+function isMobileRequest()
 {
     $_SERVER['ALL_HTTP'] = isset($_SERVER['ALL_HTTP']) ? $_SERVER['ALL_HTTP'] : '';
     $mobile_browser = '0';
@@ -260,6 +260,58 @@ function is_mobile_request()
         return false;
 }
 /**
+ * 身份证号验证
+ * @param $id
+ * @return bool
+ */
+function isIDCard($id)
+{
+    $id = strtoupper($id);
+    $regx = "/(^\d{15}$)|(^\d{17}([0-9]|X)$)/";
+    $arr_split = array();
+    if (!preg_match($regx, $id)) {
+        return FALSE;
+    }
+    if (15 == strlen($id)) //检查15位
+    {
+        $regx = "/^(\d{6})+(\d{2})+(\d{2})+(\d{2})+(\d{3})$/";
+        @preg_match($regx, $id, $arr_split);
+        //检查生日日期是否正确
+        $dtm_birth = "19" . $arr_split[2] . '/' . $arr_split[3] . '/' . $arr_split[4];
+        if (!strtotime($dtm_birth)) {
+            return FALSE;
+        } else {
+            return TRUE;
+        }
+    } else { //检查18位
+        $regx = "/^(\d{6})+(\d{4})+(\d{2})+(\d{2})+(\d{3})([0-9]|X)$/";
+        @preg_match($regx, $id, $arr_split);
+        $dtm_birth = $arr_split[2] . '/' . $arr_split[3] . '/' . $arr_split[4];
+        if (!strtotime($dtm_birth)) //检查生日日期是否正确
+        {
+            return FALSE;
+        } else {
+            //检验18位身份证的校验码是否正确。
+            //校验位按照ISO 7064:1983.MOD 11-2的规定生成，X可以认为是数字10。
+            $arr_int = array(7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2);
+            $arr_ch = array('1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2');
+            $sign = 0;
+            for ($i = 0; $i < 17; $i++) {
+                $b = (int) $id[$i];
+                $w = $arr_int[$i];
+                $sign += $b * $w;
+            }
+            $n = $sign % 11;
+            $val_num = $arr_ch[$n];
+            if ($val_num != substr($id, 17, 1)) {
+                return FALSE;
+            } else {
+                return TRUE;
+            }
+        }
+    }
+}
+/**
  * 是否是整数
  *
  * @param string 输入内容
@@ -280,137 +332,167 @@ function getTicket($key)
     return sha1($key . (env('SYSTEM_SALT') ?? 'StartAdmin') . $key);
 }
 /**
- * CURL POST
+ * CURL请求
  *
- * @param string 请求地址
- * @param array POST数据
- * @param array 请求头
- * @param string COOKIES
- * @param boolean 是否返回header
- * @param boolean 是否后台请求
- * @param integer 超时时间
- * @param array 使用代理
- * @return mixed 
+ * @param  string URL地址
+ * @param  mixed 请求方法,支持GET/POST/PUT/DELETE/PATCH/TRACE/OPTION/HEAD 默认GET
+ * @param  mixed 请求数据包体
+ * @param  mixed 请求头 数组
+ * @param  mixed 请求COOKIES字符串
+ * @return void
  */
-function httpPostFull($url, $data = null, $header = [], $cookies = "", $returnHeader = false, $isBackGround = false, $timeout = 0, $proxy = null)
+function  curlHelper($url, $method = 'GET', $data = null, $header = [], $cookies = "")
 {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_REFERER, $url);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
     curl_setopt($ch, CURLOPT_COOKIE, $cookies);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    if ($timeout) {
-        //curl_setopt($ch, CURLOPT_CONNECTTIMEOUT,$timeout);
-        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+    switch ($method) {
+        case  "GET":
+            curl_setopt($ch, CURLOPT_HTTPGET, true);
+            break;
+        case  "POST":
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            break;
+        case  "PUT":
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            break;
+        case  "DELETE":
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            break;
+        case  "PATCH":
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PATCH");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            break;
+        case  "TRACE":
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "TRACE");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            break;
+        case  "OPTIONS":
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "OPTIONS");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            break;
+        case  "HEAD":
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "HEAD");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            break;
+        default:
     }
-    if (!empty($proxy)) {
-        curl_setopt($ch, CURLOPT_PROXY, $proxy['ip']);
-        curl_setopt($ch, CURLOPT_PROXYPORT, $proxy['port']);
-        curl_setopt($ch, CURLOPT_PROXYUSERPWD, "taras:taras-ss5");
-    }
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, $isBackGround ? 0 : 1);
-    curl_setopt($ch, CURLOPT_HEADER, $returnHeader ? 1 : 0);
-    $output = curl_exec($ch);
-    if ($timeout) {
-        if ($output === FALSE) {
-            if (curl_errno($ch) == CURLE_OPERATION_TIMEOUTED) {
-                $output = 'TIMEOUT';
-            } else {
-                $output = 'ERROR';
-            }
-        }
-    }
-    curl_close($ch);
-    return $output;
-}
-
-/**
- * CURL GET
- *
- * @param string 请求地址
- * @param array 请求头
- * @param string COOKIES
- * @param boolean 是否返回header
- * @param boolean 是否后台请求
- * @param integer 超时时间
- * @param array 使用代理
- * @return mixed 
- */
-function httpGetFull($url, $header = [], $cookies = "", $returnHeader = false, $isBackGround = false, $timeout = 0, $proxy = null)
-{
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_REFERER, $url);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-    curl_setopt($ch, CURLOPT_COOKIE, $cookies);
-    if ($timeout) {
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
-    }
-    if (!empty($proxy)) {
-        curl_setopt($ch, CURLOPT_PROXY, $proxy['ip']);
-        curl_setopt($ch, CURLOPT_PROXYPORT, $proxy['port']);
-        curl_setopt($ch, CURLOPT_PROXYUSERPWD, "taras:taras-ss5");
-    }
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, $isBackGround ? 0 : 1);
-    curl_setopt($ch, CURLOPT_HEADER, $returnHeader ? 1 : 0);
-    $output = curl_exec($ch);
-    if ($timeout) {
-        if ($output === FALSE) {
-            if (in_array(curl_errno($ch), [28])) {
-                $output = 'TIMEOUT';
-            } else {
-                $output = 'ERROR';
-            }
-        }
-    }
-    curl_close($ch);
-    return $output;
-}
-/**
- * 请求并返回HEADER
- *
- * @param string 请求地址
- * @return mixed
- */
-function httpGetWithHeader($url)
-{
-    $ch = curl_init();
-    //设置选项，包括URL
-    curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HEADER, 1);
-    //执行并获取HTML文档内容
-    $output = curl_exec($ch);
-    //释放curl句柄
+    $response = curl_exec($ch);
+    $output = [];
+    $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+    // 根据头大小去获取头信息内容
+    $output['header'] = substr($response, 0, $headerSize);
+    $output['body'] = substr($response, $headerSize, strlen($response) - $headerSize);
+    $output['detail'] = curl_getinfo($ch);
     curl_close($ch);
-    //打印获得的数据
     return $output;
+}
+/**
+ * 模拟表单上传文件请求
+ * @param $$url 提交地址
+ * @param $data 提交数据
+ * @param $cookies 如设置了Content-Type将被自动覆写为formdata
+ * ex.
+ * $data = ['file'=>new \CURLFile(realpath($file_dir)),appid"=>"1234"];
+ * $result = curl_form($url,$data);
+ * @return mixed
+ */
+function curlForm($url, $data = null, $header = [], $cookies = "")
+{
+    $header[] = 'Content-Type: multipart/form-data';
+    return curlHelper($url, "POST", $data, $header, $cookies);
+}
+/**
+ * 多维数组合并（支持多数组）
+ * @param arraylist arrayMergeMulti(['1'=>'1','2'=>'2','3'=>'3'],['4'=>'4','5'=>'5','6'=>'6'])
+ * @return array
+ */
+function arrayMergeMulti()
+{
+    //获取当前方法捕获到的所有参数数组
+    $args = func_get_args();
+    $array = [];
+    foreach ($args as $arg) {
+        if (is_array($arg)) {
+            foreach ($arg as $k => $v) {
+                if (is_array($v)) {
+                    $array[$k] = isset($array[$k]) ? $array[$k] : [];
+                    $array[$k] = arrayMergeMulti($array[$k], $v);
+                } else {
+                    $array[$k] = $v;
+                }
+            }
+        }
+    }
+
+    return $array;
+}
+/**
+ * 对查询结果集进行排序
+ * @access public
+ * @param array $list   查询结果
+ * @param string $field 排序的字段名
+ * @param array $sortBy 排序类型
+ *                      asc正向排序 desc逆向排序 nat自然排序
+ * @return array|bool
+ */
+function listSortBy($list, $field, $sortBy = 'asc')
+{
+    if (is_array($list)) {
+        $refer = $resultSet = [];
+        foreach ($list as $i => $data) {
+            $refer[$i] = &$data[$field];
+        }
+        switch ($sortBy) {
+            case 'asc': // 正向排序
+                asort($refer);
+                break;
+            case 'desc': // 逆向排序
+                arsort($refer);
+                break;
+            case 'nat': // 自然排序
+                natcasesort($refer);
+                break;
+        }
+        foreach ($refer as $key => $val) {
+            $resultSet[] = &$list[$key];
+        }
+        return $resultSet;
+    }
+
+    return false;
 }
 
 /**
- * 后台请求URL
- *
- * @param string 请求地址
- * @return mixed
+ * 格式化字节大小
+ * @param  number   $size       字节数
+ * @param  int      $float      小数保留位数
+ * @param  string   $delimiter  数字和单位分隔符
+ * @return string   格式化后的带单位的大小
  */
-function httpBackground($url)
+function formatBytes($size, $float = 2, $delimiter = '')
 {
-    $ch = curl_init();
-    //设置选项，包括URL
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 0);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 1);   //只需要设置一个秒的数量就可以  
-    //执行并获取HTML文档内容
-    curl_exec($ch);
-    //释放curl句柄
-    curl_close($ch);
+    $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+    for ($i = 0; $size >= 1024 && $i < 5; $i++) $size /= 1024;
+
+    return round($size, $float) . $delimiter . $units[$i];
+}
+/**
+ * 生成标准UUID
+ *
+ * @return string
+ */
+function getUuid()
+{
+    mt_srand((float) microtime() * 10000);
+    $uuid = sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
+    return $uuid;
 }

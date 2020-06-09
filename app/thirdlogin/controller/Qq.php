@@ -30,7 +30,8 @@ class Qq extends BaseController
 		} else {
 			$code = input("code");
 			$url = $this->accesstokenUrl . "?grant_type=authorization_code&client_id=" . $this->appid . "&client_secret=" . $this->appkey . "&code=" . $code . "&redirect_uri=" . urlencode(getFullDomain() . "/thirdlogin/qq/callback");
-			$ret = (httpGetFull($url));
+			$ret = curlHelper($url);
+			$ret = $ret['body'];
 			if (strpos($ret, "callback") !== false) {
 				return $this->login();
 				die;
@@ -41,7 +42,8 @@ class Qq extends BaseController
 				//$refresh_token = $retArr ['refresh_token'];
 				//$expires_in = $retArr ['expires_in'];
 				$url = $this->openidUrl . "?access_token=" . $access_token;
-				$ret = httpGetFull($url);
+				$ret = curlHelper($url);
+				$ret = $ret['body'];
 				if (strpos($ret, "callback") === false) {
 					return $this->login();
 					die;
@@ -52,7 +54,7 @@ class Qq extends BaseController
 
 					$openid = $retObj->openid;
 					$url = $this->userinfoUrl . "?access_token=" . $access_token . "&oauth_consumer_key=" . $this->appid . "&openid=" . $openid;
-					$retObj = json_decode(httpGetFull($url));
+					$retObj = json_decode(curlHelper($url)['body']);
 					//print_r($retObj);die;
 					if ($retObj->ret !== 0) {
 						return $this->login();

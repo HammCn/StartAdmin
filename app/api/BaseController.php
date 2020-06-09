@@ -43,7 +43,7 @@ abstract class BaseController
     //excel 表头
     protected $excelTitle = "数据导出表";
     //EXCEL 单元格字母
-    private $excelCells = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD'];
+    protected $excelCells = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD'];
 
     //主键key
     protected $pk = '';
@@ -177,7 +177,7 @@ abstract class BaseController
                     "log_user" => $this->user['user_id'],
                     "log_node" => $this->node['node_id'],
                     "log_createtime" => time(),
-                    "log_ip" => get_client_ip(),
+                    "log_ip" => getClientIp(),
                     "log_browser" => getBrowser(),
                     "log_os" => getOs(),
                     "log_updatetime" => time(),
@@ -198,7 +198,7 @@ abstract class BaseController
                 }
             }
         }
-    }    
+    }
     /**
      * 添加接口基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
      *
@@ -225,7 +225,7 @@ abstract class BaseController
         $data[$this->table . "_createtime"] = time();
         $this->model->insert($data);
         return jok('添加成功');
-    }    
+    }
     /**
      * 修改接口基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
      *
@@ -416,7 +416,7 @@ abstract class BaseController
             return jerr("没有查询到数据");
         }
         return jok('数据加载成功', $item);
-    }    
+    }
     /**
      * 导出Excel基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
      *
