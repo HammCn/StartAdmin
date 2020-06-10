@@ -15,10 +15,12 @@ class Access extends BaseModel
      */
     public function createAccess($access_user, $access_plat)
     {
+        //将该平台下所有授权记录标记为失效
         $this->where([
             "access_user" => $access_user,
             "access_plat" => $access_plat
-        ])->delete();
+        ])->update(['access_status' => 1]);
+        //生成一个新的Access_token
         $access_token = sha1(time()) . rand(100000, 99999) . sha1(time());
         $access_id = $this->insertGetId([
             "access_user" => $access_user,

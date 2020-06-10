@@ -10,6 +10,7 @@ class Log extends BaseModel
 {
     public function getListByPage($maps, $order, $field = "*")
     {
+        //联查user/node表的相关字段
         $resource = $this->view('log', $field)->view('user', 'user_id,user_name', 'user.user_id = log.log_user', 'left')->view('node', '*', 'node.node_id=log.log_node', 'left');
         foreach ($maps as $map) {
             switch (count($map)) {
@@ -30,6 +31,8 @@ class Log extends BaseModel
     }
     public function getLogStatus()
     {
+        //MySQL在5.7及以上版本中的ONLY_FULL_GROUP_BY问题处理方案
+        //https://blog.hamm.cn/2018747.html
         $datalist = $this->field('count(log_id) as visitcount,log_node')->view('log', '*')->view('user', '*', 'user.user_id = log.log_user', 'left')->view('node', '*', 'node.node_id=log.log_node', 'left')->group("log_node")->order("visitcount desc")->select();
         return $datalist;
     }
@@ -40,6 +43,7 @@ class Log extends BaseModel
      */
     public function cleanLog()
     {
+        //清空log表
         Db::execute("truncate table " . config('database.connections.mysql.prefix') . "log");
         return true;
     }

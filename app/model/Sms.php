@@ -17,6 +17,7 @@ class Sms
      */
     public static function sendSms($phone, $code)
     {
+        //初始化阿里云短信相关配置
         $alisms_appid = config('startadmin.alisms_appid');
         $alisms_appkey = config('startadmin.alisms_appkey');
         $alisms_sign = config('startadmin.alisms_sign');
@@ -25,6 +26,7 @@ class Sms
         if (!($alisms_appid && $alisms_appkey && $alisms_sign && $alisms_template)) {
             $error =  jerr('请先在后台配置阿里云短信相关参数！');
         }
+        //创建一个阿里云授权客户端
         AlibabaCloud::accessKeyClient($alisms_appid, $alisms_appkey)->regionId('cn-hangzhou')->asDefaultClient();
         try {
             $result = AlibabaCloud::rpc()

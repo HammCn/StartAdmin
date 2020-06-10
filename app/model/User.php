@@ -84,7 +84,8 @@ class User extends BaseModel
     public function motifyPassword($user_id, $password)
     {
         $access = new Access();
-        $access->where('access_user', $user_id)->delete();
+        //将所有授权记录标记为失效
+        $access->where('access_user', $user_id)->update(['access_status' => 1]);
         $salt = getRandString(4);
         $password = encodePassword($password, $salt);
         return $this->where([
@@ -96,12 +97,12 @@ class User extends BaseModel
     }
 
     /**
-     * 通过帐号获取access_token 慎用 仅在确保手机号有效的前提下使用
+     * 通过帐号获取用户信息
      *
-     * @param  string 帐号
+     * @param  string 帐号/手机号
      * @return void
      */
-    public function loginByAccount($user_account)
+    public function getUserByAccount($user_account)
     {
         $user = $this->where([
             "user_account" => $user_account
@@ -122,7 +123,8 @@ class User extends BaseModel
     {
         $Access = new Access();
         $access = $Access->where([
-            "access_token" => $access_token
+            "access_token" => $access_token,
+            "access_status" => 0,
         ])->find();
         if ($access) {
             if (time() > $access['access_updatetime'] + 7200) {
@@ -138,23 +140,6 @@ class User extends BaseModel
             ]);
             $user = $this->where("user_id", $access['access_user'])->find();
             return $user->toArray() ?? false;
-        } else {
-            return false;
-        }
-    }
-    /**
-     * 帐号获取用户信息
-     *
-     * @param string 帐号
-     * @return void
-     */
-    public function getUserByAccount($user_account)
-    {
-        $user = $this->where([
-            "user_account" => $user_account
-        ])->find();
-        if ($user) {
-            return $user;
         } else {
             return false;
         }

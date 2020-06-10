@@ -22,11 +22,7 @@ class Auth extends BaseModel
             "auth_group" => $auth_group,
             "auth_node" => $auth_node
         ])->find();
-        if ($auth) {
-            return true;
-        } else {
-            return false;
-        }
+        return $auth ? true : false;
     }
 
     /**
@@ -39,6 +35,7 @@ class Auth extends BaseModel
     {
         $NodeModel = new NodeModel();
         if ($group_id == 1) {
+            //超级管理员组
             $list =  $NodeModel
                 ->view('node', '*')
                 ->view('auth', '*', 'node.node_id=auth.auth_node', 'left')
@@ -53,6 +50,7 @@ class Auth extends BaseModel
             }
             return $list;
         } else {
+            //其他组
             $list = $NodeModel
                 ->alias("node")
                 ->view('node', '*')
@@ -82,6 +80,7 @@ class Auth extends BaseModel
     {
         $NodeModel = new NodeModel();
         if ($group_id == 1) {
+            //超级管理员组
             return $NodeModel
                 ->where([
                     "node_pid"   =>  $node_id,
@@ -90,6 +89,7 @@ class Auth extends BaseModel
                 ->order("node_order desc,node_id asc")
                 ->select();
         } else {
+            //其他组
             return $NodeModel
                 ->alias("node")
                 ->view('node', '*')
@@ -110,6 +110,7 @@ class Auth extends BaseModel
      */
     public function cleanAuth()
     {
+        //清空auth表
         Db::execute("truncate table " . config('database.connections.mysql.prefix') . "auth");
         return true;
     }
