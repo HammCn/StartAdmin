@@ -14,7 +14,8 @@
             {/volist}
         </el-submenu>
         {else}
-        <el-menu-item index="{$item.node_id}" onclick="location.href='/{$item.node_module}/{$item.node_controller}/{$item.node_action}';" {if
+        <el-menu-item index="{$item.node_id}"
+            onclick="location.href='/{$item.node_module}/{$item.node_controller}/{$item.node_action}';" {if
             condition="$item.node_controller==strtolower($controller) && $item.node_action==strtolower($action)"
             }class="is-active" {/if}>
             <i class="iconfont icon-{$item.node_icon}"></i> {$item.node_title}

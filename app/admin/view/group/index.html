@@ -199,6 +199,7 @@
                             })
                             .catch(function (error) {
                                 that.$message.error('服务器内部错误');
+                                console.log(error);
                             });
                     }).catch(() => {
                     });
@@ -229,6 +230,7 @@
                         })
                         .catch(function (error) {
                             that.$message.error('服务器内部错误');
+                            console.log(error);
                         });
                 },
                 postEdit() {
@@ -253,6 +255,7 @@
                             })
                             .catch(function (error) {
                                 that.$message.error('服务器内部错误');
+                                console.log(error);
                             });
                     });
                 },
@@ -278,6 +281,7 @@
                             })
                             .catch(function (error) {
                                 that.$message.error('服务器内部错误');
+                                console.log(error);
                             });
                     });
                 },
@@ -295,6 +299,7 @@
                         })
                         .catch(function (error) {
                             that.$message.error('服务器内部错误');
+                            console.log(error);
                         });
                 },
                 clickDelete(row) {
@@ -320,6 +325,7 @@
                             })
                             .catch(function (error) {
                                 that.$message.error('服务器内部错误');
+                                console.log(error);
                             });
                     }).catch(() => {
                     });
@@ -342,6 +348,7 @@
                         })
                         .catch(function (error) {
                             that.$message.error('服务器内部错误');
+                            console.log(error);
                         });
                 },
                 clickAuth(row) {
@@ -360,6 +367,7 @@
                         })
                         .catch(function (error) {
                             that.$message.error('服务器内部错误');
+                            console.log(error);
                         });
                 },
                 getAuthList(row) {
@@ -414,6 +422,7 @@
                                     })
                                     .catch(function (error) {
                                         that.$message.error('服务器内部错误');
+                                        console.log(error);
                                     });
                             } else {
                                 that.$message.error(response.data.msg);
@@ -421,6 +430,7 @@
                         })
                         .catch(function (error) {
                             that.$message.error('服务器内部错误');
+                            console.log(error);
                         });
 
                 },
@@ -443,6 +453,7 @@
                         .catch(function (error) {
                             that.loading = false;
                             that.$message.error('服务器内部错误');
+                            console.log(error);
                         });
                 }
             }

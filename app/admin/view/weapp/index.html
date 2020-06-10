@@ -59,8 +59,7 @@
 
     <el-pagination @size-change="handleSizeChange" :page-sizes="[10, 20, 50, 100,200,500]" :page-size="10"
         layout="total, sizes, prev, pager, next, jumper" background @current-change="changeCurrentPage"
-        layout="prev, pager, next" :current-page="dataList.current_page" :page-count="dataList.last_page"
-        :total="dataList.total" :hide-on-single-page="true" style="margin-top: 10px;text-align: right;">
+        :current-page="dataList.current_page" :page-count="dataList.last_page" :total="dataList.total">
     </el-pagination>
 
 
@@ -152,6 +151,7 @@
                             })
                             .catch(function (error) {
                                 that.$message.error('服务器内部错误');
+                                console.log(error);
                             });
                     }).catch(() => {
                     });
@@ -182,6 +182,7 @@
                                 })
                                 .catch(function (error) {
                                     that.$message.error('服务器内部错误');
+                                    console.log(error);
                                 });
                         }
                     });
@@ -205,6 +206,7 @@
                                 })
                                 .catch(function (error) {
                                     that.$message.error('服务器内部错误');
+                                    console.log(error);
                                 });
                         }
                     });
@@ -237,6 +239,7 @@
                             })
                             .catch(function (error) {
                                 that.$message.error('服务器内部错误');
+                                console.log(error);
                             });
                     }).catch(() => {
                     });
@@ -259,6 +262,7 @@
                         })
                         .catch(function (error) {
                             that.$message.error('服务器内部错误');
+                            console.log(error);
                         });
                 },
                 clickEdit(row) {
@@ -277,6 +281,7 @@
                         })
                         .catch(function (error) {
                             that.$message.error('服务器内部错误');
+                            console.log(error);
                         });
 
                 },
@@ -299,6 +304,7 @@
                         .catch(function (error) {
                             that.loading = false;
                             that.$message.error('服务器内部错误');
+                            console.log(error);
                         });
                 }
             }

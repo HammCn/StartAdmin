@@ -86,6 +86,11 @@
         bottom: 0;
         right: 0;
     }
+
+    .el-pagination {
+        margin-top: 10px;
+        text-align: right;
+    }
 </style>
 </head>
 
@@ -93,7 +98,9 @@
     <div id="app" v-cloak>
         <el-container>
             <el-header>
-                <el-link class="title" href="/admin" underline="false"><img src="/static/StartAdmin/StartAdmin_White.png" height="65px" style="margin-left:-40px"/></el-link>
+                <el-link class="title" href="/admin" underline="false"><img
+                        src="/static/StartAdmin/StartAdmin_White.png" height="65px" style="margin-left:-40px" />
+                </el-link>
                 <span class="topArea">
                     <!-- <el-link :underline="false">消息管理</el-link> -->
                     <el-dropdown>

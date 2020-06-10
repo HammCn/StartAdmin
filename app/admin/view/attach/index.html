@@ -6,7 +6,9 @@
     {include file="common/header"/}
     <el-form :inline="true">
         <el-form-item>
-            <el-upload class="upload-demo" action="/api/attach/uploadImage" :on-success="handleUploadSuccess" :file-list="fileList" :show-file-list="false" :before-upload="beforeUpload" :data="postData" v-loading.fullscreen.lock="fullscreenLoading">
+            <el-upload class="upload-demo" action="/api/attach/uploadImage" :on-success="handleUploadSuccess"
+                :file-list="fileList" :show-file-list="false" :before-upload="beforeUpload" :data="postData"
+                v-loading.fullscreen.lock="fullscreenLoading">
                 <el-button size="small" type="primary">上传图片</el-button>
             </el-upload>
         </el-form-item>
@@ -41,8 +43,9 @@
     </el-table>
 
 
-    <el-pagination @size-change="handleSizeChange" :page-sizes="[10, 20, 50, 100,200,500]" :page-size="10" layout="total, sizes, prev, pager, next, jumper" background @current-change="changeCurrentPage" layout="prev, pager, next" :current-page="dataList.current_page"
-        :page-count="dataList.last_page" :total="dataList.total" :hide-on-single-page="true" style="margin-top: 10px;text-align: right;">
+    <el-pagination @size-change="handleSizeChange" :page-sizes="[10, 20, 50, 100,200,500]" :page-size="10"
+        layout="total, sizes, prev, pager, next, jumper" background @current-change="changeCurrentPage"
+        :current-page="dataList.current_page" :page-count="dataList.last_page" :total="dataList.total">
     </el-pagination>
 
 
@@ -117,9 +120,9 @@
                         type: 'warning'
                     }).then(() => {
                         axios.post('/api/attach/delete', Object.assign({}, PostBase, {
-                                attach_id: that.selectList.join(",")
-                            }))
-                            .then(function(response) {
+                            attach_id: that.selectList.join(",")
+                        }))
+                            .then(function (response) {
                                 that.getList();
                                 if (response.data.code == CODE_SUCCESS) {
                                     that.$message({
@@ -130,10 +133,11 @@
                                     that.$message.error(response.data.msg);
                                 }
                             })
-                            .catch(function(error) {
+                            .catch(function (error) {
                                 that.$message.error('服务器内部错误');
+                                console.log(error);
                             });
-                    }).catch(() => {});
+                    }).catch(() => { });
                 },
                 changeSelection(list) {
                     var that = this;
@@ -155,9 +159,9 @@
                         type: 'warning'
                     }).then(() => {
                         axios.post('/api/attach/delete', Object.assign({}, PostBase, {
-                                attach_id: row.attach_id
-                            }))
-                            .then(function(response) {
+                            attach_id: row.attach_id
+                        }))
+                            .then(function (response) {
                                 that.getList();
                                 if (response.data.code == CODE_SUCCESS) {
                                     that.$message({
@@ -168,10 +172,11 @@
                                     that.$message.error(response.data.msg);
                                 }
                             })
-                            .catch(function(error) {
+                            .catch(function (error) {
                                 that.$message.error('服务器内部错误');
+                                console.log(error);
                             });
-                    }).catch(() => {});
+                    }).catch(() => { });
                 },
                 changeCurrentPage(page) {
                     this.form.page = page;
@@ -181,7 +186,7 @@
                     var that = this;
                     that.loading = true;
                     axios.post('/api/attach/getList', Object.assign({}, PostBase, that.form, that.search))
-                        .then(function(response) {
+                        .then(function (response) {
                             that.loading = false;
                             if (response.data.code == CODE_SUCCESS) {
                                 that.dataList = response.data.data;
@@ -189,9 +194,10 @@
                                 that.$message.error(response.data.msg);
                             }
                         })
-                        .catch(function(error) {
+                        .catch(function (error) {
                             that.loading = false;
                             that.$message.error('服务器内部错误');
+                            console.log(error);
                         });
                 }
             }

@@ -222,6 +222,7 @@
                             })
                             .catch(function (error) {
                                 that.$message.error('服务器内部错误');
+                                console.log(error);
                             });
                     }).catch(() => {
                     });
@@ -285,6 +286,7 @@
                                 })
                                 .catch(function (error) {
                                     that.$message.error('服务器内部错误');
+                                    console.log(error);
                                 });
                         }
                     });
@@ -341,6 +343,7 @@
                                 })
                                 .catch(function (error) {
                                     that.$message.error('服务器内部错误');
+                                    console.log(error);
                                 });
                         }
                     });
@@ -366,6 +369,7 @@
                         })
                         .catch(function (error) {
                             that.$message.error('服务器内部错误');
+                            console.log(error);
                         });
                 },
                 publish() {
@@ -388,6 +392,7 @@
                             })
                             .catch(function (error) {
                                 that.$message.error('服务器内部错误');
+                                console.log(error);
                             });
                     }).catch(() => {
                     });
@@ -419,6 +424,7 @@
                             })
                             .catch(function (error) {
                                 that.$message.error('服务器内部错误');
+                                console.log(error);
                             });
                     }).catch(() => {
                     });
@@ -441,6 +447,7 @@
                         })
                         .catch(function (error) {
                             that.$message.error('服务器内部错误');
+                            console.log(error);
                         });
                 },
                 clickEdit(row) {
@@ -468,6 +475,7 @@
                                     })
                                     .catch(function (error) {
                                         that.$message.error('服务器内部错误');
+                                        console.log(error);
                                     });
 
                             } else {
@@ -476,6 +484,7 @@
                         })
                         .catch(function (error) {
                             that.$message.error('服务器内部错误');
+                            console.log(error);
                         });
 
 
@@ -492,10 +501,10 @@
                             that.loading = false;
                             if (response.data.code == CODE_SUCCESS) {
                                 that.dataList = [];
-                                for (parentMenu in response.data.data) {
+                                for (var parentMenu in response.data.data) {
                                     parentMenu = response.data.data[parentMenu];
                                     that.dataList.push(parentMenu);
-                                    for (subMenu in parentMenu.sub) {
+                                    for (var subMenu in parentMenu.sub) {
                                         subMenu = parentMenu.sub[subMenu];
                                         subMenu.wemenu_name = '　　　　' + subMenu.wemenu_name;
                                         that.dataList.push(subMenu);
@@ -508,6 +517,7 @@
                         .catch(function (error) {
                             that.loading = false;
                             that.$message.error('服务器内部错误');
+                            console.log(error);
                         });
                 }
             }
