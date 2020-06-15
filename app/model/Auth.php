@@ -37,8 +37,6 @@ class Auth extends BaseModel
         if ($group_id == 1) {
             //超级管理员组
             $list =  $NodeModel
-                ->view('node', '*')
-                ->view('auth', '*', 'node.node_id=auth.auth_node', 'left')
                 ->where([
                     "node_pid"   =>  0,
                     "node_show"   =>  1,
