@@ -138,6 +138,9 @@ class User extends BaseModel
             ])->update([
                 'access_updatetime' => time()
             ]);
+            $this->where("user_id", $access['access_user'])->update([
+                'user_updatetime' => time()
+            ]);
             $user = $this->where("user_id", $access['access_user'])->find();
             return $user->toArray() ?? false;
         } else {

@@ -57,6 +57,18 @@
         </el-table-column>
         <el-table-column prop="user_money" label="余额">
         </el-table-column>
+        <el-table-column prop="user_ipreg" label="注册IP" width="150">
+        </el-table-column>
+        <el-table-column label="最后活跃" width="100">
+            <template slot-scope="scope">
+                {{time2string(scope.row.user_updatetime)}}
+            </template>
+        </el-table-column>
+        <el-table-column label="注册时间" width="100">
+            <template slot-scope="scope">
+                {{time2string(scope.row.user_createtime)}}
+            </template>
+        </el-table-column>
         <el-table-column label="禁用" width="80">
             <template slot-scope="scope">
                 <el-switch v-model="scope.row.user_status==1?true:false" active-color="#ff4949"
@@ -203,6 +215,14 @@
                 }
             },
             methods: {
+                time2string(timestamps) {
+                    var now = new Date(timestamps * 1000),
+                        y = now.getFullYear(),
+                        m = now.getMonth() + 1,
+                        d = now.getDate();
+                    // return y + "-" + (m < 10 ? "0" + m : m) + "-" + (d < 10 ? "0" + d : d) + " " + now.toTimeString().substr(0, 8);
+                    return (m < 10 ? "0" + m : m) + "-" + (d < 10 ? "0" + d : d) + " " + now.toTimeString().substr(0, 5);
+                },
                 handleSizeChange(per_page) {
                     this.form.per_page = per_page;
                     this.getList();
