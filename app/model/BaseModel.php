@@ -22,7 +22,7 @@ class BaseModel extends Model
      * @param  string 排序方式
      * @return void
      */
-    public function getListByPage($maps, $order, $field = "*")
+    public function getListByPage($maps, $order = null, $field = "*")
     {
         $resource = $this->field($field);
         foreach ($maps as $map) {
@@ -39,7 +39,10 @@ class BaseModel extends Model
                 default:
             }
         }
-        return $resource->order($order)->paginate($this->per_page);
+        if ($order) {
+            $resource = $resource->order($order);
+        }
+        return $resource->paginate($this->per_page);
     }
     /**
      * 获取数据
@@ -48,7 +51,7 @@ class BaseModel extends Model
      * @param  string 排序方式
      * @return void
      */
-    public function getList($maps, $order, $field = "*")
+    public function getList($maps, $order = null, $field = "*")
     {
         $resource = $this->field($field);
         foreach ($maps as $map) {
@@ -65,6 +68,9 @@ class BaseModel extends Model
                 default:
             }
         }
-        return $resource->order($order)->select();
+        if ($order) {
+            $resource = $resource->order($order);
+        }
+        return $resource->select();
     }
 }
