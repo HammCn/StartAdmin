@@ -37,7 +37,7 @@ class Node extends BaseController
         ];
         $this->model = new NodeModel();
     }
-    
+
     /**
      * 添加节点
      *
@@ -67,7 +67,7 @@ class Node extends BaseController
         $data[$this->table . "_createtime"] = time();
         $this->model->insert($data);
         return jok('用户添加成功');
-    }    
+    }
     /**
      * 更新节点
      *
@@ -140,7 +140,7 @@ class Node extends BaseController
         }
         return jok('删除节点成功');
     }
-    
+
     /**
      * 获取所有节点
      *
@@ -157,28 +157,7 @@ class Node extends BaseController
             "node_pid" => 0
         ];
         $datalist = $this->model->where($map)->order($order)->select();
-        $subMap = [];
-        $filter = input('post.');
-        foreach ($filter as $k => $v) {
-            if ($k == 'filter') {
-                $k = input('filter');
-                $v = input('keyword');
-            }
-            if ($v === '' || $v === null) {
-                continue;
-            }
-            if (array_key_exists($k, $this->searchFilter)) {
-                switch ($this->searchFilter[$k]) {
-                    case "like":
-                        array_push($subMap, [$k, 'like', "%" . urldecode($v) . "%"]);
-                        break;
-                    case "=":
-                        array_push($subMap, [$k, '=', urldecode($v)]);
-                        break;
-                    default:
-                }
-            }
-        }
+        $subMap = $this->getDataFilterFromRequest();
         for ($i = 0; $i < count($datalist); $i++) {
             $subDatalist = $this->model->field($this->selectList)->where($subMap)->where($this->table . "_pid", $datalist[$i][$this->pk])->order($order)->select();
             $datalist[$i]['sub'] = $subDatalist;

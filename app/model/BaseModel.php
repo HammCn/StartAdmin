@@ -20,6 +20,7 @@ class BaseModel extends Model
      *
      * @param  array 筛选数组
      * @param  string 排序方式
+     * @param  string 搜索字段
      * @return void
      */
     public function getListByPage($maps, $order = null, $field = "*")
@@ -49,6 +50,7 @@ class BaseModel extends Model
      *
      * @param  array 筛选数组
      * @param  string 排序方式
+     * @param  string 搜索字段
      * @return void
      */
     public function getList($maps, $order = null, $field = "*")

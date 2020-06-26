@@ -365,28 +365,7 @@ abstract class BaseController
         if ($error) {
             return $error;
         }
-        $map = [];
-        $filter = input('post.');
-        foreach ($filter as $k => $v) {
-            if ($k == 'filter') {
-                $k = input('filter');
-                $v = input('keyword');
-            }
-            if ($v === '' || $v === null) {
-                continue;
-            }
-            if (array_key_exists($k, $this->searchFilter)) {
-                switch ($this->searchFilter[$k]) {
-                    case "like":
-                        array_push($map, [$k, 'like', "%" . $v . "%"]);
-                        break;
-                    case "=":
-                        array_push($map, [$k, '=', $v]);
-                        break;
-                    default:
-                }
-            }
-        }
+        $map = $this->getDataFilterFromRequest();
         $order = strtolower($this->controller) . "_id desc";
         if (input('order')) {
             $order = urldecode(input('order'));
@@ -417,17 +396,8 @@ abstract class BaseController
         }
         return jok('数据加载成功', $item);
     }
-    /**
-     * 导出Excel基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
-     *
-     * @return void
-     */
-    public function excel()
+    protected function getDataFilterFromRequest()
     {
-        $error = $this->access();
-        if ($error) {
-            return $error;
-        }
         $map = [];
         $filter = input('post.');
         foreach ($filter as $k => $v) {
@@ -450,6 +420,21 @@ abstract class BaseController
                 }
             }
         }
+        return $map;
+    }
+    /**
+     * 导出Excel基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
+     *
+     * @return void
+     */
+    public function excel()
+    {
+        $error = $this->access();
+        if ($error) {
+            return $error;
+        }
+        $map = $this->getDataFilterFromRequest();
+
         $order = strtolower($this->controller) . "_id desc";
         if (input('order')) {
             $order = urldecode(input('order'));

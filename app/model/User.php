@@ -54,7 +54,7 @@ class User extends BaseModel
             "user_updatetime" => time()
         ]);
     }
-    public function getListByPage($maps, $order, $field = "*")
+    public function getListByPage($maps, $order = null, $field = "*")
     {
         $resource = $this->view('user', $field)->view('group', '*', 'group.group_id = user.user_group', 'left');
         foreach ($maps as $map) {
@@ -71,7 +71,10 @@ class User extends BaseModel
                 default:
             }
         }
-        return $resource->order($order)->paginate($this->per_page);
+        if ($order) {
+            $resource = $resource->order($order);
+        }
+        return $resource->paginate($this->per_page);
     }
 
     /**

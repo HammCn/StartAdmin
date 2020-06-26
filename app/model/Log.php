@@ -8,7 +8,7 @@ use app\model\BaseModel;
 
 class Log extends BaseModel
 {
-    public function getListByPage($maps, $order, $field = "*")
+    public function getListByPage($maps, $order = null, $field = "*")
     {
         //联查user/node表的相关字段
         $resource = $this->view('log', $field)->view('user', 'user_id,user_name', 'user.user_id = log.log_user', 'left')->view('node', '*', 'node.node_id=log.log_node', 'left');
@@ -26,8 +26,11 @@ class Log extends BaseModel
                 default:
             }
         }
+        if ($order) {
+            $resource = $resource->order($order);
+        }
 
-        return $resource->order($order)->paginate($this->per_page);
+        return $resource->paginate($this->per_page);
     }
     public function getLogStatus()
     {
