@@ -425,7 +425,7 @@ abstract class BaseController
     {
         foreach ($this->insertRequire as $k => $v) {
             if (!input($k)) {
-                return jerr($v);
+                return jerr($v, 400);
             }
         }
         return null;
@@ -454,7 +454,7 @@ abstract class BaseController
     {
         foreach ($this->updateRequire as $k => $v) {
             if (!input($k)) {
-                return jerr($v);
+                return jerr($v, 400);
             }
         }
         return null;
