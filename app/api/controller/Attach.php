@@ -44,12 +44,10 @@ class Attach extends BaseController
                     'attach_path' => $saveName,
                     'attach_type' => $file->extension(),
                     'attach_size' => $file->getSize(),
-                    'attach_createtime' => time(),
-                    'attach_updatetime' => time(),
                     'attach_user' => $this->user['user_id']
                 );
-                $attach_id = $this->model->insertGetId($attach_data);
-                $attach_data = $this->model->where(["attach_id" => $attach_id])->find();
+                $attach_id = $this->insertRow($attach_data);
+                $attach_data = $this->getRowByPk($attach_id);
                 if (input("?extend")) {
                     $attach_data['extend'] = input("extend");
                 }
@@ -82,12 +80,10 @@ class Attach extends BaseController
                     'attach_path' => $saveName,
                     'attach_type' => $file->extension(),
                     'attach_size' => $file->getSize(),
-                    'attach_createtime' => time(),
-                    'attach_updatetime' => time(),
                     'attach_user' => $this->user['user_id']
                 );
-                $attach_id = $this->model->insertGetId($attach_data);
-                $attach_data = $this->model->where(["attach_id" => $attach_id])->find();
+                $attach_id = $this->insertRow($attach_data);
+                $attach_data = $this->getRowByPk($attach_id);
                 if (input("?extend")) {
                     $attach_data['extend'] = input("extend");
                 }

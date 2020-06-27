@@ -40,7 +40,7 @@ class Wemenu extends BaseController
             "wemenu_name" => "菜单名称必须填写",
         ];
         $this->model = new WemenuModel();
-    }    
+    }
     /**
      * 添加微信菜单
      *
@@ -52,17 +52,11 @@ class Wemenu extends BaseController
         if ($error) {
             return $error;
         }
-        foreach ($this->insertRequire as $k => $v) {
-            if (!input($k)) {
-                return jerr($v);
-            }
+        $error = $this->validateInsertFields();
+        if ($error) {
+            return $error;
         }
-        $data = [];
-        foreach (input('post.') as $k => $v) {
-            if (in_array($k, $this->insertFields)) {
-                $data[$k] = $v;
-            }
-        }
+        $data = $this->getInsertDataFromRequest();
         if ($data['wemenu_pid'] == 0) {
             $parentCount = $this->model->where('wemenu_pid', 0)->count();
             if ($parentCount >= 3) {
@@ -91,7 +85,7 @@ class Wemenu extends BaseController
             $dataList[$i]['sub'] = $itemList;
         }
         return jok('数据获取成功', $dataList);
-    }    
+    }
     /**
      * 删除微信菜单
      *
@@ -107,20 +101,19 @@ class Wemenu extends BaseController
             return jerr($this->pk . "必须填写");
         }
         if (isInteger($this->pk_value)) {
-            $map = [$this->pk => $this->pk_value];
-            $item = $this->model->where($map)->find();
+            $item = $this->getRowByPk();
             if (empty($item)) {
                 return jerr("数据查询失败");
             }
-            $this->model->where($map)->delete();
+            $this->deleteBySingle();
             $this->model->where('wemenu_pid', $this->pk_value)->delete();
         } else {
+            $this->deleteByMultiple();
             $list = explode(',', $this->pk_value);
-            $this->model->where($this->pk, 'in', $list)->delete();
             $this->model->where('wemenu_pid', 'in', $list)->delete();
         }
         return jok('删除成功');
-    }    
+    }
     /**
      * 发布菜单到微信
      *

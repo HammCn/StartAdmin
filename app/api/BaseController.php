@@ -94,6 +94,208 @@ abstract class BaseController
         $this->initialize();
     }
 
+    //TODO !!!如有特殊需求请重写下面的方法到子类，请勿修改此处!!! BEGIN.........//
+    /**
+     * 添加接口基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
+     *
+     * @return void
+     */
+    public function add()
+    {
+        //校验Access与RBAC
+        $error = $this->access();
+        if ($error) {
+            return $error;
+        }
+        //校验Insert字段是否填写
+        $error = $this->validateInsertFields();
+        if ($error) {
+            return $error;
+        }
+        //从请求中获取Insert数据
+        $data = $this->getInsertDataFromRequest();
+        //添加这行数据
+        $this->insertRow($data);
+        return jok('添加成功');
+    }
+    /**
+     * 修改接口基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
+     *
+     * @return void
+     */
+    public function update()
+    {
+        //校验Access与RBAC
+        $error = $this->access();
+        if ($error) {
+            return $error;
+        }
+        if (!$this->pk_value) {
+            return jerr($this->pk . "参数必须填写");
+        }
+        //根据主键获取一行数据
+        $item = $this->getRowByPk();
+        if (empty($item)) {
+            return jerr("数据查询失败");
+        }
+        //校验Update字段是否填写
+        $error  = $this->validateUpdateFields();
+        if ($error) {
+            return $error;
+        }
+        //从请求中获取Update数据
+        $data = $this->getUpdateDataFromRequest();
+        //根据主键更新这条数据
+        $this->updateByPk($data);
+        return jok('修改成功');
+    }
+    /**
+     * 禁用接口基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
+     *
+     * @return void
+     */
+    public function disable()
+    {
+        //校验Access与RBAC
+        $error = $this->access();
+        if ($error) {
+            return $error;
+        }
+        if (!$this->pk_value) {
+            return jerr($this->pk . "参数必须填写");
+        }
+        if (isInteger($this->pk_value)) {
+            //根据主键获取一行数据
+            $item = $this->getRowByPk();
+            if (empty($item)) {
+                return jerr("数据查询失败");
+            }
+            //单个操作
+            $this->disableBySingle();
+        } else {
+            //批量操作
+            $this->disableByMultiple();
+        }
+        return jok("禁用成功");
+    }
+    /**
+     * 启用接口基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
+     *
+     * @return void
+     */
+    public function enable()
+    {
+        //校验Access与RBAC
+        $error = $this->access();
+        if ($error) {
+            return $error;
+        }
+        if (!$this->pk_value) {
+            return jerr($this->pk . "参数必须填写");
+        }
+        if (isInteger($this->pk_value)) {
+            //根据主键获取一行数据
+            $item = $this->getRowByPk();
+            if (empty($item)) {
+                return jerr("数据查询失败");
+            }
+            //单个操作
+            $this->enableBySingle();
+        } else {
+            //批量操作
+            $this->enableByMultiple();
+        }
+        return jok("启用成功");
+    }
+
+    /**
+     * 删除接口基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
+     *
+     * @return void
+     */
+    public function delete()
+    {
+        //校验Access与RBAC
+        $error = $this->access();
+        if ($error) {
+            return $error;
+        }
+        if (!$this->pk_value) {
+            return jerr($this->pk . "必须填写");
+        }
+        if (isInteger($this->pk_value)) {
+            //根据主键获取一行数据
+            $item = $this->getRowByPk();
+            if (empty($item)) {
+                return jerr("数据查询失败");
+            }
+            //单个操作
+            $this->deleteBySingle();
+        } else {
+            //批量操作
+            $this->deleteByMultiple();
+        }
+        return jok('删除成功');
+    }
+    /**
+     * 获取列表接口基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
+     *
+     * @return void
+     */
+    public function getList()
+    {
+        //校验Access与RBAC
+        $error = $this->access();
+        if ($error) {
+            return $error;
+        }
+        //从请求中获取筛选数据的数组
+        $map = $this->getDataFilterFromRequest();
+        //从请求中获取排序方式
+        $order = $this->getorderfromRequest();
+        //设置Model中的 per_page
+        $this->setGetListPerPage();
+        //查询数据
+        $dataList = $this->model->getListByPage($map, $order, $this->selectList);
+        return jok('数据获取成功', $dataList);
+    }
+    /**
+     * 获取详情基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
+     *
+     * @return void
+     */
+    public function detail()
+    {
+        //校验Access与RBAC
+        $error = $this->access();
+        if ($error) {
+            return $error;
+        }
+        if (!$this->pk_value) {
+            return jerr($this->pk . "必须填写");
+        }
+        //根据主键获取一行数据
+        $item = $this->getRowByPk();
+        if (empty($item)) {
+            return jerr("没有查询到数据");
+        }
+        return jok('数据加载成功', $item);
+    }
+    /**
+     * 导出Excel基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
+     *
+     * @return void
+     */
+    public function excel()
+    {
+        $error = $this->access();
+        if ($error) {
+            return $error;
+        }
+        $this->exportExcelData();
+    }
+    // !!!如有特殊需求请重写下面的方法到子类，请勿修改此处!!! END.........//
+
     // 初始化
     protected function initialize()
     {
@@ -200,202 +402,230 @@ abstract class BaseController
         }
     }
     /**
-     * 添加接口基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
+     * 从请求中获取Request数据
      *
      * @return void
      */
-    public function add()
+    protected function getInsertDataFromRequest()
     {
-        $error = $this->access();
-        if ($error) {
-            return $error;
-        }
-        foreach ($this->insertRequire as $k => $v) {
-            if (!input($k)) {
-                return jerr($v);
-            }
-        }
         $data = [];
         foreach (input('post.') as $k => $v) {
             if (in_array($k, $this->insertFields)) {
                 $data[$k] = $v;
             }
         }
-        $data[$this->table . "_updatetime"] = time();
-        $data[$this->table . "_createtime"] = time();
-        $this->model->insert($data);
-        return jok('添加成功');
+        return $data;
     }
     /**
-     * 修改接口基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
+     * 校验Insert的字段
      *
      * @return void
      */
-    public function update()
+    protected function validateInsertFields()
     {
-        $error = $this->access();
-        if ($error) {
-            return $error;
-        }
-        if (!$this->pk_value) {
-            return jerr($this->pk . "参数必须填写");
-        }
-        $item = $this->model->where($this->pk, $this->pk_value)->find();
-        if (empty($item)) {
-            return jerr("数据查询失败");
-        }
-        foreach ($this->updateRequire as $k => $v) {
+        foreach ($this->insertRequire as $k => $v) {
             if (!input($k)) {
                 return jerr($v);
             }
         }
+        return null;
+    }
+    /**
+     * 从请求中获取Update数据
+     *
+     * @return void
+     */
+    protected function getUpdateDataFromRequest()
+    {
         $data = [];
         foreach (input('post.') as $k => $v) {
             if (in_array($k, $this->updateFields)) {
                 $data[$k] = $v;
             }
         }
-        $data[$this->table . "_updatetime"] = time();
+        return $data;
+    }
+    /**
+     * 校验Update的字段
+     *
+     * @return void
+     */
+    protected function validateUpdateFields()
+    {
+        foreach ($this->updateRequire as $k => $v) {
+            if (!input($k)) {
+                return jerr($v);
+            }
+        }
+        return null;
+    }
+    /**
+     * 按主键集合批量禁用 1,2,3,4
+     *
+     * @return void
+     */
+    protected function disableByMultiple()
+    {
+        $list = explode(',', $this->pk_value);
+        $this->model->where($this->pk, 'in', $list)->update([
+            $this->table . "_status" => 1,
+            $this->table . "_updatetime" => time(),
+        ]);
+    }
+    /**
+     * 单个禁用 可传入自定义$map
+     * 默认按主键ID禁用
+     *
+     * @param  array $map
+     * @return void
+     */
+    protected function disableBySingle($map = null)
+    {
+        if (!$map == null) {
+            $map = [$this->pk => $this->pk_value];
+        }
+        $this->model->where($map)->update([
+            $this->table . "_status" => 1,
+            $this->table . "_updatetime" => time(),
+        ]);
+    }
+    /**
+     * 按主键集合批量启用 1,2,3,4
+     *
+     * @return void
+     */
+    protected function enableByMultiple()
+    {
+        $list = explode(',', $this->pk_value);
+        $this->model->where($this->pk, 'in', $list)->update([
+            $this->table . "_status" => 1,
+            $this->table . "_updatetime" => time(),
+        ]);
+    }
+    /**
+     * 单个启用 可传入自定义$map
+     * 默认按主键ID启用
+     *
+     * @param  array $map
+     * @return void
+     */
+    protected function enableBySingle($map = null)
+    {
+        if (!$map == null) {
+            $map = [$this->pk => $this->pk_value];
+        }
+        $this->model->where($map)->update([
+            $this->table . "_status" => 1,
+            $this->table . "_updatetime" => time(),
+        ]);
+    }
+    /**
+     * 按主键集合批量删除1,2,3,4
+     *
+     * @return void
+     */
+    protected function deleteByMultiple()
+    {
+        $list = explode(',', $this->pk_value);
+        $this->model->where($this->pk, 'in', $list)->delete();
+    }
+    /**
+     * 单个删除 默认主键ID
+     *
+     * @param  array $map
+     * @return void
+     */
+    protected function deleteBySingle($map = null)
+    {
+        if (!$map == null) {
+            $map = [$this->pk => $this->pk_value];
+        }
+        $this->model->where($map)->delete();
+    }
+    /**
+     * 根据主键ID获取一行数据
+     *
+     * @param  int|null 主键ID
+     * @return array|null
+     */
+    protected function getRowByPk($pk_value = null)
+    {
+        if (!$pk_value) {
+            $pk_value = $this->pk_value;
+        }
+        $item  = $this->model->where($this->pk, $pk_value)->find();
+        return $item ? $item->toArray() : null;
+    }
+    /**
+     * 根据主键ID更新数据
+     *
+     * @param  array 需要更新的KV数组
+     * @param  int|null 主键ID 默认$this->pk_value
+     * @param  bool 是否更新_updatetime字段 默认TRUE
+     * @return void
+     */
+    protected function updateByPk($data, $pk_value = null, $auto_updatetime = true)
+    {
+        if (!$pk_value) {
+            $pk_value = $this->pk_value;
+        }
+        if ($auto_updatetime) {
+            $data[$this->table . "_updatetime"] = time();
+        }
         $this->model->where($this->pk, $this->pk_value)->update($data);
-        return jok('修改成功');
     }
     /**
-     * 禁用接口基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
+     * 添加一行数据
      *
-     * @return void
+     * @param  array 需要添加的KV数组
+     * @param  bool 是否自动记录_createtime和_updatetime字段 默认true
+     * @return int 添加返回的主键ID
      */
-    public function disable()
+    protected function insertRow($data, $auto_inserttime = true)
     {
-        $error = $this->access();
-        if ($error) {
-            return $error;
-        }
-        if (!$this->pk_value) {
-            return jerr($this->pk . "参数必须填写");
-        }
-        if (isInteger($this->pk_value)) {
-            $map = [$this->pk => $this->pk_value];
-            $item = $this->model->where($map)->find();
-            if (empty($item)) {
-                return jerr("数据查询失败");
-            }
-            $this->model->where($map)->update([
-                $this->table . "_status" => 1,
-                $this->table . "_updatetime" => time(),
-            ]);
+        if ($auto_inserttime) {
+            $data[$this->table . "_updatetime"] = time();
+            $data[$this->table . "_createtime"] = time();
         } else {
-            $list = explode(',', $this->pk_value);
-            $this->model->where($this->pk, 'in', $list)->update([
-                $this->table . "_status" => 1,
-                $this->table . "_updatetime" => time(),
-            ]);
+            $data[$this->table . "_updatetime"] = 0;
+            $data[$this->table . "_createtime"] = 0;
         }
-        return jok("禁用成功");
+        $id = $this->model->insertGetId($data);
+        return $id;
     }
-
     /**
-     * 启用接口基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
+     * 从请求中获取查询排序(默认主键DESC)
      *
      * @return void
      */
-    public function enable()
+    protected function getOrderFromRequest()
     {
-        $error = $this->access();
-        if ($error) {
-            return $error;
-        }
-        if (!$this->pk_value) {
-            return jerr($this->pk . "参数必须填写");
-        }
-        if (isInteger($this->pk_value)) {
-            $map = [$this->pk => $this->pk_value];
-            $item = $this->model->where($map)->find();
-            if (empty($item)) {
-                return jerr("数据查询失败");
-            }
-            $this->model->where($map)->update([
-                $this->table . "_status" => 0,
-                $this->table . "_updatetime" => time(),
-            ]);
-        } else {
-            $list = explode(',', $this->pk_value);
-            $this->model->where($this->pk, 'in', $list)->update([
-                $this->table . "_status" => 0,
-                $this->table . "_updatetime" => time(),
-            ]);
-        }
-        return jok("启用成功");
-    }
-
-    /**
-     * 删除接口基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
-     *
-     * @return void
-     */
-    public function delete()
-    {
-        $error = $this->access();
-        if ($error) {
-            return $error;
-        }
-        if (!$this->pk_value) {
-            return jerr($this->pk . "必须填写");
-        }
-        if (isInteger($this->pk_value)) {
-            $map = [$this->pk => $this->pk_value];
-            $item = $this->model->where($map)->find();
-            if (empty($item)) {
-                return jerr("数据查询失败");
-            }
-            $this->model->where($map)->delete();
-        } else {
-            $list = explode(',', $this->pk_value);
-            $this->model->where($this->pk, 'in', $list)->delete();
-        }
-        return jok('删除成功');
-    }
-    /**
-     * 获取列表接口基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
-     *
-     * @return void
-     */
-    public function getList()
-    {
-        $error = $this->access();
-        if ($error) {
-            return $error;
-        }
-        $map = $this->getDataFilterFromRequest();
-        $order = strtolower($this->controller) . "_id desc";
         if (input('order')) {
             $order = urldecode(input('order'));
+        } else {
+            $order = strtolower($this->controller) . "_id desc";
         }
-        if (input('per_page')) {
-            $this->model->per_page = intval(input('per_page'));
-        }
-        $dataList = $this->model->getListByPage($map, $order, $this->selectList);
-        return jok('数据获取成功', $dataList);
+        return $order;
     }
     /**
-     * 获取详情基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
+     * 设置分页查询每页数量
      *
+     * @param  int|null 每页数量
      * @return void
      */
-    public function detail()
+    protected function setGetListPerPage($per_page = null)
     {
-        $error = $this->access();
-        if ($error) {
-            return $error;
+        if ($per_page) {
+            $this->model->per_page = intval($per_page);
+        } else if (!intval(input('per_page'))) {
+            $this->model->per_page = intval(input('per_page'));
         }
-        if (!$this->pk_value) {
-            return jerr($this->pk . "必须填写");
-        }
-        $item = $this->model->field($this->selectDetail)->where($this->pk, $this->pk_value)->find();
-        if (empty($item)) {
-            return jerr("没有查询到数据");
-        }
-        return jok('数据加载成功', $item);
     }
+    /**
+     * 获取查询列表的Where参数
+     *
+     * @return array
+     */
     protected function getDataFilterFromRequest()
     {
         $map = [];
@@ -422,29 +652,8 @@ abstract class BaseController
         }
         return $map;
     }
-    /**
-     * 导出Excel基类 子类自动继承 如有特殊需求 可重写到子类 请勿修改父类方法
-     *
-     * @return void
-     */
-    public function excel()
+    protected function getExcelFields()
     {
-        $error = $this->access();
-        if ($error) {
-            return $error;
-        }
-        $map = $this->getDataFilterFromRequest();
-
-        $order = strtolower($this->controller) . "_id desc";
-        if (input('order')) {
-            $order = urldecode(input('order'));
-        }
-        if (input('per_page')) {
-            $this->model->per_page = intval(input('per_page'));
-        }
-        $datalist = $this->model->getList($map, $order);
-        $datalist = $datalist ? $datalist->toArray() : [];
-        $field = "";
         $excelField = [];
         foreach ($this->excelField as $k => $v) {
             if ($k == "*") {
@@ -453,15 +662,23 @@ abstract class BaseController
                 array_push($excelField, [
                     $k, $v
                 ]);
-                if ($field) {
-                    $field .= "," . $this->table . "_" . $k;
-                } else {
-                    $field .= $this->table . "_" . $k;
-                }
             }
         }
+        return $excelField;
+    }
+    /**
+     * 导出Excel
+     *
+     * @param  array 筛选条件 默认 getDataFilterFromRequest()
+     * @param  mixed 排序方式 默认 getOrderFromRequest()
+     * @return string 下载文件名
+     */
+    protected function exportExcelData($map = null, $order = null)
+    {
+        $datalist = $this->model->getList($map, $order);
+        $datalist = $datalist ? $datalist->toArray() : [];
+        $excelField = $this->getExcelFields();
         $PHPExcel = new \PHPExcel(); //实例化
-
         $PHPExcel
             ->getProperties()  //获得文件属性对象，给下文提供设置资源  
             ->setCreator("StartAdmin")                 //设置文件的创建者  
@@ -541,6 +758,7 @@ abstract class BaseController
         header('Content-Disposition: attachment;filename="' . $this->excelTitle . "_" . date('Y-m-d_H:i:s') . '.xlsx"'); //下载下来的表格名
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         $PHPWriter->save("php://output"); //表示在$path路径下面生成demo.xlsx文件
+        return $this->excelTitle . "_" . date('Y-m-d_H:i:s') . '.xlsx"';
     }
     public function __call($method, $args)
     {

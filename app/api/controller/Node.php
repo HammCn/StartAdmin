@@ -49,23 +49,15 @@ class Node extends BaseController
         if ($error) {
             return $error;
         }
-        foreach ($this->insertRequire as $k => $v) {
-            if (!input($k)) {
-                return jerr($v);
-            }
+        $error = $this->validateInsertFields();
+        if ($error) {
+            return $error;
         }
-        $data = [];
-        foreach (input('post.') as $k => $v) {
-            if (in_array($k, $this->insertFields)) {
-                $data[$k] = $v;
-            }
-        }
+        $data = $this->getInsertDataFromRequest();
         $data['node_module'] = strtolower($data['node_module']);
         $data['node_controller'] = input("node_controller") ? strtolower($data['node_controller']) : "";
         $data['node_action'] = input("node_action") ? strtolower($data['node_action']) : "";
-        $data[$this->table . "_updatetime"] = time();
-        $data[$this->table . "_createtime"] = time();
-        $this->model->insert($data);
+        $this->insertRow($data);
         return jok('用户添加成功');
     }
     /**
@@ -85,26 +77,19 @@ class Node extends BaseController
         if (!isInteger($this->pk_value)) {
             return jerr("修改失败,参数错误");
         }
-        $item = $this->model->where($this->pk, $this->pk_value)->find();
+        $item = $this->getRowByPk();
         if (empty($item)) {
             return jerr("数据查询失败");
         }
-        foreach ($this->updateRequire as $k => $v) {
-            if (!input($k)) {
-                return jerr($v);
-            }
+        $error = $this->validateUpdateFields();
+        if ($error) {
+            return $error;
         }
-        $data = [];
-        foreach (input('post.') as $k => $v) {
-            if (in_array($k, $this->updateFields)) {
-                $data[$k] = $v;
-            }
-        }
+        $data = $this->getUpdateDataFromRequest();
         $data['node_module'] = strtolower($data['node_module']);
         $data['node_controller'] = input("node_controller") ? strtolower($data['node_controller']) : "";
         $data['node_action'] = input("node_action") ? strtolower($data['node_action']) : "";
-        $data[$this->table . "_updatetime"] = time();
-        $this->model->where($this->pk, $this->pk_value)->update($data);
+        $this->updateByPk($data);
         return jok('节点信息更新成功');
     }
 
@@ -129,13 +114,13 @@ class Node extends BaseController
             if (empty($item)) {
                 return jerr("数据查询失败");
             }
-            $this->model->where($map)->delete();
+            $this->deleteBySingle();
             //删除对应ID的授权记录
             $this->authModel->where("auth_node", $this->pk_value)->delete();
         } else {
-            $list = explode(',', $this->pk_value);
-            $this->model->where($this->pk, 'in', $list)->delete();
+            $this->deleteByMultiple();
             //删除对应ID的授权记录
+            $list = explode(',', $this->pk_value);
             $this->authModel->where("auth_node", 'in', $list)->delete();
         }
         return jok('删除节点成功');

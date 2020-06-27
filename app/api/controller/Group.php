@@ -161,15 +161,14 @@ class Group extends BaseController
             return jerr($this->pk . "必须填写");
         }
         if (isInteger($this->pk_value)) {
-            $map = [$this->pk => $this->pk_value];
-            $item = $this->model->where($map)->find();
+            $item = $this->getRowByPk();
             if (empty($item)) {
                 return jerr("数据查询失败");
             }
             if ($item[$this->pk] == 1) {
                 return jerr("无法删除超级管理员组");
             }
-            $this->model->where($map)->delete();
+            $this->deleteBySingle();
             //删除对应ID的授权记录
             $this->authModel->where([
                 "auth_group" => $this->pk_value
@@ -200,7 +199,7 @@ class Group extends BaseController
         if (!isInteger($this->pk_value)) {
             return jerr("修改失败,参数错误");
         }
-        $item = $this->model->where($this->pk, $this->pk_value)->find();
+        $item = $this->getRowByPk();
         if (empty($item)) {
             return jerr("用户组信息查询失败，授权失败");
         }
@@ -241,7 +240,7 @@ class Group extends BaseController
         if (!isInteger($this->pk_value)) {
             return jerr("修改失败,参数错误");
         }
-        $item = $this->model->where($this->pk, $this->pk_value)->find();
+        $item = $this->getRowByPk();
         if (empty($item)) {
             return jerr("用户组信息查询失败，授权失败");
         }

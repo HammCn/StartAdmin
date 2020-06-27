@@ -57,17 +57,11 @@ class User extends BaseController
         if ($error) {
             return $error;
         }
-        foreach ($this->insertRequire as $k => $v) {
-            if (!input($k)) {
-                return jerr($v);
-            }
+        $error = $this->validateInsertFields();
+        if ($error) {
+            return $error;
         }
-        $data = [];
-        foreach (input('post.') as $k => $v) {
-            if (in_array($k, $this->insertFields)) {
-                $data[$k] = $v;
-            }
-        }
+        $data = $this->getInsertDataFromRequest();
         $data['user_ipreg'] = "127.0.0.1";
         $user = $this->model->getUserByAccount($data["user_account"]);
         if ($user) {
@@ -78,9 +72,7 @@ class User extends BaseController
         $password = encodePassword($password, $salt);
         $data["user_salt"] = $salt;
         $data["user_password"] = $password;
-        $data["user_updatetime"] = time();
-        $data["user_createtime"] = time();
-        $this->model->insert($data);
+        $this->insertRow($data);
         return jok('用户添加成功');
     }
     public function update()
