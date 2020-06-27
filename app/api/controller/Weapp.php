@@ -93,7 +93,7 @@ class Weapp extends BaseController
                 return jerr("获取session_key失败");
             }
         } else {
-            return jerr("你应该传code给我");
+            return jerr("你应该传code给我", 400);
         }
     }
     /**
@@ -125,7 +125,7 @@ class Weapp extends BaseController
                 return jerr($e->getMessage());
             }
         } else {
-            return jerr("是不是所有的参数都POST过来了");
+            return jerr("是不是所有的参数都POST过来了", 400);
         }
     }
 }

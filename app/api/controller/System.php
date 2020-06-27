@@ -26,12 +26,12 @@ class System extends BaseController
         }
         $table = strtolower(input("controller"));
         if (empty($table)) {
-            return jerr("请输入控制器名称");
+            return jerr("请输入控制器名称", 400);
         }
         $prefix = config('database.connections.mysql.prefix');
         $database = config('database.connections.mysql.database');
         if (empty(input("nodeTitle"))) {
-            return jerr("请输入节点名称");
+            return jerr("请输入节点名称", 400);
         }
         $files = scandir(__DIR__);
         if (in_array(ucfirst($table) . ".php", $files)) {

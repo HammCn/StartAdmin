@@ -23,10 +23,10 @@ class Group extends BaseController
             "group_name", "group_desc"
         ];
         $this->insertRequire = [
-            'group_name' => "组名称必須填寫"
+            'group_name' => "组名称必须填写"
         ];
         $this->updateRequire = [
-            'group_name' => "组名称必須填寫"
+            'group_name' => "组名称必须填写"
         ];
         $this->model = new GroupModel();
     }
@@ -42,14 +42,14 @@ class Group extends BaseController
             return $error;
         }
         if (!$this->pk_value) {
-            return jerr($this->pk . "必须填写");
+            return jerr($this->pk . "必须填写", 400);
         }
         if (!isInteger($this->pk_value)) {
-            return jerr("修改失败,参数错误");
+            return jerr("修改失败,参数错误", 400);
         }
         $item = $this->model->where($this->pk, $this->pk_value)->find();
         if (empty($item)) {
-            return jerr("数据查询失败");
+            return jerr("数据查询失败", 404);
         }
         if ($item[$this->pk] == 1) {
             return jerr("无法操作超级管理员组信息");
@@ -66,7 +66,7 @@ class Group extends BaseController
             }
         }
         if (!input($this->table . "_name")) {
-            return jerr("组名称必须填写");
+            return jerr("组名称必须填写", 400);
         }
         $data[$this->table . "_updatetime"] = time();
         $this->model->where($this->pk, $this->pk_value)->update($data);
@@ -85,13 +85,13 @@ class Group extends BaseController
             return $error;
         }
         if (!$this->pk_value) {
-            return jerr($this->pk . "参数必须填写");
+            return jerr($this->pk . "参数必须填写", 400);
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
             $item = $this->model->where($map)->find();
             if (empty($item)) {
-                return jerr("数据查询失败");
+                return jerr("数据查询失败", 404);
             }
             if ($item[$this->pk] == 1) {
                 return jerr("无法操作超级管理员组信息");
@@ -122,13 +122,13 @@ class Group extends BaseController
             return $error;
         }
         if (!$this->pk_value) {
-            return jerr($this->pk . "参数必须填写");
+            return jerr($this->pk . "参数必须填写", 400);
         }
         if (isInteger($this->pk_value)) {
             $map = [$this->pk => $this->pk_value];
             $item = $this->model->where($map)->find();
             if (empty($item)) {
-                return jerr("数据查询失败");
+                return jerr("数据查询失败", 404);
             }
             if ($item[$this->pk] == 1) {
                 return jerr("无法操作超级管理员组信息");
@@ -158,12 +158,12 @@ class Group extends BaseController
             return $error;
         }
         if (!$this->pk_value) {
-            return jerr($this->pk . "必须填写");
+            return jerr($this->pk . "必须填写", 400);
         }
         if (isInteger($this->pk_value)) {
             $item = $this->getRowByPk();
             if (empty($item)) {
-                return jerr("数据查询失败");
+                return jerr("数据查询失败", 404);
             }
             if ($item[$this->pk] == 1) {
                 return jerr("无法删除超级管理员组");
@@ -194,14 +194,14 @@ class Group extends BaseController
             return $error;
         }
         if (!$this->pk_value) {
-            return jerr($this->pk . "必须填写");
+            return jerr($this->pk . "必须填写", 400);
         }
         if (!isInteger($this->pk_value)) {
-            return jerr("修改失败,参数错误");
+            return jerr("修改失败,参数错误", 400);
         }
         $item = $this->getRowByPk();
         if (empty($item)) {
-            return jerr("用户组信息查询失败，授权失败");
+            return jerr("用户组信息查询失败，授权失败", 404);
         }
         $this->authModel->where([
             "auth_group" => $this->pk_value
@@ -235,14 +235,14 @@ class Group extends BaseController
             return $error;
         }
         if (!$this->pk_value) {
-            return jerr($this->pk . "必须填写");
+            return jerr($this->pk . "必须填写", 400);
         }
         if (!isInteger($this->pk_value)) {
-            return jerr("修改失败,参数错误");
+            return jerr("修改失败,参数错误", 400);
         }
         $item = $this->getRowByPk();
         if (empty($item)) {
-            return jerr("用户组信息查询失败，授权失败");
+            return jerr("用户组信息查询失败，授权失败", 404);
         }
         $myAuthorizeList = $this->authModel->where("auth_group", $this->pk_value)->select();
         return jok('ok', $myAuthorizeList);

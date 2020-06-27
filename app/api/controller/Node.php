@@ -72,14 +72,14 @@ class Node extends BaseController
             return $error;
         }
         if (!$this->pk_value) {
-            return jerr($this->pk . "必须填写");
+            return jerr($this->pk . "必须填写", 400);
         }
         if (!isInteger($this->pk_value)) {
-            return jerr("修改失败,参数错误");
+            return jerr("修改失败,参数错误", 400);
         }
         $item = $this->getRowByPk();
         if (empty($item)) {
-            return jerr("数据查询失败");
+            return jerr("数据查询失败", 404);
         }
         $error = $this->validateUpdateFields();
         if ($error) {

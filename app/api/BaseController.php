@@ -131,12 +131,12 @@ abstract class BaseController
             return $error;
         }
         if (!$this->pk_value) {
-            return jerr($this->pk . "参数必须填写");
+            return jerr($this->pk . "参数必须填写", 400);
         }
         //根据主键获取一行数据
         $item = $this->getRowByPk();
         if (empty($item)) {
-            return jerr("数据查询失败");
+            return jerr("数据查询失败", 404);
         }
         //校验Update字段是否填写
         $error  = $this->validateUpdateFields();
@@ -162,13 +162,13 @@ abstract class BaseController
             return $error;
         }
         if (!$this->pk_value) {
-            return jerr($this->pk . "参数必须填写");
+            return jerr($this->pk . "参数必须填写", 400);
         }
         if (isInteger($this->pk_value)) {
             //根据主键获取一行数据
             $item = $this->getRowByPk();
             if (empty($item)) {
-                return jerr("数据查询失败");
+                return jerr("数据查询失败", 404);
             }
             //单个操作
             $this->disableBySingle();
@@ -191,13 +191,13 @@ abstract class BaseController
             return $error;
         }
         if (!$this->pk_value) {
-            return jerr($this->pk . "参数必须填写");
+            return jerr($this->pk . "参数必须填写", 400);
         }
         if (isInteger($this->pk_value)) {
             //根据主键获取一行数据
             $item = $this->getRowByPk();
             if (empty($item)) {
-                return jerr("数据查询失败");
+                return jerr("数据查询失败", 404);
             }
             //单个操作
             $this->enableBySingle();
@@ -221,13 +221,13 @@ abstract class BaseController
             return $error;
         }
         if (!$this->pk_value) {
-            return jerr($this->pk . "必须填写");
+            return jerr($this->pk . "必须填写", 400);
         }
         if (isInteger($this->pk_value)) {
             //根据主键获取一行数据
             $item = $this->getRowByPk();
             if (empty($item)) {
-                return jerr("数据查询失败");
+                return jerr("数据查询失败", 404);
             }
             //单个操作
             $this->deleteBySingle();
@@ -272,12 +272,12 @@ abstract class BaseController
             return $error;
         }
         if (!$this->pk_value) {
-            return jerr($this->pk . "必须填写");
+            return jerr($this->pk . "必须填写", 400);
         }
         //根据主键获取一行数据
         $item = $this->getRowByPk();
         if (empty($item)) {
-            return jerr("没有查询到数据");
+            return jerr("没有查询到数据", 404);
         }
         return jok('数据加载成功', $item);
     }
@@ -340,17 +340,17 @@ abstract class BaseController
             return jerr("你访问的节点[" . $this->node['node_title'] . "]被禁用", 503);
         }
         if (!input("plat")) {
-            return jerr("plat参数为必须", 500);
+            return jerr("plat参数为必须", 400);
         }
         $this->plat = input('plat');
         if (!input("version")) {
-            return jerr("version参数为必须", 500);
+            return jerr("version参数为必须", 400);
         }
         $this->version = input('version');
         if ($this->node['node_login']) {
             //节点是否需要登录
             if (!input("?access_token")) {
-                return jerr("AccessToken为必要参数", 401);
+                return jerr("AccessToken为必要参数", 400);
             }
             $access_token = input("access_token");
             $this->user = $this->userModel->getUserByAccessToken($access_token);

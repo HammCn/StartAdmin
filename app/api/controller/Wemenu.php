@@ -98,12 +98,12 @@ class Wemenu extends BaseController
             return $error;
         }
         if (!$this->pk_value) {
-            return jerr($this->pk . "必须填写");
+            return jerr($this->pk . "必须填写", 400);
         }
         if (isInteger($this->pk_value)) {
             $item = $this->getRowByPk();
             if (empty($item)) {
-                return jerr("数据查询失败");
+                return jerr("数据查询失败", 404);
             }
             $this->deleteBySingle();
             $this->model->where('wemenu_pid', $this->pk_value)->delete();
