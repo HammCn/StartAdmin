@@ -38,49 +38,49 @@
                                         @blur="changeName(scope.$index)"></el-input>
                                 </el-tooltip>
                             </template>
-                        </el-table-column>
-                        <el-table-column label="字段类型" width="120">
-                            <template slot-scope="scope">
-                                <el-select size="medium" placeholder="请选择用户组" v-model="scope.row.type">
+                </el-table-column>
+                <el-table-column label="字段类型" width="120">
+                    <template slot-scope="scope">
+                                <el-select size="medium" placeholder="请选择字段类型" v-model="scope.row.type" @change="changeType(scope.$index)">
                                     <el-option v-for="type in data.typeList" :value="type.key" :label="type.value">
                                     </el-option>
                                 </el-select>
                             </template>
-                        </el-table-column>
-                        <el-table-column label="字段长度" width="100">
-                            <template slot-scope="scope">
-                                <el-input placeholder="输入整数" v-model="scope.row.length"
+                </el-table-column>
+                <el-table-column label="字段长度" width="100">
+                    <template slot-scope="scope">
+                                <el-input placeholder="整数" v-model="scope.row.length"
                                     @blur="changeLength(scope.$index)"></el-input>
                             </template>
-                        </el-table-column>
-                        <el-table-column label="默认值" width="120">
-                            <template slot-scope="scope">
+                </el-table-column>
+                <el-table-column label="默认值" width="120">
+                    <template slot-scope="scope">
                                 <el-tooltip content="varchar类型默认值不填为空字符串，int类型不填默认值为0" placement="top">
                                     <el-input placeholder="默认值" v-model="scope.row.default"></el-input>
                                 </el-tooltip>
                             </template>
-                        </el-table-column>
-                        <el-table-column label="是否必填" width="120">
-                            <template slot-scope="scope">
+                </el-table-column>
+                <el-table-column label="是否必填" width="120">
+                    <template slot-scope="scope">
                                 <el-tooltip content="启用后API/前端都将对这个字段进行必填验证" placement="top">
                                     <el-switch v-model="scope.row.require"></el-switch>
                                 </el-tooltip>
                             </template>
-                        </el-table-column>
-                        <el-table-column label="字段描述">
-                            <template slot-scope="scope">
+                </el-table-column>
+                <el-table-column label="字段描述">
+                    <template slot-scope="scope">
                                 <el-tooltip content="字段描述将显示到数据库字段上，同时显示到生成的表单页面上" placement="top">
                                     <el-input placeholder="如 student" v-model="scope.row.desc"></el-input>
                                 </el-tooltip>
                             </template>
-                        </el-table-column>
-                        <el-table-column label="操作" width="100">
-                            <template slot-scope="scope">
+                </el-table-column>
+                <el-table-column label="操作" width="100">
+                    <template slot-scope="scope">
                                 <el-link type="danger" @click="clickDelete(scope.$index)" :underline="false"><i
                                         class="el-icon-delete"></i>删除</el-link>
                             </template>
-                        </el-table-column>
-                    </el-table>
+                </el-table-column>
+                </el-table>
                 </template>
             </div>
         </el-card>
@@ -113,8 +113,17 @@
                             key: "int",
                             value: "int"
                         }, {
+                            key: "bigint",
+                            value: "bigint"
+                        }, {
                             key: "text",
                             value: "text"
+                        }, {
+                            key: "longtext",
+                            value: "longtext"
+                        }, {
+                            key: "double",
+                            value: "double"
                         }],
                         fieldList: []
                     },
@@ -123,19 +132,13 @@
                             required: true,
                             message: '请输入节点名称',
                             trigger: 'blur'
-                        },],
+                        }, ],
                         controller: [{
                             required: true,
                             pattern: /^[a-z]+$/,
                             message: '控制器只允许小写字母',
                             trigger: 'blur'
-                        },],
-                        name: [{
-                            required: true,
-                            pattern: /^[a-z]+$/,
-                            message: '控制器只允许小写字母',
-                            trigger: 'blur'
-                        },],
+                        }, ],
                     }
                 }
             },
@@ -164,13 +167,99 @@
                         }
                     }
                 },
+                changeType(_index) {
+                    switch (this.data.fieldList[_index].type) {
+                        case 'int':
+                            this.data.fieldList[_index].length = 11;
+                            this.data.fieldList[_index].default = "0";
+                            break;
+                        case 'bigint':
+                            this.data.fieldList[_index].length = 20;
+                            this.data.fieldList[_index].default = "0";
+                            break;
+                        case 'varchar':
+                            this.data.fieldList[_index].length = 255;
+                            this.data.fieldList[_index].default = "";
+                            break;
+                        case 'double':
+                            this.data.fieldList[_index].length = "11,2";
+                            this.data.fieldList[_index].default = "0";
+                            break;
+                        default:
+                            this.data.fieldList[_index].length = "";
+                            this.data.fieldList[_index].default = "";
+                    }
+                },
                 changeLength(_index) {
                     var _length = this.data.fieldList[_index].length;
-                    re = /^[0-9]+$/;
-                    if (!re.test(_length)) {
-                        this.$alert(_length + "不是一个合法字段长度值", '不理想的字段长度', {
-                            confirmButtonText: '我马上改',
-                        });
+                    switch (this.data.fieldList[_index].type) {
+                        case 'int':
+                            re = /^[1-9]\d*$/;
+                            if (!re.test(_length)) {
+                                if (!_length) {
+                                    this.data.fieldList[_index].length = 11;
+                                } else {
+                                    this.$alert(_length + "不是一个合法字段长度值", '不理想的字段长度', {
+                                        confirmButtonText: '我马上改',
+                                    });
+                                    this.data.fieldList[_index].length = 11;
+                                }
+                            } else {
+                                if (_length > 11) {
+                                    this.data.fieldList[_index].length = 11;
+                                }
+                            }
+                            break;
+                        case 'bigint':
+                            re = /^[1-9]\d*$/;
+                            if (!re.test(_length)) {
+                                if (!_length) {
+                                    this.data.fieldList[_index].length = 20;
+                                } else {
+                                    this.$alert(_length + "不是一个合法字段长度值", '不理想的字段长度', {
+                                        confirmButtonText: '我马上改',
+                                    });
+                                    this.data.fieldList[_index].length = 20;
+                                }
+                            } else {
+                                if (_length > 20 || _length == 11) {
+                                    this.data.fieldList[_index].length = 20;
+                                }
+                            }
+                            break;
+                        case 'varchar':
+                            re = /^[1-9]\d*$/;
+                            if (!re.test(_length)) {
+                                if (!_length) {
+                                    this.data.fieldList[_index].length = 255;
+                                } else {
+                                    this.$alert(_length + "不是一个合法字段长度值", '不理想的字段长度', {
+                                        confirmButtonText: '我马上改',
+                                    });
+                                    this.data.fieldList[_index].length = 255;
+                                }
+                            } else {
+                                if (_length > 255 || _length == 11 || _length == 9) {
+                                    this.data.fieldList[_index].length = 255;
+                                }
+                            }
+                            break;
+                        case 'double':
+                            re = /^[1-9]\d*,[1-9]$/;
+                            if (!re.test(_length)) {
+                                if (!_length || _length == 11 || _length == 255 || length == 20) {
+                                    this.data.fieldList[_index].length = "11,2";
+                                } else {
+                                    this.$alert(_length + "不是一个合法字段长度值", '不理想的字段长度', {
+                                        confirmButtonText: '我马上改',
+                                    });
+                                    this.data.fieldList[_index].length = "11,2";
+                                }
+                            }
+                            break;
+                        default:
+                            this.data.fieldList[_index].length = "";
+                            this.data.fieldList[_index].default = "";
                     }
                 },
                 submitForm(formName) {
@@ -195,7 +284,7 @@
                             type: 'warning'
                         }).then(() => {
                             axios.post('/api/system/build', Object.assign({}, PostBase, JSON.parse(JSON.stringify(postData))))
-                                .then(function (response) {
+                                .then(function(response) {
                                     if (response.data.code == CODE_SUCCESS) {
                                         that.$message({
                                             message: response.data.msg,
@@ -205,11 +294,11 @@
                                         that.$message.error(response.data.msg);
                                     }
                                 })
-                                .catch(function (error) {
+                                .catch(function(error) {
                                     that.$message.error('服务器内部错误');
                                     console.log(error);
                                 });
-                        }).catch(() => { });
+                        }).catch(() => {});
 
                     });
                 },
