@@ -318,10 +318,6 @@ class User extends BaseController
      */
     public function reg()
     {
-        $error = $this->checkAccess();
-        if ($error) {
-            return $error;
-        }
         if (!input("phone")) {
             return jerr("手机号不能为空！", 400);
         }
@@ -391,10 +387,6 @@ class User extends BaseController
      */
     public function resetPassword()
     {
-        $error = $this->checkAccess();
-        if ($error) {
-            return $error;
-        }
         if (!input("phone")) {
             return jerr("手机号不能为空！", 400);
         }
