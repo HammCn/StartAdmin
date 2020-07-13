@@ -348,7 +348,7 @@ abstract class BaseController
         }
         $this->version = input('version');
         if ($this->node['node_login']) {
-            //节点是否需要登录
+            //节点需要强制登录
             if (!input("?access_token")) {
                 return jerr("AccessToken为必要参数", 400);
             }
@@ -398,6 +398,13 @@ abstract class BaseController
                         return jerr("你没有权限访问[" . $this->node['node_title'] . "]这个接口", 403);
                     }
                 }
+            }
+        } else {
+            //节点不需要强制登录
+            //但有可能也会传access过来，这里当有access_token时，查一下用户并设定全局用户信息
+            if (input("?access_token")) {
+                $access_token = input("access_token");
+                $this->user = $this->userModel->getUserByAccessToken($access_token) ?? null;
             }
         }
     }
