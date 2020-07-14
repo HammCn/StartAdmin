@@ -488,7 +488,7 @@ abstract class BaseController
      */
     protected function disableBySingle($map = null)
     {
-        if (!$map == null) {
+        if ($map == null) {
             $map = [$this->pk => $this->pk_value];
         }
         $this->model->where($map)->update([
@@ -518,7 +518,7 @@ abstract class BaseController
      */
     protected function enableBySingle($map = null)
     {
-        if (!$map == null) {
+        if ($map == null) {
             $map = [$this->pk => $this->pk_value];
         }
         $this->model->where($map)->update([
@@ -544,7 +544,7 @@ abstract class BaseController
      */
     protected function deleteBySingle($map = null)
     {
-        if (!$map == null) {
+        if ($map == null) {
             $map = [$this->pk => $this->pk_value];
         }
         $this->model->where($map)->delete();
