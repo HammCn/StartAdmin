@@ -505,7 +505,7 @@ abstract class BaseController
     {
         $list = explode(',', $this->pk_value);
         $this->model->where($this->pk, 'in', $list)->update([
-            $this->table . "_status" => 1,
+            $this->table . "_status" => 0,
             $this->table . "_updatetime" => time(),
         ]);
     }
@@ -522,7 +522,7 @@ abstract class BaseController
             $map = [$this->pk => $this->pk_value];
         }
         $this->model->where($map)->update([
-            $this->table . "_status" => 1,
+            $this->table . "_status" => 0,
             $this->table . "_updatetime" => time(),
         ]);
     }
