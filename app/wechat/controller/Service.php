@@ -49,6 +49,9 @@ class Service extends BaseController
                         case 'VIEW':
                             return '你访问的URL为：' . $message['EventKey'];
                             break;
+                        case 'scancode_waitmsg':
+                            return "扫码结果：\n\n类型：".$message['ScanCodeInfo']['ScanType']."\n数据：".$message['ScanCodeInfo']['ScanResult']."\n\n你可以自行进行业务逻辑扩展。";
+                            break;
                         case 'unsubscribe':
                             break;
                         default:
