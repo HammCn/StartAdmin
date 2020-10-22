@@ -21,14 +21,14 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `sa_access` (
-  `access_id` int(9) NOT NULL,
-  `access_user` int(9) NOT NULL DEFAULT '0' COMMENT '用户ID',
+  `access_id` int(11) NOT NULL,
+  `access_user` int(11) NOT NULL DEFAULT '0' COMMENT '用户ID',
   `access_token` varchar(255) NOT NULL DEFAULT '' COMMENT 'AccessToken',
   `access_plat` varchar(255) NOT NULL DEFAULT 'all' COMMENT '登录平台',
   `access_ip` varchar(255) NOT NULL DEFAULT '' COMMENT 'IP',
-  `access_status` int(9) NOT NULL DEFAULT '0' COMMENT '状态',
-  `access_createtime` int(9) NOT NULL DEFAULT '0' COMMENT '创建时间',
-  `access_updatetime` int(9) NOT NULL DEFAULT '0' COMMENT '修改时间'
+  `access_status` int(11) NOT NULL DEFAULT '0' COMMENT '状态',
+  `access_createtime` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `access_updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '修改时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='授权信息表';
 
 -- --------------------------------------------------------
@@ -38,14 +38,14 @@ CREATE TABLE `sa_access` (
 --
 
 CREATE TABLE `sa_attach` (
-  `attach_id` int(9) NOT NULL,
+  `attach_id` int(11) NOT NULL,
   `attach_path` varchar(255) NOT NULL DEFAULT '' COMMENT '路径',
   `attach_type` varchar(255) NOT NULL DEFAULT '' COMMENT '类型',
   `attach_size` int(11) NOT NULL DEFAULT '0' COMMENT '大小',
   `attach_user` int(11) NOT NULL DEFAULT '0' COMMENT '用户',
-  `attach_status` int(9) NOT NULL DEFAULT '0' COMMENT '状态',
-  `attach_createtime` int(9) NOT NULL DEFAULT '0' COMMENT '创建时间',
-  `attach_updatetime` int(9) NOT NULL DEFAULT '0' COMMENT '修改时间'
+  `attach_status` int(11) NOT NULL DEFAULT '0' COMMENT '状态',
+  `attach_createtime` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `attach_updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '修改时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='附件表';
 
 -- --------------------------------------------------------
@@ -70,12 +70,12 @@ CREATE TABLE `sa_auth` (
 --
 
 CREATE TABLE `sa_code` (
-  `code_id` int(9) NOT NULL,
-  `code_user` int(9) NOT NULL DEFAULT '0' COMMENT 'user',
+  `code_id` int(11) NOT NULL,
+  `code_user` int(11) NOT NULL DEFAULT '0' COMMENT 'user',
   `code_code` varchar(255) NOT NULL DEFAULT '' COMMENT 'code',
-  `code_status` int(9) NOT NULL DEFAULT '0' COMMENT '状态',
-  `code_createtime` int(9) NOT NULL DEFAULT '0' COMMENT '创建时间',
-  `code_updatetime` int(9) NOT NULL DEFAULT '0' COMMENT '修改时间'
+  `code_status` int(11) NOT NULL DEFAULT '0' COMMENT '状态',
+  `code_createtime` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `code_updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '修改时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='临时凭证表';
 
 -- --------------------------------------------------------
@@ -147,18 +147,18 @@ INSERT INTO `sa_group` (`group_id`, `group_name`, `group_desc`, `group_status`, 
 --
 
 CREATE TABLE `sa_log` (
-  `log_id` int(9) NOT NULL COMMENT '操作ID',
+  `log_id` int(11) NOT NULL COMMENT '操作ID',
   `log_user` int(11) NOT NULL COMMENT '用户UID',
   `log_gets` text CHARACTER SET utf8 COMMENT 'GET参数',
   `log_posts` text CHARACTER SET utf8 COMMENT 'POST参数',
   `log_cookies` text CHARACTER SET utf8 COMMENT 'Cookies数据',
-  `log_node` int(9) NOT NULL COMMENT '节点ID',
+  `log_node` int(11) NOT NULL COMMENT '节点ID',
   `log_ip` varchar(255) CHARACTER SET utf8 NOT NULL COMMENT 'IP地址',
   `log_os` varchar(255) CHARACTER SET utf8 NOT NULL COMMENT '操作系统',
   `log_browser` varchar(255) CHARACTER SET utf8 NOT NULL COMMENT '浏览器',
-  `log_status` int(9) NOT NULL DEFAULT '0' COMMENT '1被禁用',
-  `log_createtime` int(9) NOT NULL DEFAULT '0' COMMENT '创建时间',
-  `log_updatetime` int(9) NOT NULL DEFAULT '0' COMMENT '修改时间'
+  `log_status` int(11) NOT NULL DEFAULT '0' COMMENT '1被禁用',
+  `log_createtime` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `log_updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '修改时间'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='访问记录表';
 
 -- --------------------------------------------------------
@@ -326,11 +326,11 @@ INSERT INTO `sa_user` (`user_id`, `user_account`, `user_password`, `user_salt`, 
 --
 
 CREATE TABLE `sa_weapp` (
-  `weapp_id` int(9) NOT NULL,
+  `weapp_id` int(11) NOT NULL,
   `weapp_openid` varchar(255) NOT NULL DEFAULT '' COMMENT 'OPENID',
-  `weapp_status` int(9) NOT NULL DEFAULT '0' COMMENT '状态',
-  `weapp_createtime` int(9) NOT NULL DEFAULT '0' COMMENT '创建时间',
-  `weapp_updatetime` int(9) NOT NULL DEFAULT '0' COMMENT '修改时间'
+  `weapp_status` int(11) NOT NULL DEFAULT '0' COMMENT '状态',
+  `weapp_createtime` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `weapp_updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '修改时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='小程序用户表';
 
 -- --------------------------------------------------------
@@ -360,17 +360,17 @@ CREATE TABLE `sa_wechat` (
 --
 
 CREATE TABLE `sa_wemenu` (
-  `wemenu_id` int(9) NOT NULL,
+  `wemenu_id` int(11) NOT NULL,
   `wemenu_name` varchar(255) NOT NULL DEFAULT '' COMMENT '菜单名称',
   `wemenu_type` varchar(255) NOT NULL DEFAULT '0' COMMENT '类型',
   `wemenu_url` varchar(255) NOT NULL DEFAULT '' COMMENT '菜单链接',
   `wemenu_appid` varchar(255) NOT NULL DEFAULT '' COMMENT '小程序ID',
   `wemenu_key` varchar(255) NOT NULL DEFAULT '' COMMENT '点击参数',
   `wemenu_page` varchar(255) NOT NULL DEFAULT '' COMMENT '小程序页面',
-  `wemenu_pid` int(9) NOT NULL DEFAULT '0' COMMENT '父菜单',
-  `wemenu_status` int(9) NOT NULL DEFAULT '0' COMMENT '状态',
-  `wemenu_createtime` int(9) NOT NULL DEFAULT '0' COMMENT '创建时间',
-  `wemenu_updatetime` int(9) NOT NULL DEFAULT '0' COMMENT '修改时间'
+  `wemenu_pid` int(11) NOT NULL DEFAULT '0' COMMENT '父菜单',
+  `wemenu_status` int(11) NOT NULL DEFAULT '0' COMMENT '状态',
+  `wemenu_createtime` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `wemenu_updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '修改时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信菜单表';
 
 --
@@ -471,13 +471,13 @@ ALTER TABLE `sa_wemenu`
 -- 使用表AUTO_INCREMENT `sa_access`
 --
 ALTER TABLE `sa_access`
-  MODIFY `access_id` int(9) NOT NULL AUTO_INCREMENT;
+  MODIFY `access_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- 使用表AUTO_INCREMENT `sa_attach`
 --
 ALTER TABLE `sa_attach`
-  MODIFY `attach_id` int(9) NOT NULL AUTO_INCREMENT;
+  MODIFY `attach_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- 使用表AUTO_INCREMENT `sa_auth`
@@ -489,7 +489,7 @@ ALTER TABLE `sa_auth`
 -- 使用表AUTO_INCREMENT `sa_code`
 --
 ALTER TABLE `sa_code`
-  MODIFY `code_id` int(9) NOT NULL AUTO_INCREMENT;
+  MODIFY `code_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- 使用表AUTO_INCREMENT `sa_conf`
@@ -507,7 +507,7 @@ ALTER TABLE `sa_group`
 -- 使用表AUTO_INCREMENT `sa_log`
 --
 ALTER TABLE `sa_log`
-  MODIFY `log_id` int(9) NOT NULL AUTO_INCREMENT COMMENT '操作ID';
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '操作ID';
 
 --
 -- 使用表AUTO_INCREMENT `sa_node`
@@ -525,7 +525,7 @@ ALTER TABLE `sa_user`
 -- 使用表AUTO_INCREMENT `sa_weapp`
 --
 ALTER TABLE `sa_weapp`
-  MODIFY `weapp_id` int(9) NOT NULL AUTO_INCREMENT;
+  MODIFY `weapp_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- 使用表AUTO_INCREMENT `sa_wechat`
@@ -537,4 +537,4 @@ ALTER TABLE `sa_wechat`
 -- 使用表AUTO_INCREMENT `sa_wemenu`
 --
 ALTER TABLE `sa_wemenu`
-  MODIFY `wemenu_id` int(9) NOT NULL AUTO_INCREMENT;
+  MODIFY `wemenu_id` int(11) NOT NULL AUTO_INCREMENT;

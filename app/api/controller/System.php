@@ -48,7 +48,7 @@ class System extends BaseController
         }
 
         //创建表开始
-        $sql = "CREATE TABLE `" . $prefix . $table . "` (`" . $table . "_id` INT(9) NOT NULL AUTO_INCREMENT ";
+        $sql = "CREATE TABLE `" . $prefix . $table . "` (`" . $table . "_id` INT(11) NOT NULL AUTO_INCREMENT ";
         foreach ($fieldList as $field) {
             $field['desc'] = empty($field['desc']) ? $field['name'] : $field['desc'];;
             if (empty($field['name'])) {
@@ -100,9 +100,9 @@ class System extends BaseController
                 $sql .= " comment '" . $field['desc'] . "'";
             }
         }
-        $sql .= " ,`" . $table . "_status` INT(9) NOT NULL DEFAULT '0' comment '状态'";
-        $sql .= " ,`" . $table . "_createtime` INT(9) NOT NULL DEFAULT '0' comment '创建时间'";
-        $sql .= " ,`" . $table . "_updatetime` INT(9) NOT NULL DEFAULT '0' comment '修改时间'";
+        $sql .= " ,`" . $table . "_status` INT(11) NOT NULL DEFAULT '0' comment '状态'";
+        $sql .= " ,`" . $table . "_createtime` INT(11) NOT NULL DEFAULT '0' comment '创建时间'";
+        $sql .= " ,`" . $table . "_updatetime` INT(11) NOT NULL DEFAULT '0' comment '修改时间'";
         $sql .= " , PRIMARY KEY (`" . $table . "_id`)) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='" . input("nodeTitle") . "表'";
         //创建表结束
         Db::execute($sql);
